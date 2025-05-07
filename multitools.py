@@ -28,12 +28,12 @@ mode = st.session_state.get("mode", None)
 if mode == "night_duty":
     st.info("คุณเลือก: เวรยืนกลางคืน")
     st.success("เปิด Google Sheet: เวรยืนกลางคืน")
-    webbrowser.open("https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU")
+    st.markdown("https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU")
 
 elif mode == "weekend_duty":
     st.info("คุณเลือก: เวรเสาร์-อาทิตย์")
     st.success("เปิด Google Sheet: เวรเสาร์อาทิตย์")
-    webbrowser.open("https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8")
+    st.markdown("https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8")
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
