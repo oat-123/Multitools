@@ -62,7 +62,7 @@ elif mode == "home":
     ]
     
     # กรอกข้อมูล
-    st.subheader("กรอกข้อมูลตามหมวด")
+    st.subheader("กรอกข้อมูลเเต่ละชั้นปี")
     data = {}
     for year in [5, 4, 3, 2]:
         data[year] = {}
