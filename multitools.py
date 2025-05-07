@@ -123,11 +123,30 @@ elif mode == "ceremony_duty":
                 if idx < 1 or idx > 3:  # เว้นคอลัมน์ B (1), C (2), D (3)
                     cell.alignment = Alignment(horizontal='center', vertical='center')
 
-        # เติมค่าว่างเพื่อให้ sort ได้ไม่พัง
-        selected_df[["สังกัด", "ตำแหน่ง", "ชื่อ"]] = selected_df[["สังกัด", "ตำแหน่ง", "ชื่อ"]].fillna("")
+        # ฟังก์ชันแปลงเลขไทย -> อารบิก
+        def thai_to_arabic(text):
+            return text.translate(str.maketrans("๐๑๒๓๔๕๖๗๘๙", "0123456789"))
         
-        # เรียงข้อมูลตาม สังกัด > ตำแหน่ง > ชื่อ
-        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง", "ชื่อ"], ascending=True)
+        # ฟังก์ชันแปลงเลขอารบิก -> ไทย
+        def arabic_to_thai(text):
+            return text.translate(str.maketrans("0123456789", "๐๑๒๓๔๕๖๗๘๙"))
+        
+        # ล้างค่า และแปลงเป็น string
+        selected_df["สังกัด"] = selected_df["สังกัด"].fillna("").astype(str).str.strip()
+        selected_df["ตำแหน่ง"] = selected_df["ตำแหน่ง"].fillna("").astype(str).str.strip()
+        selected_df["ชื่อ"] = selected_df["ชื่อ"].fillna("").astype(str).str.strip()
+        
+        # สร้างคอลัมน์ช่วยเรียง
+        selected_df["ตำแหน่ง_sort"] = selected_df["ตำแหน่ง"].apply(thai_to_arabic)
+        
+        # เรียงข้อมูล
+        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง_sort", "ชื่อ"])
+        
+        # ลบคอลัมน์ช่วยเรียง
+        selected_df = selected_df.drop(columns=["ตำแหน่ง_sort"])
+        
+        # แปลง "ตำแหน่ง" กลับเป็นเลขไทย (หากมันถูกแปลงก่อนหน้านี้)
+        selected_df["ตำแหน่ง"] = selected_df["ตำแหน่ง"].apply(arabic_to_thai)
         
         # รีเซ็ต index
         selected_df = selected_df.reset_index(drop=True)
