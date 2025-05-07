@@ -36,11 +36,8 @@ if mode == "night_duty":
     st.markdown("https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU")
 
 elif mode == "weekend_duty":
-        response = st.radio("คุณต้องการเปิด Google Sheets สำหรับเวรเสาร์อาทิตย์หรือไม่?", ["ใช่"])
-    
-        if response == "ใช่":
-            url = "https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?usp=drivesdk"
-            st.markdown(f'[คลิกที่นี่เพื่อเปิดลิงก์]({url})', unsafe_allow_html=True)
+    st.info("คุณเลือก: เวรเสาร์-อาทิตย์")
+    st.markdown("https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?gid=1888956716#gid=1888956716")
 
 
 elif mode == "ceremony_duty":
