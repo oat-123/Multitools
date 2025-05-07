@@ -36,7 +36,7 @@ if mode == "night_duty":
     st.markdown("https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU")
 
 elif mode == "weekend_duty":
-        response = st.radio("คุณต้องการเปิด Google Sheets สำหรับเวรเสาร์อาทิตย์หรือไม่?", ["ไม่", "ใช่"])
+        response = st.radio("คุณต้องการเปิด Google Sheets สำหรับเวรเสาร์อาทิตย์หรือไม่?", ["ใช่"])
     
         if response == "ใช่":
             url = "https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?usp=drivesdk"
