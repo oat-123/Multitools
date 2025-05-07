@@ -7,27 +7,36 @@ from collections import defaultdict
 from openpyxl.styles import Alignment, Border, Side
 
 st.title("แอปผู้ช่วยจัดเวร")
+# สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button("เวรยืนกลางคืน", use_container_width=True):
+        st.session_state["mode"] = "night_duty"
+
+with col2:
+    if st.button("เวรเสาร์-อาทิตย์", use_container_width=True):
+        st.session_state["mode"] = "weekend_duty"
+
+with col3:
+    if st.button("จัดยอดพิธี", use_container_width=True):
+        st.session_state["mode"] = "ceremony_duty"
+# ตรวจสอบและแสดง UI เฉพาะส่วนที่เลือก
+mode = st.session_state.get("mode", None)
 
 
-option = st.selectbox(
-    "เลือกหน้าที่ที่ต้องการทำ",
-    [
-        "เลือกเมนู...",
-        "เวรยืนกลางคืน",
-        "เวรเสาร์อาทิตย์",
-        "จัดยอดพิธีต่างๆ (รันอัตโนมัติ)"
-    ]
-)
 
-if option == "เวรยืนกลางคืน":
+if mode == "night_duty":
+     st.info("คุณเลือก: เวรยืนกลางคืน")
     st.success("เปิด Google Sheet: เวรยืนกลางคืน")
     webbrowser.open("https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU")
 
-elif option == "เวรเสาร์อาทิตย์":
+elif mode == "weekend_duty":
+    st.info("คุณเลือก: เวรเสาร์-อาทิตย์")
     st.success("เปิด Google Sheet: เวรเสาร์อาทิตย์")
     webbrowser.open("https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8")
 
-elif option == "จัดยอดพิธีต่างๆ (รันอัตโนมัติ)":
+elif mode == "ceremony_duty":
+    st.info("คุณเลือก: จัดยอดพิธี")
 # อ่านไฟล์ Excel ชั้น4พัน4.xlsx
     @st.cache_data
     def load_data():
