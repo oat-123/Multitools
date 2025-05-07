@@ -116,10 +116,10 @@ elif option == "จัดยอดพิธีต่างๆ (รันอั�
         )
 
         # ตั้งความกว้างคอลัมน์
-        ws.column_dimensions['C'].width = 20  # ปรับตามความเหมาะสม
-        ws.column_dimensions['D'].width = 20
-        ws.column_dimensions['G'].width = 30
-        ws.column_dimensions['H'].width = 30
+        ws.column_dimensions['C'].width = 15  # ปรับตามความเหมาะสม
+        ws.column_dimensions['D'].width = 15
+        ws.column_dimensions['G'].width = 20
+        ws.column_dimensions['H'].width = 20
 
         
         # จัดหัวตาราง (แถวที่ 1)
@@ -127,13 +127,10 @@ elif option == "จัดยอดพิธีต่างๆ (รันอั�
             cell.alignment = Alignment(horizontal='center', vertical='center')
             cell.border = thin_border
         
-        # จัดแถวข้อมูล (แถวที่ 2 เป็นต้นไป)
-        for row in ws.iter_rows(min_row=2):
-            for idx, cell in enumerate(row[:9]):  # คอลัมน์ A–I
-                # จัดกึ่งกลางเว้น B–D (index 1–3)
-                if idx < 1 or idx > 3:
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
-                # ใส่กรอบทุกเซลล์
+        for row in ws.iter_rows(min_row=1):  # รวมหัวตาราง
+            if row[0].row == 2:
+                continue  # ข้ามแถวที่ 2
+            for cell in row:
                 cell.border = thin_border
         
         output_filename = f"{ยอด_name}.xlsx"
