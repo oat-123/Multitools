@@ -114,6 +114,13 @@ elif option == "จัดยอดพิธีต่างๆ (รันอั�
             top=Side(style='thin'),
             bottom=Side(style='thin')
         )
+
+        # ตั้งความกว้างคอลัมน์
+        ws.column_dimensions['C'].width = 20  # ปรับตามความเหมาะสม
+        ws.column_dimensions['D'].width = 20
+        ws.column_dimensions['G'].width = 30
+        ws.column_dimensions['H'].width = 30
+
         
         # จัดหัวตาราง (แถวที่ 1)
         for cell in ws[1]:
