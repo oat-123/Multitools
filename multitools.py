@@ -4,6 +4,7 @@ import subprocess
 import pandas as pd
 import random
 from collections import defaultdict
+from openpyxl.styles import Alignment
 
 st.title("แอปผู้ช่วยจัดเวร")
 
