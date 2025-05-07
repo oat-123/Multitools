@@ -8,6 +8,8 @@ from openpyxl.styles import Alignment, Border, Side
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 from datetime import date
+import io
+from collections import defaultdict
 
 st.image("assist.jpg", width=120)
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
@@ -15,7 +17,7 @@ st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
 
 
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
     if st.button("เวรยืนกลางคืน", use_container_width=True):
         st.session_state["mode"] = "night_duty"
@@ -31,6 +33,10 @@ with col3:
 with col4:
     if st.button("พิมพ์ยอดปล่อย", use_container_width=True):
         st.session_state["mode"] = "home"
+
+with col5:
+    if st.button("สถิติโดนยอด", use_container_width=True):
+        st.session_state["mode"] = "count"
 
 # ตรวจสอบและแสดง UI เฉพาะส่วนที่เลือก
 mode = st.session_state.get("mode", None)
@@ -110,7 +116,54 @@ elif mode == "home":
         lines.append("จึงเรียนมาเพื่อกรุณาทราบ")
     
         st.text_area("รายงานยอด", value="\n".join(lines), height=600)
+
+
+elif mode == "count":
+    # ตัวเลือกระดับความเหนื่อย
+    เหนื่อย_map = {
+        "เบา (1 แต้ม)": 1,
+        "กลาง (2 แต้ม)": 2,
+        "หนัก (3 แต้ม)": 3
+    }
+    ระดับ = st.radio("เลือกระดับความเหนื่อยของยอดนี้:", list(เหนื่อย_map.keys()))
     
+    uploaded_file = st.file_uploader("อัปโหลดไฟล์ Excel หรือ CSV ที่มีชื่อผู้ถูกยอด", type=["xlsx", "xls", "csv"])
+    
+    if uploaded_file:
+        # อ่านไฟล์เป็น DataFrame
+        if uploaded_file.name.endswith("csv"):
+            df = pd.read_csv(uploaded_file)
+        else:
+            df = pd.read_excel(uploaded_file)
+    
+        st.success("อ่านไฟล์สำเร็จ")
+        st.write("ตัวอย่างข้อมูล:", df.head())
+    
+        # ระบุคอลัมน์ชื่อ
+        col_name = st.selectbox("เลือกคอลัมน์ที่มีชื่อ-สกุล:", df.columns)
+    
+        # ถ้ามีชื่อซ้ำกันจะสะสมแต้มรวม
+        แต้มสะสม = defaultdict(int)
+    
+        if st.button("✅ นับแต้มจากยอดนี้"):
+            คะแนน = เหนื่อย_map[ระดับ]
+    
+            for name in df[col_name].dropna():
+                แต้มสะสม[name.strip()] += คะแนน
+    
+            # แปลงเป็น DataFrame
+            summary_df = pd.DataFrame([
+                {"ชื่อ-สกุล": k, "แต้มสะสม": v} for k, v in แต้มสะสม.items()
+            ])
+    
+            summary_df = summary_df.sort_values(by="แต้มสะสม", ascending=False)
+            st.subheader("📌 สรุปแต้มผู้ที่โดนยอด")
+            st.dataframe(summary_df, use_container_width=True)
+    
+            # ดาวน์โหลด
+            csv = summary_df.to_csv(index=False).encode("utf-8-sig")
+            st.download_button("📥 ดาวน์โหลดสรุปเป็น CSV", data=csv, file_name="ยอดสถิติ.csv", mime="text/csv")
+
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
