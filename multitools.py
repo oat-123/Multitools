@@ -80,40 +80,40 @@ elif mode == "ceremony_duty":
         if "ลำดับ" in selected_df.columns:
             selected_df = selected_df.drop(columns=["ลำดับ"])
 
-        # เพิ่มคอลัมน์ใหม่
+        # เพิ่มคอลัมน์ลำดับ (เริ่มจาก 1)
+        selected_df = selected_df.reset_index(drop=True)
+        selected_df.index += 1
+        if "ลำดับ" in selected_df.columns:
+            selected_df = selected_df.drop(columns=["ลำดับ"])
         selected_df.insert(0, "ลำดับ", selected_df.index)
-
-
-        # คอลัมน์ที่ต้องการ
+        
+        # กำหนดลำดับคอลัมน์
         columns = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
-
+        
         # สร้างไฟล์ Excel
-        from openpyxl import Workbook
-        from openpyxl.utils.dataframe import dataframe_to_rows
-
         wb = Workbook()
         ws = wb.active
         ws.title = "ยอดพิธี"
-
-        ws.append([ยอด_name])  # หัวข้อยอด
-        ws.append([])           # เว้น 1 แถว
-
-        # (เซลล์ B3, C3, D3 == 2nd row (0-indexed) + 1 == row 3)
+        
+        # เขียนชื่อยอดและเว้นแถว
+        ws.append([ยอด_name])
+        ws.append([])
+        
+        # 👉 เขียนหัวตารางก่อน (เพื่อให้เซลล์ row=3 มีอยู่จริง)
+        ws.append(columns)
+        
+        # 👉 Merge หัวข้อ “ยศ ชื่อ-สกุล” (B3-D3)
         ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
         ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
+        ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
         
-        # ลบหัวข้อเก่าใน C และ D (ไม่จำเป็น ถ้า merge แล้วจะหายไปเอง แต่ป้องกันซ้ำ)
-        ws.cell(row=3, column=3).value = None
-        ws.cell(row=3, column=4).value = None
-        
-        # เขียนข้อมูล
-        for r in dataframe_to_rows(selected_df, index=False, header=False):
+        # 👉 เขียนข้อมูลจาก DataFrame
+        for r in dataframe_to_rows(output_df, index=False, header=False):
             ws.append(r)
-
-        # จัดหัวตาราง (แถวที่ 1) ให้กึ่งกลางทั้งหมด
-        for cell in ws[1]:
-            cell.alignment = Alignment(horizontal='center', vertical='center')
+        
+        # จัดหัวข้อยอดให้อยู่กลาง
+        ws.cell(row=1, column=1).alignment = Alignment(horizontal='center', vertical='center')
         
         # จัดข้อมูล ตั้งแต่แถวที่ 2 ยกเว้นคอลัมน์ B–D
         for row in ws.iter_rows(min_row=2):  # เริ่มจากแถวที่ 2
