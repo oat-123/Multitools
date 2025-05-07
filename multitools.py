@@ -123,14 +123,15 @@ elif mode == "ceremony_duty":
                 if idx < 1 or idx > 3:  # เว้นคอลัมน์ B (1), C (2), D (3)
                     cell.alignment = Alignment(horizontal='center', vertical='center')
 
-        # เรียงตามคอลัมน์ที่ 8, 7, 3
-        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง", "ตอน"], ascending=True)
+        # 🔁 ล้าง NaN
+        selected_df[["สังกัด", "ตำแหน่ง", "ชื่อ"]] = selected_df[["สังกัด", "ตำแหน่ง", "ชื่อ"]].fillna("")
         
-        # รีเซ็ต index และเพิ่มลำดับ
+        # 🔽 เรียงตามลำดับที่ต้องการ
+        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง", "ชื่อ"], ascending=True)
+        
+        # ✅ รีเซ็ตและเพิ่มลำดับ
         selected_df = selected_df.reset_index(drop=True)
         selected_df.index += 1
-        if "ลำดับ" in selected_df.columns:
-            selected_df = selected_df.drop(columns=["ลำดับ"])
         selected_df.insert(0, "ลำดับ", selected_df.index)
         
         # สร้างเส้นขอบบางๆ
