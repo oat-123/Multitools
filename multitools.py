@@ -26,7 +26,7 @@ mode = st.session_state.get("mode", None)
 
 
 if mode == "night_duty":
-     st.info("คุณเลือก: เวรยืนกลางคืน")
+    st.info("คุณเลือก: เวรยืนกลางคืน")
     st.success("เปิด Google Sheet: เวรยืนกลางคืน")
     webbrowser.open("https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU")
 
