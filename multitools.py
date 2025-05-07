@@ -37,7 +37,13 @@ if mode == "night_duty":
 
 elif mode == "weekend_duty":
     st.info("คุณเลือก: เวรเสาร์-อาทิตย์")
-    st.markdown("https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8")
+    if st.button("คลิกเพื่อยืนยัน"):
+            agree = st.checkbox("ฉันต้องการเปิดลิงก์จริง ๆ")
+            if agree:
+                url = "https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?usp=drivesdk"
+                st.markdown(f"[เปิดลิงก์]({url})", unsafe_allow_html=True)
+            else:
+                st.warning("กรุณาติ๊กยืนยันก่อนเปิดลิงก์")
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
