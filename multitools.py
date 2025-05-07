@@ -124,7 +124,7 @@ elif mode == "ceremony_duty":
                     cell.alignment = Alignment(horizontal='center', vertical='center')
 
         # เรียงตามคอลัมน์ที่ 8, 7, 3
-        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง", "ชื่อ"], ascending=True)
+        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง", "ตอน"], ascending=True)
         
         # รีเซ็ต index และเพิ่มลำดับ
         selected_df = selected_df.reset_index(drop=True)
@@ -165,9 +165,6 @@ elif mode == "ceremony_duty":
             for cell in row:
                 cell.border = thin_border
 
-
-
-        
         output_filename = f"{ยอด_name}.xlsx"
         wb.save(output_filename)
 
