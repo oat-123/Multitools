@@ -49,9 +49,9 @@ elif mode == "home":
     # วันที่ของรายงาน
     col1, col2 = st.columns(2)
     with col1:
-        start_date = st.date_input("วันที่เริ่มต้น", date.today())
+        start_date = st.date_input("วันปล่อย", date.today())
     with col2:
-        end_date = st.date_input("วันที่สิ้นสุด", date.today())
+        end_date = st.date_input("วันเข้ารร.", date.today())
     
     # ยอดเดิมแต่ละชั้นปี
     defaults = {5: 67, 4: 101, 3: 94, 2: 85}
