@@ -123,6 +123,9 @@ elif mode == "ceremony_duty":
                 if idx < 1 or idx > 3:  # เว้นคอลัมน์ B (1), C (2), D (3)
                     cell.alignment = Alignment(horizontal='center', vertical='center')
 
+        # 🔽 เรียงข้อมูลก่อน
+        selected_df = selected_df.sort_values(by=["สังกัด", "ตำเเหน่ง", "ตอน"], ascending=True)
+        
         # สร้างเส้นขอบบางๆ
         thin_border = Border(
             left=Side(style='thin'),
@@ -132,7 +135,7 @@ elif mode == "ceremony_duty":
         )
 
         # ตั้งความกว้างคอลัมน์
-        ws.column_dimensions['A'].width = 8
+        ws.column_dimensions['A'].width = 6
         ws.column_dimensions['B'].width = 5
         ws.column_dimensions['C'].width = 15  # ปรับตามความเหมาะสม
         ws.column_dimensions['D'].width = 15
