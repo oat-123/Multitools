@@ -151,7 +151,7 @@ elif mode == "ceremony_duty":
         # เลือกเฉพาะคอลัมน์ที่ต้องการ
         columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
-        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง", "ชื่อ"])
+        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง"])
 
 
         
