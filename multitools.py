@@ -96,6 +96,10 @@ elif option == "จัดยอดพิธีต่างๆ (รันอั�
         for r in dataframe_to_rows(output_df, index=False, header=True):
             ws.append(r)
 
+        for row in ws.iter_rows(min_row=2):  # เริ่มจากแถวที่ 2 ถ้ามี header
+            for cell in row[:5]:  # ลำดับถึงสังกัด = คอลัมน์ A ถึง E
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+        
         output_filename = f"{ยอด_name}.xlsx"
         wb.save(output_filename)
 
