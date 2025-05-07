@@ -6,7 +6,7 @@ import random
 from collections import defaultdict
 from openpyxl.styles import Alignment, Border, Side
 
-st.title("แอปผู้ช่วย ฝอ.1")
+st.title("ผู้ช่วย ฝอ.1")
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
 col1, col2, col3 = st.columns(3)
 with col1:
