@@ -9,7 +9,7 @@ from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
 st.image("assist.jpg", width=120)
-st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วยจัดเวร <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
 st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
 
 st.sidebar.header("เมนูการทำงาน")
@@ -30,8 +30,6 @@ with col3:
         st.session_state["mode"] = "ceremony_duty"
 # ตรวจสอบและแสดง UI เฉพาะส่วนที่เลือก
 mode = st.session_state.get("mode", None)
-
-
 
 if mode == "night_duty":
     st.info("คุณเลือก: เวรยืนกลางคืน")
