@@ -99,7 +99,16 @@ elif mode == "ceremony_duty":
         ws.append([ยอด_name])  # หัวข้อยอด
         ws.append([])           # เว้น 1 แถว
 
-        for r in dataframe_to_rows(output_df, index=False, header=True):
+        # (เซลล์ B3, C3, D3 == 2nd row (0-indexed) + 1 == row 3)
+        ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
+        ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
+        
+        # ลบหัวข้อเก่าใน C และ D (ไม่จำเป็น ถ้า merge แล้วจะหายไปเอง แต่ป้องกันซ้ำ)
+        ws.cell(row=3, column=3).value = None
+        ws.cell(row=3, column=4).value = None
+        
+        # เขียนข้อมูล
+        for r in dataframe_to_rows(selected_df, index=False, header=False):
             ws.append(r)
 
         # จัดหัวตาราง (แถวที่ 1) ให้กึ่งกลางทั้งหมด
@@ -144,14 +153,6 @@ elif mode == "ceremony_duty":
             for cell in row:
                 cell.border = thin_border
 
-        # รวมคอลัมน์ ยศ + ชื่อ + สกุล เป็น ยศ ชื่อ-สกุล
-        selected_df["ยศ ชื่อ-สกุล"] = selected_df["ยศ"] + " " + selected_df["ชื่อ"] + "-" + selected_df["สกุล"]
-        selected_df["ลำดับ"] = range(1, len(selected_df) + 1)
-
-        # เลือกเฉพาะคอลัมน์ที่ต้องการ
-        columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
-        output_df = selected_df[columns]
-        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง"])
 
 
         
