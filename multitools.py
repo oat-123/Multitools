@@ -116,12 +116,18 @@ elif option == "จัดยอดพิธีต่างๆ (รันอั�
         )
 
         # ตั้งความกว้างคอลัมน์
+        ws.column_dimensions['A'].width = 5
+        ws.column_dimensions['B'].width = 5
         ws.column_dimensions['C'].width = 15  # ปรับตามความเหมาะสม
         ws.column_dimensions['D'].width = 15
+        ws.column_dimensions['E'].width = 10
+        ws.column_dimensions['F'].width = 10
         ws.column_dimensions['G'].width = 20
-        ws.column_dimensions['H'].width = 20
+        ws.column_dimensions['H'].width = 15
+        ws.column_dimensions['I'].width = 15
 
-        
+        ws.merge_cells('A1:I1')
+        ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
         # จัดหัวตาราง (แถวที่ 1)
         for cell in ws[1]:
             cell.alignment = Alignment(horizontal='center', vertical='center')
