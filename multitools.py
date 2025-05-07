@@ -4,7 +4,7 @@ import subprocess
 import pandas as pd
 import random
 from collections import defaultdict
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Border, Side
 
 st.title("แอปผู้ช่วยจัดเวร")
 
@@ -106,6 +106,28 @@ elif option == "จัดยอดพิธีต่างๆ (รันอั�
             for idx, cell in enumerate(row[:9]):  # คอลัมน์ A–I
                 if idx < 1 or idx > 3:  # เว้นคอลัมน์ B (1), C (2), D (3)
                     cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        # สร้างเส้นขอบบางๆ
+        thin_border = Border(
+            left=Side(style='thin'),
+            right=Side(style='thin'),
+            top=Side(style='thin'),
+            bottom=Side(style='thin')
+        )
+        
+        # จัดหัวตาราง (แถวที่ 1)
+        for cell in ws[1]:
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+            cell.border = thin_border
+        
+        # จัดแถวข้อมูล (แถวที่ 2 เป็นต้นไป)
+        for row in ws.iter_rows(min_row=2):
+            for idx, cell in enumerate(row[:9]):  # คอลัมน์ A–I
+                # จัดกึ่งกลางเว้น B–D (index 1–3)
+                if idx < 1 or idx > 3:
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                # ใส่กรอบทุกเซลล์
+                cell.border = thin_border
         
         output_filename = f"{ยอด_name}.xlsx"
         wb.save(output_filename)
