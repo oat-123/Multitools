@@ -5,6 +5,8 @@ import pandas as pd
 import random
 from collections import defaultdict
 from openpyxl.styles import Alignment, Border, Side
+from openpyxl import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
 
 st.title("ผู้ช่วย ฝอ.1")
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
