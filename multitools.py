@@ -14,7 +14,7 @@ st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
 
 
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
-col1, col2, col3, col4 = st.columns(2)
+col1, col2, col3, col4 = st.columns(4)
 with col1:
     if st.button("เวรยืนกลางคืน", use_container_width=True):
         st.session_state["mode"] = "night_duty"
