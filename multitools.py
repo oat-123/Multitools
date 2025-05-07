@@ -8,6 +8,7 @@ from openpyxl.styles import Alignment, Border, Side
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
+
 st.title("ผู้ช่วย ฝอ.1")
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
 col1, col2, col3 = st.columns(3)
@@ -196,3 +197,7 @@ elif mode == "ceremony_duty":
         st.success(f"สร้างไฟล์สำเร็จ: {output_filename}")
         with open(output_filename, "rb") as f:
             st.download_button("ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
+
+st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
+
