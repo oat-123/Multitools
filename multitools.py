@@ -6,7 +6,7 @@ import random
 from collections import defaultdict
 from openpyxl.styles import Alignment, Border, Side
 
-st.title("แอปผู้ช่วยจัดเวร")
+st.title("แอปผู้ช่วย ฝอ.1")
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -27,12 +27,10 @@ mode = st.session_state.get("mode", None)
 
 if mode == "night_duty":
     st.info("คุณเลือก: เวรยืนกลางคืน")
-    st.success("เปิด Google Sheet: เวรยืนกลางคืน")
     st.markdown("https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU")
 
 elif mode == "weekend_duty":
     st.info("คุณเลือก: เวรเสาร์-อาทิตย์")
-    st.success("เปิด Google Sheet: เวรเสาร์อาทิตย์")
     st.markdown("https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8")
 
 elif mode == "ceremony_duty":
@@ -43,8 +41,6 @@ elif mode == "ceremony_duty":
         return pd.read_excel("ชั้น4พัน4.xlsx")
 
     df = load_data()
-
-    st.title("จัดยอดพิธีอัตโนมัติ")
 
     # อินพุตจากผู้ใช้
     ยอด_name = st.text_input("กรอกชื่อยอด")
