@@ -8,8 +8,13 @@ from openpyxl.styles import Alignment, Border, Side
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
+st.image("logo.png", width=120)
+st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วยจัดเวร <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
+st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
 
-st.title("ผู้ช่วย ฝอ.1")
+st.sidebar.header("เมนูการทำงาน")
+menu = st.sidebar.radio("เลือกฟังก์ชัน", ["เวรยืนกลางคืน", "เวรเสาร์อาทิตย์", "จัดยอดพิธี", "อื่น ๆ (เร็ว ๆ นี้)"])
+
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
 col1, col2, col3 = st.columns(3)
 with col1:
