@@ -23,7 +23,7 @@ with col1:
         st.session_state["mode"] = "night_duty"
 
 with col2:
-    if st.button("เวรเสาร์-อาทิตย์", use_container_width=True):
+    if st.button("เวรเสา-อา", use_container_width=True):
         st.session_state["mode"] = "weekend_duty"
 
 with col3:
