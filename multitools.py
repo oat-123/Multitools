@@ -97,9 +97,15 @@ elif option == "จัดยอดพิธีต่างๆ (รันอั�
         for r in dataframe_to_rows(output_df, index=False, header=True):
             ws.append(r)
 
-        for row in ws.iter_rows(min_row=2):  # เริ่มจากแถวที่ 2 ถ้ามี header
-            for cell in row[:5]:  # ลำดับถึงสังกัด = คอลัมน์ A ถึง E
-                cell.alignment = Alignment(horizontal='center', vertical='center')
+        # จัดหัวตาราง (แถวที่ 1) ให้กึ่งกลางทั้งหมด
+        for cell in ws[1]:
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+        
+        # จัดข้อมูล ตั้งแต่แถวที่ 2 ยกเว้นคอลัมน์ B–D
+        for row in ws.iter_rows(min_row=2):  # เริ่มจากแถวที่ 2
+            for idx, cell in enumerate(row[:9]):  # คอลัมน์ A–I
+                if idx < 1 or idx > 3:  # เว้นคอลัมน์ B (1), C (2), D (3)
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
         
         output_filename = f"{ยอด_name}.xlsx"
         wb.save(output_filename)
