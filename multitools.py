@@ -7,6 +7,7 @@ from collections import defaultdict
 from openpyxl.styles import Alignment, Border, Side
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
+from datetime import date
 
 st.image("assist.jpg", width=120)
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
@@ -43,59 +44,73 @@ elif mode == "weekend_duty":
     st.markdown("https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?gid=1888956716#gid=1888956716")
 
 elif mode == "home":
-    st.header("กรอกข้อมูลยอดปล่อย")
+    st.header("📋 พิมพ์ยอดปล่อย")
 
-    full_strength = {
-        5: 67,
-        4: 101,
-        3: 94,
-        2: 85,
-    }
-
-    # รับค่าของแต่ละชั้นปี
-    results = {}
+    # วันที่ของรายงาน
+    col1, col2 = st.columns(2)
+    with col1:
+        start_date = st.date_input("วันที่เริ่มต้น", date.today())
+    with col2:
+        end_date = st.date_input("วันที่สิ้นสุด", date.today())
+    
+    # ยอดเดิมแต่ละชั้นปี
+    defaults = {5: 67, 4: 101, 3: 94, 2: 85}
+    
+    categories = [
+        "เวรเตรียมพร้อม", "กักบริเวณ", "อยู่โรงเรียน",
+        "ราชการ", "โรงพยาบาล", "ลา", "อื่นๆ"
+    ]
+    
+    # กรอกข้อมูล
+    st.subheader("กรอกข้อมูลตามหมวด")
+    data = {}
     for year in [5, 4, 3, 2]:
-        st.subheader(f"ชั้นปีที่ {year}")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            duty = st.number_input(f"เวร ชั้น {year}", min_value=0, step=1, key=f"duty_{year}")
-            hospital = st.number_input(f"โรงพยาบาล ชั้น {year}", min_value=0, step=1, key=f"hosp_{year}")
-        with col2:
-            confine = st.number_input(f"กัก ชั้น {year}", min_value=0, step=1, key=f"conf_{year}")
-            gov = st.number_input(f"ราชการ ชั้น {year}", min_value=0, step=1, key=f"gov_{year}")
-        with col3:
-            onsite = st.number_input(f"อยู่โรงเรียน ชั้น {year}", min_value=0, step=1, key=f"onsite_{year}")
-
-        # เก็บข้อมูล
-        results[year] = {
-            "เวร": duty,
-            "กัก": confine,
-            "อยู่โรงเรียน": onsite,
-            "โรงพยาบาล": hospital,
-            "ราชการ": gov
-        }
-
-    if st.button("สร้างยอดปล่อย"):
-        st.subheader("ยอดปล่อย")
+        data[year] = {}
+        with st.expander(f"ชั้นปีที่ {year}"):
+            for cat in categories:
+                val = st.number_input(f"{cat} ชั้นปีที่ {year}", min_value=0, step=1, key=f"{cat}_{year}")
+                data[year][cat] = val
+    
+    # ปุ่มสร้างรายงาน
+    if st.button("สร้างรายงาน"):
+        lines = []
+        start_str = start_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
+        end_str = end_date.strftime("%-d %b %y").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
+        
+        lines.append(f"พัน.4 กรม นนร.รอ. ขออนุญาตส่งยอด นนร. ปล่อยพักบ้าน, อยู่โรงเรียน และ เวรเตรียมพร้อม ของวันที่   {start_str} - {end_str} ดังนี้")
+    
+        for y in [5, 4, 3, 2]:
+            lines.append(f"ชั้นปีที่ {y} ยอดเดิม {defaults[y]} นาย")
+    
+        def section(title, key):
+            lines.append(f"{key+1}.{title}")
+            total = 0
+            for y in [5, 4, 3, 2]:
+                val = data[y].get(title, 0)
+                total += val
+                show_val = f"{val}" if val != 0 else "-"
+                lines.append(f"   -ชั้นปีที่ {y} จำนวน {show_val} นาย")
+            show_total = f"{total}" if total != 0 else "-"
+            lines.append(f"   -รวม {show_total} นาย")
+    
+        # 1. ยอดปล่อยบ้าน = ยอดเดิม - (ยอดอื่น ๆ)
+        lines.append("1.ยอดปล่อยพักบ้าน")
         total_home = 0
-        summary = "พัน.4 กรม นนร.รอ. ขออนุญาตส่งยอด นนร. ปล่อยพักบ้าน, อยู่โรงเรียน และ เวรเตรียมพร้อม ดังนี้\n"
-        for year in [5, 4, 3, 2]:
-            total = full_strength[year]
-            duty = results[year].get("เวร", 0)
-            confine = results[year].get("กัก", 0)
-            onsite = results[year].get("อยู่โรงเรียน", 0)
-            hospital = results[year].get("โรงพยาบาล", 0)
-            gov = results[year].get("ราชการ", 0)
-
-            used = sum([duty, confine, onsite, hospital, gov])
-            home = total - used
-            total_home += home
-
-            summary += f"- ชั้นปีที่ {year} จำนวน {home if home >= 0 else '-'} นาย\n"
-
-        summary += f"- รวม {total_home} นาย"
-        st.text_area("ผลลัพธ์", summary, height=300)
-
+        for y in [5, 4, 3, 2]:
+            sum_others = sum(data[y].values())
+            val = defaults[y] - sum_others
+            total_home += val
+            lines.append(f"   -ชั้นปีที่ {y} จำนวน {val} นาย")
+        lines.append(f"   -รวม {total_home} นาย")
+    
+        # หมวดอื่น ๆ
+        for i, cat in enumerate(["อยู่โรงเรียน", "เวรเตรียมพร้อม", "กักบริเวณ", "โรงพยาบาล", "ราชการ", "ลา", "อื่นๆ"], start=2):
+            section(cat, i)
+    
+        lines.append("จึงเรียนมาเพื่อกรุณาทราบ")
+    
+        st.text_area("รายงานยอด", value="\n".join(lines), height=600)
+    
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
