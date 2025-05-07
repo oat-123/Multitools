@@ -8,7 +8,7 @@ from openpyxl.styles import Alignment, Border, Side
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-st.image("https://play-lh.googleusercontent.com/GmmGNrzCDXfktzVJ7fzhz-Yh7DttGVgUe8uMwrNV8IOz31UIcuGglclBT2M_1TzUCrU=w480-h960-rw", width=120)
+st.image("assist.jpg", width=120)
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วยจัดเวร <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
 st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
 
