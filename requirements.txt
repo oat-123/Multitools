@@ -2,3 +2,5 @@ streamlit
 line-bot-sdk
 requests
 openpyxl
+gspread
+oauth2client
