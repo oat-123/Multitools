@@ -146,10 +146,19 @@ elif mode == "count":
             lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in ยอด_df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],
             axis=1
         )
-    
+        
         # ลบคอลัมน์ช่วย
         ชั้น4พัน4.drop(columns=["ชื่อเต็ม"], inplace=True)
-    
+        def check_update(row):
+            if row["ชื่อเต็ม"] in ยอด_df["ชื่อเต็ม"].values:
+                print(f"อัปเดตแต้มสำหรับ {row['ชื่อเต็ม']}")
+                return row["สถิติโดนยอด"] + เหนื่อย
+            else:
+                return row["สถิติโดนยอด"]
+
+# ตรวจสอบการคำนวณ
+ชั้น4พัน4["สถิติโดนยอด"] = ชั้น4พัน4.apply(check_update, axis=1)
+
         # ให้ดาวน์โหลดไฟล์ใหม่
         from io import BytesIO
         output = BytesIO()
