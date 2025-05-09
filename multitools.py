@@ -125,14 +125,23 @@ elif mode == "count":
     
     # 2. โหลดไฟล์หลัก
     ชั้น4พัน4 = pd.read_excel("ชั้น4พัน4.xlsx")
+    # สำหรับทั้ง 2 ตาราง: ชั้น4พัน4 และ ยอด_df
+    ชั้น4พัน4["ชื่อเต็ม"] = ชั้น4พัน4["ชื่อ"].astype(str).str.strip() + " " + ชั้น4พัน4["สกุล"].astype(str).str.strip()
+    ยอด_df["ชื่อเต็ม"] = ยอด_df["ชื่อ"].astype(str).str.strip() + " " + ยอด_df["สกุล"].astype(str).str.strip()
     
     # 3. โหลดยอด
     if ยอด_file:
         ยอด_df = pd.read_excel(ยอด_file, header=2)  # ปรับเลขให้ตรงกับแถวหัวจริง
         ยอด_df.columns = ยอด_df.columns.str.strip()
     
-        # เพิ่มแต้ม
-        ชั้น4พัน4["สถิติโดนยอด"] = ชั้น4พัน4.apply(lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ยศ ชื่อ-สกุล"] in ยอด_df["ยศ ชื่อ-สกุล"].values else row["สถิติโดนยอด"],axis=1)
+        def check_update(row):
+            if row["ชื่อเต็ม"] in ยอด_df["ชื่อเต็ม"].values:
+                return row["สถิติโดนยอด"] + เหนื่อย
+            else:
+                return row["สถิติโดนยอด"]
+        
+        ชั้น4พัน4["สถิติโดนยอด"] = ชั้น4พัน4.apply(check_update, axis=1)
+
         
         # ให้ดาวน์โหลดไฟล์ใหม่
         from io import BytesIO
