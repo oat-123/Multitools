@@ -131,7 +131,7 @@ elif mode == "count":
     
     # 3. โหลดยอด
     if ยอด_file:
-        ยอด_df = pd.read_excel(ยอด_file, header=1)  # ปรับเลขให้ตรงกับแถวหัวจริง
+        ยอด_df = pd.read_excel(ยอด_file, header=2)  # ปรับเลขให้ตรงกับแถวหัวจริง
         ยอด_df.columns = ยอด_df.columns.str.strip()
     
         # รวมชื่อให้ตรงกัน
