@@ -142,11 +142,11 @@ elif mode == "count":
     
         # อัปเดตแต้ม
         ชั้น4พัน4["สถิติโดนยอด"] = ชั้น4พัน4.apply(
-            lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in ยอด_df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],
+            lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ยศ ชื่อ-สกุล"] in ยอด_df["ยศ ชื่อ-สกุล"].values else row["สถิติโดนยอด"],
             axis=1)
     
         # ลบคอลัมน์ช่วย
-        ชั้น4พัน4.drop(columns=["ชื่อเต็ม"], inplace=True)
+        ชั้น4พัน4.drop(columns=["ยศ ชื่อ-สกุล"], inplace=True)
     
         # ดาวน์โหลดไฟล์
         from io import BytesIO
