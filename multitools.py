@@ -156,8 +156,8 @@ elif mode == "count":
             else:
                 return row["สถิติโดนยอด"]
 
-# ตรวจสอบการคำนวณ
-ชั้น4พัน4["สถิติโดนยอด"] = ชั้น4พัน4.apply(check_update, axis=1)
+        # ตรวจสอบการคำนวณ
+        ชั้น4พัน4["สถิติโดนยอด"] = ชั้น4พัน4.apply(check_update, axis=1)
 
         # ให้ดาวน์โหลดไฟล์ใหม่
         from io import BytesIO
