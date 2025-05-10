@@ -295,7 +295,6 @@ elif mode == "ceremony_duty":
                     padding: 8px;
                     text-align: center;
                     height: 40px;
-                    word-wrap: break-word;
                 }
                 table.custom-table th {
                     font-weight: bold;
