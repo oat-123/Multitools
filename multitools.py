@@ -295,7 +295,8 @@ elif mode == "ceremony_duty":
             </style>
             """
         # แสดงผลลัพธ์
-        render_styled_table(df)
+        render_centered_table(output_df)
+
 
         
         # สร้างไฟล์ Excel
