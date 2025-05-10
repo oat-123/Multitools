@@ -300,7 +300,7 @@ elif mode == "ceremony_duty":
                 /* ปรับขนาดความกว้างของคอลัมน์ */
                 table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; } /* ลำดับ */
                 table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; } /* ยศ ชื่อ-สกุล*/
-                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 5%; } /* ชั้นปีที่ */
+                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 8%; } /* ชั้นปีที่ */
                 table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; } /* ตอน */
                 table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; } /* ตำแหน่ง */
                 table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; } /* สังกัด */
@@ -318,6 +318,13 @@ elif mode == "ceremony_duty":
             for _, row in df.iterrows():
                 html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
             html += "</tbody></table>"
+            
+            for _, row in df.iterrows():
+                html += "<tr>"
+                for i, cell in enumerate(row):
+                    value = "" if pd.isna(cell) and i == 6 else cell  # 👈 เช็คเฉพาะคอลัมน์หมายเหตุ (index 6)
+                    html += f"<td>{value}</td>"
+                html += "</tr>"
             st.markdown(html, unsafe_allow_html=True)
         
         # แสดงผลลัพธ์
