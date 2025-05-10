@@ -273,7 +273,18 @@ elif mode == "ceremony_duty":
         columns = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
 
-        st.dataframe(output_df)
+        def render_centered_table(df):
+            html = "<style>th, td {text-align: center !important;}</style>"
+            html += "<table border='1' style='width: 100%; border-collapse: collapse;'>"
+            html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
+            html += "<tbody>"
+            for _, row in df.iterrows():
+                html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
+            html += "</tbody></table>"
+            st.markdown(html, unsafe_allow_html=True)
+        
+        render_centered_table(output_df)
+
 
         # สร้างไฟล์ Excel
         wb = Workbook()
