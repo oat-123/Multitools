@@ -295,22 +295,19 @@ elif mode == "ceremony_duty":
             </style>
             """
         
-            html += "<table class='custom-table'>"
-            html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
-            html += "<tbody>"
-            for _, row in df.iterrows():
-                html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
-            html += "</tbody></table>"
-            st.markdown(html, unsafe_allow_html=True)
+        # 1. สร้าง column ยศ ชื่อ-สกุล
         df["ยศ ชื่อ-สกุล"] = df["ยศ"] + " " + df["ชื่อ"] + " " + df["สกุล"]
-        df = df.drop(columns=["ยศ", "ชื่อ", "สกุล"])  # ลบคอลัมน์เดิมออก
         
-        # เลื่อนคอลัมน์ใหม่ไปไว้ตำแหน่งที่ 1-3
-        cols = df.columns.tolist()
-        cols.insert(1, cols.pop(cols.index("ยศ ชื่อ-สกุล")))
-        df = df[cols]
+        # 2. ลบคอลัมน์เดิม
+        df = df.drop(columns=["ยศ", "ชื่อ", "สกุล"])
+        
+        # 3. จัดลำดับคอลัมน์ใหม่ (ถ้าต้องการ)
+        column_order = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
+        df = df[column_order]
+        
+        # 4. แสดงด้วยฟังก์ชันที่มีสไตล์
+        render_styled_table(df)
 
-        render_centered_table(output_df)
         
         # สร้างไฟล์ Excel
         wb = Workbook()
