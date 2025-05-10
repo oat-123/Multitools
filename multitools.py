@@ -12,6 +12,7 @@ import io
 from collections import defaultdict
 import gspread
 from google.oauth2.service_account import Credentials
+from google.oauth2 import service_account
 
 # 0. กำหนด Scope สำหรับ Google Sheets API
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -20,10 +21,11 @@ CREDS_FILE = 'oat-assist-451095edccb2.json'  # 👈 ต้องมีไฟล�
 # 1. เชื่อมต่อ Google Sheets
 @st.cache_resource
 def connect_gsheet():
-    creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
+    creds_dict = st.secrets["gcp_service_account"]
+    creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     gc = gspread.authorize(creds)
-    sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/e/2PACX-1vSf6OB3YE98NPUBjuN7c7tdp93kmj0kEAQMvMiu4FECY4OgbQgQ-AWwz31TcabtrlzWPgcilDmsG4uZ/pub?output=xlsx")
-    worksheet = sheet.worksheet("Sheet1")  # ปรับชื่อชีทตามต้องการ
+    sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/...")
+    worksheet = sheet.worksheet("Sheet1")
     return worksheet
 
 st.image("assist.jpg", width=120)
