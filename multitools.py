@@ -213,7 +213,8 @@ elif mode == "count":
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
-# อ่านไฟล์ Excel ชั้น4พัน4.xlsx
+    
+    # อ่านไฟล์ Excel ชั้น4พัน4.xlsx
     @st.cache_data
     def load_data():
         return pd.read_excel("ชั้น4พัน4.xlsx")
@@ -254,87 +255,44 @@ elif mode == "ceremony_duty":
         selected_df = selected_df.reset_index(drop=True)
         selected_df.index += 1
 
-        # ✅ ลบคอลัมน์ "ลำดับ" เดิม (ถ้ามี)
+        # ลบคอลัมน์ "ลำดับ" เดิม (ถ้ามี)
         if "ลำดับ" in selected_df.columns:
             selected_df = selected_df.drop(columns=["ลำดับ"])
 
         # เพิ่มคอลัมน์ลำดับ (เริ่มจาก 1)
         selected_df = selected_df.reset_index(drop=True)
         selected_df.index += 1
-        if "ลำดับ" in selected_df.columns:
-            selected_df = selected_df.drop(columns=["ลำดับ"])
         selected_df.insert(0, "ลำดับ", selected_df.index)
-        
+
         # กำหนดลำดับคอลัมน์
         columns = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
-        
+
         # สร้างไฟล์ Excel
         wb = Workbook()
         ws = wb.active
         ws.title = "ยอดพิธี"
-        
+
         # เขียนชื่อยอดและเว้นแถว
         ws.append([ยอด_name])
         ws.append([])
-        
+
         # 👉 เขียนหัวตารางก่อน (เพื่อให้เซลล์ row=3 มีอยู่จริง)
         ws.append(columns)
-        
+
         # 👉 Merge หัวข้อ “ยศ ชื่อ-สกุล” (B3-D3)
         ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
         ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
         ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
-        
+
         # 👉 เขียนข้อมูลจาก DataFrame
         for r in dataframe_to_rows(output_df, index=False, header=False):
             ws.append(r)
-        
+
         # จัดหัวข้อยอดให้อยู่กลาง
         ws.cell(row=1, column=1).alignment = Alignment(horizontal='center', vertical='center')
-        
-        # จัดข้อมูล ตั้งแต่แถวที่ 2 ยกเว้นคอลัมน์ B–D
-        for row in ws.iter_rows(min_row=2):  # เริ่มจากแถวที่ 2
-            for idx, cell in enumerate(row[:9]):  # คอลัมน์ A–I
-                if idx < 1 or idx > 3:  # เว้นคอลัมน์ B (1), C (2), D (3)
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
 
-        # ฟังก์ชันแปลงเลขไทย -> อารบิก
-        def thai_to_arabic(text):
-            return text.translate(str.maketrans("๐๑๒๓๔๕๖๗๘๙", "0123456789"))
-        
-        # ฟังก์ชันแปลงเลขอารบิก -> ไทย
-        def arabic_to_thai(text):
-            return text.translate(str.maketrans("0123456789", "๐๑๒๓๔๕๖๗๘๙"))
-        
-        # ล้างค่า และแปลงเป็น string
-        selected_df["สังกัด"] = selected_df["สังกัด"].fillna("").astype(str).str.strip()
-        selected_df["ตำแหน่ง"] = selected_df["ตำแหน่ง"].fillna("").astype(str).str.strip()
-        selected_df["ชื่อ"] = selected_df["ชื่อ"].fillna("").astype(str).str.strip()
-        
-        # สร้างคอลัมน์ช่วยเรียง
-        selected_df["ตำแหน่ง_sort"] = selected_df["ตำแหน่ง"].apply(thai_to_arabic)
-        
-        # เรียงข้อมูล
-        selected_df = selected_df.sort_values(by=["สังกัด", "ตำแหน่ง_sort", "ชื่อ"])
-        
-        # ลบคอลัมน์ช่วยเรียง
-        selected_df = selected_df.drop(columns=["ตำแหน่ง_sort"])
-        
-        # แปลง "ตำแหน่ง" กลับเป็นเลขไทย (หากมันถูกแปลงก่อนหน้านี้)
-        selected_df["ตำแหน่ง"] = selected_df["ตำแหน่ง"].apply(arabic_to_thai)
-        
-        # รีเซ็ต index
-        selected_df = selected_df.reset_index(drop=True)
-        
-        # ลบ "ลำดับ" ถ้ามี
-        if "ลำดับ" in selected_df.columns:
-            selected_df = selected_df.drop(columns=["ลำดับ"])
-        
-        # เพิ่มคอลัมน์ "ลำดับ"
-        selected_df.insert(0, "ลำดับ", selected_df.index + 1)
-        
-        # สร้างเส้นขอบบางๆ
+        # ตั้งเส้นขอบบางๆ
         thin_border = Border(
             left=Side(style='thin'),
             right=Side(style='thin'),
@@ -342,10 +300,17 @@ elif mode == "ceremony_duty":
             bottom=Side(style='thin')
         )
 
+        # จัดการข้อมูลในแถว (ตั้งแต่แถวที่ 2)
+        for row in ws.iter_rows(min_row=2):
+            for idx, cell in enumerate(row[:9]):
+                if idx < 1 or idx > 3:
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                cell.border = thin_border
+
         # ตั้งความกว้างคอลัมน์
         ws.column_dimensions['A'].width = 6
         ws.column_dimensions['B'].width = 5
-        ws.column_dimensions['C'].width = 15  # ปรับตามความเหมาะสม
+        ws.column_dimensions['C'].width = 15
         ws.column_dimensions['D'].width = 15
         ws.column_dimensions['E'].width = 8
         ws.column_dimensions['F'].width = 8
@@ -353,22 +318,18 @@ elif mode == "ceremony_duty":
         ws.column_dimensions['H'].width = 15
         ws.column_dimensions['I'].width = 15
 
+        # สร้างเส้นขอบที่หัวตาราง
         ws.merge_cells('A1:I1')
         ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
-        # จัดหัวตาราง (แถวที่ 1)
         for cell in ws[1]:
             cell.alignment = Alignment(horizontal='center', vertical='center')
             cell.border = thin_border
-        
-        for row in ws.iter_rows(min_row=1):  # รวมหัวตาราง
-            if row[0].row == 2:
-                continue  # ข้ามแถวที่ 2
-            for cell in row:
-                cell.border = thin_border
-        st.dataframe(ผลลัพธ์)  # แสดงผลในรูปแบบตาราง
+
+        # บันทึกไฟล์ Excel
         output_filename = f"{ยอด_name}.xlsx"
         wb.save(output_filename)
 
+        # แจ้งผลสำเร็จและให้ดาวน์โหลด
         st.success(f"สร้างไฟล์สำเร็จ: {output_filename}")
         with open(output_filename, "rb") as f:
             st.download_button("ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
