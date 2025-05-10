@@ -312,8 +312,6 @@ elif mode == "ceremony_duty":
         # แสดงผลลัพธ์
         render_centered_table(output_df)
 
-
-        
         # สร้างไฟล์ Excel
         wb = Workbook()
         ws = wb.active
@@ -328,7 +326,7 @@ elif mode == "ceremony_duty":
         ws.merge_cells('A2:I2')
 
         # นำข้อมูลจากคอลัมภ์ B, C, D มาแยกในคอลัมภ์ที่ถูกต้อง
-        selected_df["ยศ"] = selected_df.iloc[:, 1]  # คอลัมภ์ยศ
+        selected_df["ยศ"] = "นนร."
         selected_df["ชื่อ"] = selected_df.iloc[:, 2]  # คอลัมภ์ชื่อ
         selected_df["สกุล"] = selected_df.iloc[:, 3]  # คอลัมภ์สกุล
         
