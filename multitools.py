@@ -189,13 +189,16 @@ elif mode == "count":
     ชั้น4พัน4 = pd.read_excel("ชั้น4พัน4.xlsx")
     # แยกคอลัมน์ "ยศ ชื่อ-สกุล" ออกเป็น "ยศ", "ชื่อ", "สกุล"
     def split_fullname(df):
+        # แยกคำสูงสุด 3 คำ
         parts = df["ยศ ชื่อ-สกุล"].astype(str).str.strip().str.split(" ", n=2, expand=True)
+    
+        # ตั้งชื่อคอลัมน์ชั่วคราวเพื่อป้องกัน KeyError
+        parts.columns = [0, 1, 2][:parts.shape[1]]  # เผื่อเจอกรณีมีไม่ครบ 3 คำ
+    
         df["ยศ"] = parts[0]
-        df["ชื่อ"] = parts[1]
-        df["สกุล"] = parts[2]
+        df["ชื่อ"] = parts[1] if 1 in parts.columns else ""
+        df["สกุล"] = parts[2] if 2 in parts.columns else ""
         return df
-
-    ชั้น4พัน4 = split_fullname(ชั้น4พัน4)
     # ล้างช่องว่างชื่อคอลัมน์
     ชั้น4พัน4.columns = ชั้น4พัน4.columns.str.strip()
     
