@@ -50,7 +50,11 @@ if mode == "night_duty":
         df = pd.read_csv(csv_url)
         # แสดงเฉพาะคอลัมน์ A–H
         st.components.v1.iframe(
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100&widget=true&headers=false",
+            src="""<div style="transform: scale(0.75); transform-origin: top left; width: 133.33%; height: 800px; overflow: hidden;">
+                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100&widget=true&headers=false"
+                        width="100%" height="100%" style="border: none;"></iframe>
+            </div>
+            """,
             height=700,
             width=1000)
         st.success("โหลดข้อมูลเวรยืนกลางคืนสำเร็จ")
