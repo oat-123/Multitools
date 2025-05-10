@@ -302,6 +302,14 @@ elif mode == "ceremony_duty":
                 html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
             html += "</tbody></table>"
             st.markdown(html, unsafe_allow_html=True)
+        df["ยศ ชื่อ-สกุล"] = df["ยศ"] + " " + df["ชื่อ"] + " " + df["สกุล"]
+        df = df.drop(columns=["ยศ", "ชื่อ", "สกุล"])  # ลบคอลัมน์เดิมออก
+        
+        # เลื่อนคอลัมน์ใหม่ไปไว้ตำแหน่งที่ 1-3
+        cols = df.columns.tolist()
+        cols.insert(1, cols.pop(cols.index("ยศ ชื่อ-สกุล")))
+        df = df[cols]
+
         render_centered_table(output_df)
         
         # สร้างไฟล์ Excel
