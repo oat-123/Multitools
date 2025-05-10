@@ -289,7 +289,6 @@ elif mode == "ceremony_duty":
                     word-wrap: break-word;
                 }
                 table.custom-table th {
-                    background-color: #f2f2f2;
                     font-weight: bold;
                 }
             </style>
