@@ -280,20 +280,28 @@ elif mode == "ceremony_duty":
                     width: 100%;
                     border-collapse: collapse;
                     table-layout: fixed;
-                    font-size: 10px; /* 👈 ปรับขนาดฟอนต์ตรงนี้ เช่น 12px, 14px, 16px */
                 }
                 table.custom-table th, table.custom-table td {
                     border: 1px solid #ddd;
                     padding: 8px;
                     text-align: center;
-                    height: 40px; /* ปรับความสูงแถว */
+                    height: 40px;
                     word-wrap: break-word;
                 }
                 table.custom-table th {
+                    background-color: #f2f2f2;
                     font-weight: bold;
                 }
             </style>
             """
+        
+            html += "<table class='custom-table'>"
+            html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
+            html += "<tbody>"
+            for _, row in df.iterrows():
+                html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
+            html += "</tbody></table>"
+            st.markdown(html, unsafe_allow_html=True)
         # แสดงผลลัพธ์
         render_centered_table(output_df)
 
