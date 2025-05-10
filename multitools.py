@@ -18,6 +18,7 @@ from google.oauth2 import service_account
 @st.cache_resource
 def connect_gsheet():
     creds_dict = st.secrets["gcp_service_account"]
+    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     gc = gspread.authorize(creds)
     sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/...")
