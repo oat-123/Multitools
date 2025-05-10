@@ -282,76 +282,37 @@ elif mode == "ceremony_duty":
         def render_centered_table(df):
             html = """
             <style>
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f5f7fa;
-            }
-            .table-wrapper {
-                max-width: 1000px;
-                margin: 30px auto;
-                padding: 16px;
-                background-color: #ffffff;
-                border-radius: 12px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                overflow-x: auto;
-            }
-            table.custom-table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 14px;
-                min-width: 600px;
-            }
-            table.custom-table th, table.custom-table td {
-                border: 1px solid #e0e0e0;
-                padding: 10px 12px;
-                text-align: center;
-                height: 48px;
-            }
-            table.custom-table th {
-                font-weight: bold;
-                background-color: #f0f4f8;
-                color: #333;
-            }
-            table.custom-table tr:hover {
-                background-color: #f9f9f9;
-            }
-            table.custom-table td:nth-child(2) {
-                text-align: left;
-                padding-left: 14px;
-            }
-        
-            /* คอลัมน์ที่มีความกว้างต่างกัน */
-            table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; } /* ลำดับ */
-            table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; } /* ยศ ชื่อ-สกุล*/
-            table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 8%; } /* ชั้นปีที่ */
-            table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; } /* ตอน */
-            table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; } /* ตำแหน่ง */
-            table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; } /* สังกัด */
-            table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 10%; } /* หมายเหตุ */
-        
-            /* ปรับข้อมูลในคอลัมน์ "ยศ ชื่อ-สกุล" ให้อยู่ชิดซ้าย */
-            table.custom-table td:nth-child(2) {
-                text-align: left;
-                padding-left: 14px;
-            }
-        
-            /* Responsive สำหรับหน้าจอขนาดเล็ก */
-            @media (max-width: 768px) {
-                .table-wrapper {
-                    padding: 8px;
-                }
                 table.custom-table {
-                    font-size: 12px;
+                    width: 100%;
+                    border-collapse: collapse;
+                    table-layout: auto;  /* ทำให้คอลัมน์ปรับขนาดตามเนื้อหา */
+                    font-size: 11px; /* 👈 ปรับขนาดฟอนต์ตรงนี้ เช่น 12px, 14px, 16px */
                 }
                 table.custom-table th, table.custom-table td {
+                    border: 1px solid #ddd;
                     padding: 8px;
+                    text-align: center;
+                    height: 40px;
                 }
-            }
+                table.custom-table th {
+                    font-weight: bold;
+                }
+                /* ปรับขนาดความกว้างของคอลัมน์ */
+                table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; } /* ลำดับ */
+                table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; } /* ยศ ชื่อ-สกุล*/
+                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 8%; } /* ชั้นปีที่ */
+                table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; } /* ตอน */
+                table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; } /* ตำแหน่ง */
+                table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; } /* สังกัด */
+                table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 10%; } /* หมายเหตุ */
+
+                /* 👇 จัดข้อมูลในคอลัมน์ "ยศ ชื่อ-สกุล" ให้อยู่ชิดซ้าย (เฉพาะข้อมูล ไม่รวมหัวตาราง) */
+                table.custom-table td:nth-child(2) {
+                text-align: left;
+                padding-left: 10px;}
             </style>
             """
-            html += "<div class='table-wrapper'><table class='custom-table'>"
+            html += "<table class='custom-table'>"
             html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
             html += "<tbody>"
             for _, row in df.iterrows():
@@ -360,10 +321,9 @@ elif mode == "ceremony_duty":
                     value = "" if pd.isna(cell) and i == 6 else cell
                     html += f"<td>{value}</td>"
                 html += "</tr>"
-            html += "</tbody></table></div>"
-        
+            html += "</tbody></table>"
             st.markdown(html, unsafe_allow_html=True)
-        
+                
         # แสดงผลลัพธ์
         render_centered_table(output_df)
 
@@ -451,5 +411,5 @@ elif mode == "ceremony_duty":
             st.download_button("📥 ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
-st.cache_data(ttl=300)  # cache ไว้ 5 นาที
+
 
