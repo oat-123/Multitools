@@ -48,6 +48,8 @@ if mode == "night_duty":
 
     try:
         df = pd.read_csv(csv_url)
+        # แสดงเฉพาะคอลัมน์ A–H
+        df_subset = df.iloc[:, :8]
         st.dataframe(df)
         st.success("โหลดข้อมูลเวรยืนกลางคืนสำเร็จ")
 
