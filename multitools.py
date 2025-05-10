@@ -58,7 +58,7 @@ if mode == "night_duty":
         edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit"
         st.markdown(
             f"""
-            <div style="text-align: right; margin-top: -30px;">
+            <div style="text-align: right; margin-top: 0px;">
                 <a href="{edit_link}" target="_blank" style="text-decoration: none; font-size: 16px;">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
             </div>
             """,
