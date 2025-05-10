@@ -213,32 +213,38 @@ elif mode == "count":
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
-    
-    # อ่านไฟล์ Excel ชั้น4พัน4.xlsx
+
+    # โหลดข้อมูล
     @st.cache_data
     def load_data():
         return pd.read_excel("ชั้น4พัน4.xlsx")
 
     df = load_data()
 
+    # แสดงตัวอย่างข้อมูลดิบ
+    st.write("📊 ตัวอย่างข้อมูลจากไฟล์:")
+    st.dataframe(df.head())
+
     # อินพุตจากผู้ใช้
     ยอด_name = st.text_input("🔖กรอกชื่อยอด")
     จำนวนคน = st.number_input("👥จำนวนคน", min_value=1, step=1)
-
-    # Checkbox สำหรับกรองหน้าที่
     ตัวกรอง_หน้าที่ = st.multiselect("ไม่เลือกคนที่มีหน้าที่", ["ชั้นกรม", "ชั้นพัน", "ฝอ.1", "ฝอ.4", "ฝอ.5"])
 
     if st.button("🚀 จัดยอดและส่งออกไฟล์"):
-        # กรองตามหน้าที่
+        # ตรวจสอบคอลัมน์ที่ต้องใช้
+        required_cols = ["ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ", "หน้าที่"]
+        for col in required_cols:
+            if col not in df.columns:
+                st.error(f"❌ ไม่พบคอลัมน์: '{col}' ในไฟล์")
+                st.stop()
+
         df_filtered = df[~df["หน้าที่"].isin(ตัวกรอง_หน้าที่)]
-        
-        # จัดกลุ่มตามสังกัด
         grouped = df_filtered.groupby("สังกัด")
         สังกัด_list = list(grouped.groups.keys())
 
+        from collections import defaultdict
         คนต่อสังกัด = defaultdict(list)
 
-        # วนสุ่มกระจายให้สังกัดละเท่าๆกัน
         while sum(len(v) for v in คนต่อสังกัด.values()) < จำนวนคน:
             for สังกัด in สังกัด_list:
                 available = grouped.get_group(สังกัด)
@@ -249,98 +255,77 @@ elif mode == "ceremony_duty":
                     คนต่อสังกัด[สังกัด].append(chosen.index[0])
 
         selected_indices = [i for indices in คนต่อสังกัด.values() for i in indices]
-        selected_df = df.loc[selected_indices]
+        selected_df = df.loc[selected_indices].copy()
+        selected_df = selected_df.reset_index(drop=True)
+        selected_df.index += 1
 
         # เพิ่มลำดับ
-        selected_df = selected_df.reset_index(drop=True)
-        selected_df.index += 1
-
-        # ลบคอลัมน์ "ลำดับ" เดิม (ถ้ามี)
-        if "ลำดับ" in selected_df.columns:
-            selected_df = selected_df.drop(columns=["ลำดับ"])
-
-        # เพิ่มคอลัมน์ลำดับ (เริ่มจาก 1)
-        selected_df = selected_df.reset_index(drop=True)
-        selected_df.index += 1
         selected_df.insert(0, "ลำดับ", selected_df.index)
-        st.write(selected_df.head())
+
+        # รวมชื่อ
         selected_df["ยศ ชื่อ-สกุล"] = (
-            selected_df.iloc[:, 1].fillna("") + " " +
-            selected_df.iloc[:, 2].fillna("") + " " +
-            selected_df.iloc[:, 3].fillna("")
+            selected_df["ยศ"].fillna("") + " " +
+            selected_df["ชื่อ"].fillna("") + " " +
+            selected_df["สกุล"].fillna("")
         )
 
-
-        # กำหนดลำดับคอลัมน์
+        # จัดเรียงคอลัมน์
         columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
+
+        st.write("✅ ตัวอย่างข้อมูลก่อนดาวน์โหลด:")
         st.dataframe(output_df)
 
-        # สร้างไฟล์ Excel
+        # ----------- สร้างไฟล์ Excel -----------
+        from openpyxl import Workbook
+        from openpyxl.utils.dataframe import dataframe_to_rows
+        from openpyxl.styles import Alignment, Border, Side
+
         wb = Workbook()
         ws = wb.active
         ws.title = "ยอดพิธี"
 
-        # เขียนชื่อยอดและเว้นแถว
+        # หัวข้อยอด
         ws.append([ยอด_name])
         ws.append([])
 
-        # 👉 เขียนหัวตารางก่อน (เพื่อให้เซลล์ row=3 มีอยู่จริง)
+        # หัวตาราง
         ws.append(columns)
 
-        # 👉 Merge หัวข้อ “ยศ ชื่อ-สกุล” (B3-D3)
+        # Merge คอลัมน์ชื่อ (B3-D3)
         ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
-        ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
         ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
 
-        # 👉 เขียนข้อมูลจาก DataFrame
+        # ข้อมูล
         for r in dataframe_to_rows(output_df, index=False, header=False):
             ws.append(r)
 
-        # จัดหัวข้อยอดให้อยู่กลาง
-        ws.cell(row=1, column=1).alignment = Alignment(horizontal='center', vertical='center')
+        # จัดรูปแบบ
+        thin_border = Border(left=Side(style='thin'), right=Side(style='thin'),
+                             top=Side(style='thin'), bottom=Side(style='thin'))
 
-        # ตั้งเส้นขอบบางๆ
-        thin_border = Border(
-            left=Side(style='thin'),
-            right=Side(style='thin'),
-            top=Side(style='thin'),
-            bottom=Side(style='thin')
-        )
-
-        # จัดการข้อมูลในแถว (ตั้งแต่แถวที่ 2)
-        for row in ws.iter_rows(min_row=2):
-            for idx, cell in enumerate(row[:9]):
-                if idx < 1 or idx > 3:
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+            for cell in row:
+                cell.alignment = Alignment(horizontal='center', vertical='center')
                 cell.border = thin_border
 
-        # ตั้งความกว้างคอลัมน์
-        ws.column_dimensions['A'].width = 6
-        ws.column_dimensions['B'].width = 5
-        ws.column_dimensions['C'].width = 15
-        ws.column_dimensions['D'].width = 15
-        ws.column_dimensions['E'].width = 8
-        ws.column_dimensions['F'].width = 8
-        ws.column_dimensions['G'].width = 20
-        ws.column_dimensions['H'].width = 15
-        ws.column_dimensions['I'].width = 15
+        # ความกว้างคอลัมน์
+        col_widths = [6, 5, 15, 15, 8, 8, 20, 15, 15]
+        for i, width in enumerate(col_widths, 1):
+            col_letter = chr(64 + i)
+            ws.column_dimensions[col_letter].width = width
 
-        # สร้างเส้นขอบที่หัวตาราง
         ws.merge_cells('A1:I1')
         ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
-        for cell in ws[1]:
-            cell.alignment = Alignment(horizontal='center', vertical='center')
-            cell.border = thin_border
 
-        # บันทึกไฟล์ Excel
         output_filename = f"{ยอด_name}.xlsx"
         wb.save(output_filename)
 
-        # แจ้งผลสำเร็จและให้ดาวน์โหลด
+        # ดาวน์โหลด
         st.success(f"สร้างไฟล์สำเร็จ: {output_filename}")
         with open(output_filename, "rb") as f:
-            st.download_button("ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
+            st.download_button("📥 ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
+
 
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
