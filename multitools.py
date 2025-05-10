@@ -296,7 +296,6 @@ elif mode == "ceremony_duty":
                 }
                 table.custom-table th {
                     font-weight: bold;
-                    background-color: #f0f0f0; /* เพิ่มสีพื้นหลังให้หัวตารางเด่น */
                 }
                 /* ปรับขนาดความกว้างของคอลัมน์ */
                 table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; } /* ลำดับ */
