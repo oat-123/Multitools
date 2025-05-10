@@ -193,9 +193,9 @@ elif mode == "count":
     
     # 3. โหลดยอด
     if ยอด_file:
-    # โหลดไฟล์ยอด (เริ่มจาก header ที่แถว 2 หรืออื่นตามที่เหมาะสม)
-    ยอด_df = pd.read_excel(ยอด_file, header=2)
-    ยอด_df.columns = ยอด_df.columns.str.strip()
+        # โหลดไฟล์ยอด (เริ่มจาก header ที่แถว 2 หรืออื่นตามที่เหมาะสม)
+        ยอด_df = pd.read_excel(ยอด_file, header=2)
+        ยอด_df.columns = ยอด_df.columns.str.strip()
 
     # แยกคอลัมน์ "ยศ ชื่อ-สกุล" ที่ถูกผสานไว้
     if "ยศ ชื่อ-สกุล" in ยอด_df.columns:
