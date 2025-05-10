@@ -268,35 +268,36 @@ elif mode == "ceremony_duty":
             selected_df.iloc[:, 2].fillna("") + " " +
             selected_df.iloc[:, 3].fillna(""))
 
-        # กำหนดลำดับคอลัมน์
+        # เพิ่มคอลัมน์ "ชั้นปีที่" และ "ตอน" ในการจัดเรียงคอลัมน์
         columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
+        
+        # ดึงข้อมูลจาก DataFrame
         output_df = selected_df[columns]
-        st.dataframe(output_df)
-
+        
         # สร้างไฟล์ Excel
         wb = Workbook()
         ws = wb.active
         ws.title = "ยอดพิธี"
-
+        
         # เขียนชื่อยอดและเว้นแถว
         ws.append([ยอด_name])
         ws.append([])
-
+        
         # 👉 เขียนหัวตารางก่อน (เพื่อให้เซลล์ row=3 มีอยู่จริง)
         ws.append(columns)
-
+        
         # 👉 Merge หัวข้อ “ยศ ชื่อ-สกุล” (B3-D3)
         ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
         ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
         ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
-
+        
         # 👉 เขียนข้อมูลจาก DataFrame
         for r in dataframe_to_rows(output_df, index=False, header=False):
             ws.append(r)
-
+        
         # จัดหัวข้อยอดให้อยู่กลาง
         ws.cell(row=1, column=1).alignment = Alignment(horizontal='center', vertical='center')
-
+        
         # ตั้งเส้นขอบบางๆ
         thin_border = Border(
             left=Side(style='thin'),
@@ -304,17 +305,17 @@ elif mode == "ceremony_duty":
             top=Side(style='thin'),
             bottom=Side(style='thin')
         )
-
+        
         # จัดการข้อมูลในแถว (ตั้งแต่แถวที่ 2)
         for row in ws.iter_rows(min_row=2):
             for idx, cell in enumerate(row[:9]):
                 if idx < 1 or idx > 3:
                     cell.alignment = Alignment(horizontal='center', vertical='center')
                 cell.border = thin_border
-
+        
         # ตั้งความกว้างคอลัมน์
         ws.column_dimensions['A'].width = 6
-        ws.column_dimensions['B'].width = 5
+        ws.column_dimensions['B'].width = 15
         ws.column_dimensions['C'].width = 15
         ws.column_dimensions['D'].width = 15
         ws.column_dimensions['E'].width = 8
@@ -322,18 +323,18 @@ elif mode == "ceremony_duty":
         ws.column_dimensions['G'].width = 20
         ws.column_dimensions['H'].width = 15
         ws.column_dimensions['I'].width = 15
-
+        
         # สร้างเส้นขอบที่หัวตาราง
         ws.merge_cells('A1:I1')
         ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
         for cell in ws[1]:
             cell.alignment = Alignment(horizontal='center', vertical='center')
             cell.border = thin_border
-
+        
         # บันทึกไฟล์ Excel
         output_filename = f"{ยอด_name}.xlsx"
         wb.save(output_filename)
-
+        
         # แจ้งผลสำเร็จและให้ดาวน์โหลด
         st.success(f"สร้างไฟล์สำเร็จ: {output_filename}")
         with open(output_filename, "rb") as f:
