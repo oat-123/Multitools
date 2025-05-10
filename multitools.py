@@ -50,12 +50,11 @@ if mode == "night_duty":
         df = pd.read_csv(csv_url)
         # แสดงเฉพาะคอลัมน์ A–H
         st.markdown("""
-        <div style="width:100%; height:600px; overflow:hidden; margin-bottom:-150px;">
-          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"
-                  width="133%" height="800" style="border:none; transform:scale(0.75); transform-origin: top left;">
-          </iframe>
-        </div>
-        <p>✏️ <a href="https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit" target="_blank">แก้ไข Google Sheets คลิกที่นี่</a></p>
+        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"
+                width="100%" height="600" style="border:none; zoom:0.75;">
+        </iframe>
+        
+        <p style="margin-top:-30px;">✏️ <a href="https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit" target="_blank">แก้ไข Google Sheets คลิกที่นี่</a></p>
         """, unsafe_allow_html=True)
 
         # ลิงก์แก้ไข
