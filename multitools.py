@@ -451,5 +451,5 @@ elif mode == "ceremony_duty":
             st.download_button("📥 ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
-@st.cache_data(ttl=300)  # cache ไว้ 5 นาที
+st.cache_data(ttl=300)  # cache ไว้ 5 นาที
 
