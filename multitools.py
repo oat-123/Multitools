@@ -50,20 +50,47 @@ if mode == "night_duty":
         df = pd.read_csv(csv_url)
         # แสดงเฉพาะคอลัมน์ A–H
         st.markdown("""
-        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"
-                width="100%" height="600" style="border:none; zoom:0.75;">
-        </iframe>
+            <style>
+                .iframe-container {
+                    border: 2px solid #4CAF50;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+                .iframe-container iframe {
+                    width: 100%;
+                    height: 600px;
+                    border: none;
+                    zoom: 0.75;
+                }
+                .edit-link {
+                    text-align: right;
+                    margin-top: 10px;
+                    background-color: #4CAF50;
+                    padding: 10px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+                .edit-link a {
+                    color: white;
+                    font-size: 16px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    transition: all 0.3s ease;
+                }
+                .edit-link a:hover {
+                    color: #FFEB3B;
+                    text-decoration: underline;
+                }
+            </style>
+            <div class="iframe-container">
+                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"></iframe>
+            </div>
+            <div class="edit-link">
+                <a href="https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit" target="_blank">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
+            </div>
         """, unsafe_allow_html=True)
 
-        edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit"
-        st.markdown(
-            f"""
-            <div style="text-align: right; margin-top: 0px;">
-                <a href="{edit_link}" target="_blank" style="text-decoration: none; font-size: 16px;">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 
     except Exception as e:
         st.error(f"โหลดข้อมูลไม่สำเร็จ: {e}")
