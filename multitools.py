@@ -203,8 +203,6 @@ elif mode == "count":
                 return row["สถิติโดนยอด"]
         
         ชั้น4พัน4["สถิติโดนยอด"] = ชั้น4พัน4.apply(check_update, axis=1)
-
-        
         # ให้ดาวน์โหลดไฟล์ใหม่
         from io import BytesIO
         output = BytesIO()
@@ -367,7 +365,7 @@ elif mode == "ceremony_duty":
                 continue  # ข้ามแถวที่ 2
             for cell in row:
                 cell.border = thin_border
-
+        st.dataframe(ผลลัพธ์)  # แสดงผลในรูปแบบตาราง
         output_filename = f"{ยอด_name}.xlsx"
         wb.save(output_filename)
 
