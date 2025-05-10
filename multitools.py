@@ -10,12 +10,12 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from datetime import date
 import io
 from collections import defaultdict
-@st.cache_data(ttl=300)  # cache ไว้ 5 นาที
+
 
 st.image("assist.jpg", width=120)
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
 st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
-
+@st.cache_data(ttl=300)  # cache ไว้ 5 นาที
 
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
 col1, col2, col3, col4, col5 = st.columns(5)
