@@ -55,9 +55,15 @@ if mode == "night_duty":
         </iframe>
         """, unsafe_allow_html=True)
 
-        # ลิงก์แก้ไข
         edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit"
-        st.markdown(f"[✏️ แก้ไข Google Sheets คลิกที่นี่]({edit_link})")
+        st.markdown(
+            f"""
+            <div style="text-align: right; margin-top: -30px;">
+                <a href="{edit_link}" target="_blank" style="text-decoration: none; font-size: 16px;">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     except Exception as e:
         st.error(f"โหลดข้อมูลไม่สำเร็จ: {e}")
