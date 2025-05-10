@@ -47,50 +47,62 @@ if mode == "night_duty":
     csv_url = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/export?format=csv"
 
     try:
-        df = pd.read_csv(csv_url)
-        # แสดงเฉพาะคอลัมน์ A–H
-        st.markdown("""
+        # ให้ผู้ใช้เลือกระหว่างชีทแทกเวร หรือ ใบเวร (สรุป)
+        sheet_option = st.radio(
+            "เลือกดูชีท",
+            ("แทกเวร", "ใบเวร (สรุป)")
+        )
+        
+        # สร้างลิงก์สำหรับชีทที่เลือก
+        if sheet_option == "แทกเวร":
+            iframe_link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"  # ลิงก์ชีทแทกเวร
+            edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit#gid=0"  # ลิงก์แก้ไขชีทแทกเวร
+        else:
+            iframe_link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=1&single=true&range=A1:I100"  # ลิงก์ใบเวร (สรุป)
+            edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit#gid=1"  # ลิงก์แก้ไขใบเวร (สรุป)
+        
+        # การฝัง iframe สำหรับชีทที่เลือก
+        st.markdown(f"""
             <style>
-                .iframe-container {
+                .iframe-container {{
                     border: 2px solid #4CAF50;
                     border-radius: 10px;
                     overflow: hidden;
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                }
-                .iframe-container iframe {
+                }}
+                .iframe-container iframe {{
                     width: 100%;
                     height: 600px;
                     border: none;
                     zoom: 0.75;
-                }
-                .edit-link {
+                }}
+                .edit-link {{
                     text-align: right;
                     margin-top: 10px;
                     background-color: #4CAF50;
                     padding: 10px;
                     border-radius: 8px;
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                }
-                .edit-link a {
+                }}
+                .edit-link a {{
                     color: white;
                     font-size: 16px;
                     text-decoration: none;
                     font-weight: bold;
                     transition: all 0.3s ease;
-                }
-                .edit-link a:hover {
+                }}
+                .edit-link a:hover {{
                     color: #FFEB3B;
                     text-decoration: underline;
-                }
+                }}
             </style>
             <div class="iframe-container">
-                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"></iframe>
+                <iframe src="{iframe_link}"></iframe>
             </div>
             <div class="edit-link">
-                <a href="https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit" target="_blank">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
+                <a href="{edit_link}" target="_blank">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
             </div>
         """, unsafe_allow_html=True)
-
 
     except Exception as e:
         st.error(f"โหลดข้อมูลไม่สำเร็จ: {e}")
