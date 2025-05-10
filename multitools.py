@@ -225,8 +225,8 @@ elif mode == "count":
 
         # 7. เตรียมข้อมูลเฉพาะคอลัมน์ 'สถิติโดนยอด' กลับไปวางในคอลัมน์ N เดิม
         updated_column_values = gsheet_df["สถิติโดนยอด"].astype(str).tolist()
-        start_cell = f'N4'  # เพราะข้อมูลเริ่มแถวที่ 4
-        end_cell = f'N{3 + len(updated_column_values)}'
+        start_cell = f'N2'  # เพราะข้อมูลเริ่มแถวที่ 4
+        end_cell = f'N{1 + len(updated_column_values)}'
 
         # 8. เขียนกลับเฉพาะคอลัมน์ N
         cell_range = f'{start_cell}:{end_cell}'
