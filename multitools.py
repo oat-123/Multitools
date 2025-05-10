@@ -280,6 +280,7 @@ elif mode == "ceremony_duty":
                     width: 100%;
                     border-collapse: collapse;
                     table-layout: fixed;
+                    ont-size: 10px; /* 👈 ปรับขนาดฟอนต์ตรงนี้ เช่น 12px, 14px, 16px */
                 }
                 table.custom-table th, table.custom-table td {
                     border: 1px solid #ddd;
