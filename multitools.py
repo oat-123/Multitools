@@ -316,19 +316,16 @@ elif mode == "ceremony_duty":
             html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
             html += "<tbody>"
             for _, row in df.iterrows():
-                html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
-            html += "</tbody></table>"
-            
-            for _, row in df.iterrows():
                 html += "<tr>"
                 for i, cell in enumerate(row):
-                    value = "" if pd.isna(cell) and i == 6 else cell  # 👈 เช็คเฉพาะคอลัมน์หมายเหตุ (index 6)
+                    value = "" if pd.isna(cell) and i == 6 else cell
                     html += f"<td>{value}</td>"
                 html += "</tr>"
+            html += "</tbody></table>"
             st.markdown(html, unsafe_allow_html=True)
-        
-        # แสดงผลลัพธ์
-        render_centered_table(output_df)
+                
+                # แสดงผลลัพธ์
+                render_centered_table(output_df)
 
 
         # สร้างไฟล์ Excel
