@@ -49,8 +49,10 @@ if mode == "night_duty":
     try:
         df = pd.read_csv(csv_url)
         # แสดงเฉพาะคอลัมน์ A–H
-        df_subset = df.iloc[:, :8]
-        st.dataframe(df)
+        st.components.v1.iframe(
+            "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit?usp=sharing",
+            height=700, width=1000)
+
         st.success("โหลดข้อมูลเวรยืนกลางคืนสำเร็จ")
 
         # ลิงก์แก้ไข
