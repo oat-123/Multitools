@@ -21,7 +21,7 @@ def connect_gsheet():
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     gc = gspread.authorize(creds)
-    sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/...")
+    sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0")
     worksheet = sheet.worksheet("Sheet1")
     return worksheet
 
