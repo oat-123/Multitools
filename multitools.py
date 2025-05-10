@@ -264,12 +264,12 @@ elif mode == "ceremony_duty":
         selected_df.index += 1
         selected_df.insert(0, "ลำดับ", selected_df.index)
 
-        # สร้างคอลัมน์ 'ยศ ชื่อ-สกุล' จากยศ + ชื่อ + สกุล
         selected_df["ยศ ชื่อ-สกุล"] = (
-            selected_df["ยศ"].fillna("") + " " +
-            selected_df["ชื่อ"].fillna("") + " " +
-            selected_df["สกุล"].fillna("")
+            selected_df.iloc[:, 1].fillna("") + " " +
+            selected_df.iloc[:, 2].fillna("") + " " +
+            selected_df.iloc[:, 3].fillna("")
         )
+
 
         # กำหนดลำดับคอลัมน์
         columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
