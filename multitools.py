@@ -266,8 +266,8 @@ elif mode == "ceremony_duty":
         
         # แยกคอลัมน์ "ยศ", "ชื่อ", "สกุล"
         selected_df["ยศ"] = "นนร."
-        selected_df["ชื่อ"] = selected_df.iloc[:, 1].fillna("")
-        selected_df["สกุล"] = selected_df.iloc[:, 2].fillna("")
+        selected_df["ชื่อ"] = selected_df.iloc[:, 2].fillna("")
+        selected_df["สกุล"] = selected_df.iloc[:, 3].fillna("")
         
         # กำหนดลำดับคอลัมน์ใหม่
         columns = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
