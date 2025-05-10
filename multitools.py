@@ -310,7 +310,8 @@ elif mode == "ceremony_duty":
             st.markdown(html, unsafe_allow_html=True)
         # แสดงผลลัพธ์
         render_centered_table(output_df)
-        # ฟังก์ชันปรับความกว้างของคอลัมน์ตามข้อมูล
+        
+        # ฟังก์ชันปรับขนาดคอลัมน์
         def auto_resize_columns(ws):
             for col in ws.columns:
                 max_length = 0
@@ -324,7 +325,7 @@ elif mode == "ceremony_duty":
                 adjusted_width = (max_length + 2)
                 ws.column_dimensions[column].width = adjusted_width
         
-        # ฟังก์ชันปรับความสูงของแถว
+        # ฟังก์ชันปรับขนาดแถว
         def auto_resize_rows(ws):
             for row in ws.iter_rows():
                 max_height = 0
@@ -332,10 +333,6 @@ elif mode == "ceremony_duty":
                     if cell.value:
                         max_height = max(max_height, len(str(cell.value)) // 20 + 1)
                 ws.row_dimensions[row[0].row].height = max_height * 15  # ปรับความสูงตามขนาดตัวอักษร
-        
-        # เรียกใช้ฟังก์ชันเพื่อปรับขนาดตาราง
-        auto_resize_columns(ws)
-        auto_resize_rows(ws)
 
         # สร้างไฟล์ Excel
         wb = Workbook()
