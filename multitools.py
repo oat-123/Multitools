@@ -230,7 +230,7 @@ elif mode == "ceremony_duty":
 
     if st.button("🚀 จัดยอดและส่งออกไฟล์"):
         # กรองตามหน้าที่
-        df_filtered = df[~df["หน้าที่"].isin(ตัวกรอง_หน้าที่)
+        df_filtered = df[~df["หน้าที่"].isin(ตัวกรอง_หน้าที่)]
         
         # จัดกลุ่มตามสังกัด
         grouped = df_filtered.groupby("สังกัด")
