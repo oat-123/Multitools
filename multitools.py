@@ -10,6 +10,21 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from datetime import date
 import io
 from collections import defaultdict
+import gspread
+from google.oauth2.service_account import Credentials
+
+# 0. กำหนด Scope สำหรับ Google Sheets API
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+CREDS_FILE = 'oat-assist-451095edccb2.json'  # 👈 ต้องมีไฟล์นี้
+
+# 1. เชื่อมต่อ Google Sheets
+@st.cache_resource
+def connect_gsheet():
+    creds = Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
+    gc = gspread.authorize(creds)
+    sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/e/2PACX-1vSf6OB3YE98NPUBjuN7c7tdp93kmj0kEAQMvMiu4FECY4OgbQgQ-AWwz31TcabtrlzWPgcilDmsG4uZ/pub?output=xlsx")
+    worksheet = sheet.worksheet("Sheet1")  # ปรับชื่อชีทตามต้องการ
+    return worksheet
 
 st.image("assist.jpg", width=120)
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
