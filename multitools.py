@@ -290,7 +290,7 @@ elif mode == "ceremony_duty":
         ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
         ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
 
-        # 👉 เขียนข้อมูลจาก DataFrame
+        # 👉 เขียนข้อมูลจาก DataFrame (จาก output_df ที่แสดงใน UI)
         for r in dataframe_to_rows(output_df, index=False, header=False):
             ws.append(r)
 
@@ -302,8 +302,7 @@ elif mode == "ceremony_duty":
             left=Side(style='thin'),
             right=Side(style='thin'),
             top=Side(style='thin'),
-            bottom=Side(style='thin')
-        )
+            bottom=Side(style='thin'))
 
         # จัดการข้อมูลในแถว (ตั้งแต่แถวที่ 2)
         for row in ws.iter_rows(min_row=2):
@@ -338,8 +337,6 @@ elif mode == "ceremony_duty":
         st.success(f"สร้างไฟล์สำเร็จ: {output_filename}")
         with open(output_filename, "rb") as f:
             st.download_button("ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
-
-
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
 
