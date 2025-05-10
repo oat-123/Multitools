@@ -210,7 +210,6 @@ elif mode == "count":
         st.download_button("📥 ดาวน์โหลดไฟล์อัปเดต", output.getvalue(), file_name="ชั้น4พัน4_อัปเดต.xlsx")
         st.success("อัปเดตเรียบร้อย ✅")
 
-
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
     
@@ -286,7 +285,7 @@ elif mode == "ceremony_duty":
                 table.custom-table {
                     width: 100%;
                     border-collapse: collapse;
-                    table-layout: fixed;
+                    table-layout: auto;  /* ทำให้คอลัมน์ปรับขนาดตามเนื้อหา */
                     font-size: 11px; /* 👈 ปรับขนาดฟอนต์ตรงนี้ เช่น 12px, 14px, 16px */
                 }
                 table.custom-table th, table.custom-table td {
@@ -297,7 +296,17 @@ elif mode == "ceremony_duty":
                 }
                 table.custom-table th {
                     font-weight: bold;
+                    background-color: #f0f0f0; /* เพิ่มสีพื้นหลังให้หัวตารางเด่น */
                 }
+                /* ปรับขนาดความกว้างของคอลัมน์ */
+                table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; } /* ลำดับ */
+                table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 10%; } /* ยศ */
+                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 20%; } /* ชื่อ-สกุล */
+                table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 10%; } /* ชั้นปีที่ */
+                table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 10%; } /* ตอน */
+                table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; } /* ตำแหน่ง */
+                table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 15%; } /* สังกัด */
+                table.custom-table th:nth-child(8), table.custom-table td:nth-child(8) { width: 10%; } /* หมายเหตุ */
             </style>
             """
             html += "<table class='custom-table'>"
@@ -307,8 +316,10 @@ elif mode == "ceremony_duty":
                 html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
             html += "</tbody></table>"
             st.markdown(html, unsafe_allow_html=True)
+        
         # แสดงผลลัพธ์
         render_centered_table(output_df)
+
 
         # สร้างไฟล์ Excel
         wb = Workbook()
