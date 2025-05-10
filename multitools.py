@@ -14,10 +14,6 @@ import gspread
 from google.oauth2.service_account import Credentials
 from google.oauth2 import service_account
 
-# 0. กำหนด Scope สำหรับ Google Sheets API
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-CREDS_FILE = 'oat-assist-451095edccb2.json'  # 👈 ต้องมีไฟล์นี้
-
 # 1. เชื่อมต่อ Google Sheets
 @st.cache_resource
 def connect_gsheet():
