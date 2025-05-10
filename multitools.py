@@ -22,7 +22,7 @@ def connect_gsheet():
     creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     gc = gspread.authorize(creds)
     sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0")
-    worksheet = sheet.worksheet("Sheet1")
+    worksheet = sheet.worksheet("ชีต1")
     return worksheet
 
 st.image("assist.jpg", width=120)
