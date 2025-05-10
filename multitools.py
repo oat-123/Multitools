@@ -52,7 +52,7 @@ if mode == "night_duty":
         iframe_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"
         
         st.markdown("""
-        <div style="transform: scale(0.70); transform-origin: top left; width: 133.33%; height: 800px; overflow: hidden;">
+        <div style="transform: scale(0.65); transform-origin: top left; width: 133.33%; height: 800px; overflow: hidden;">
             <iframe src="{0}" width="100%" height="100%" style="border:none;"></iframe>
         </div>
         """.format(iframe_url), unsafe_allow_html=True)
