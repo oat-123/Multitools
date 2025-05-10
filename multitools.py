@@ -209,8 +209,8 @@ elif mode == "count":
 
         # 3. สร้าง DataFrame พร้อม Header
         gsheet_df = pd.DataFrame(gsheet_data)
-        gsheet_df.columns = gsheet_df.iloc[2]  # แถวที่ 3 คือ header
-        gsheet_df = gsheet_df[3:].reset_index(drop=True)
+        gsheet_df.columns = gsheet_df.iloc[0]  # แถวที่ 3 คือ header
+        gsheet_df = gsheet_df[0:].reset_index(drop=True)
 
         # 4. สร้างชื่อเต็มเพื่อใช้เปรียบเทียบ
         gsheet_df["ชื่อเต็ม"] = gsheet_df.iloc[:, 2].astype(str).str.strip() + " " + gsheet_df.iloc[:, 3].astype(str).str.strip()
