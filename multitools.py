@@ -334,10 +334,17 @@ elif mode == "ceremony_duty":
         columns = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
 
-        # Merge หัวข้อ “ยศ ชื่อ-สกุล” (B3-D3)
+        # ผสานเซลล์ "ยศ ชื่อ-สกุล" (B3-D3)
         ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
         ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
         ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
+        
+        # หลังจากการผสาน "ยศ ชื่อ-สกุล" คอลัมน์อื่นๆ ก็ต้องกำหนดหัวตารางให้ถูกต้อง
+        ws.cell(row=3, column=5).value = "ชั้นปีที่"
+        ws.cell(row=3, column=6).value = "ตอน"
+        ws.cell(row=3, column=7).value = "ตำแหน่ง"
+        ws.cell(row=3, column=8).value = "สังกัด"
+        ws.cell(row=3, column=9).value = "หมายเหตุ"
         
         # เขียนข้อมูลแถวต่อจาก row 4
         for r in dataframe_to_rows(output_df, index=False, header=False):
