@@ -14,7 +14,7 @@ from collections import defaultdict
 st.image("assist.jpg", width=120)
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
 st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
-@st.cache_data(ttl=300)  # cache ไว้ 5 นาที
+
 
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
 col1, col2, col3, col4, col5 = st.columns(5)
@@ -451,4 +451,5 @@ elif mode == "ceremony_duty":
             st.download_button("📥 ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
+@st.cache_data(ttl=300)  # cache ไว้ 5 นาที
 
