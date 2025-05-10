@@ -324,8 +324,8 @@ elif mode == "ceremony_duty":
             html += "</tbody></table>"
             st.markdown(html, unsafe_allow_html=True)
                 
-                # แสดงผลลัพธ์
-                render_centered_table(output_df)
+        # แสดงผลลัพธ์
+        render_centered_table(output_df)
 
 
         # สร้างไฟล์ Excel
