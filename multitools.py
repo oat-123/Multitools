@@ -10,6 +10,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from datetime import date
 import io
 from collections import defaultdict
+from openpyxl.utils import get_column_letter
 
 st.image("assist.jpg", width=120)
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
@@ -301,7 +302,6 @@ elif mode == "ceremony_duty":
                 }
             </style>
             """
-        
             html += "<table class='custom-table'>"
             html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
             html += "<tbody>"
@@ -311,6 +311,32 @@ elif mode == "ceremony_duty":
             st.markdown(html, unsafe_allow_html=True)
         # แสดงผลลัพธ์
         render_centered_table(output_df)
+        # ฟังก์ชันปรับความกว้างของคอลัมน์ตามข้อมูล
+        def auto_resize_columns(ws):
+            for col in ws.columns:
+                max_length = 0
+                column = col[0].column_letter  # รับชื่อคอลัมน์
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                ws.column_dimensions[column].width = adjusted_width
+        
+        # ฟังก์ชันปรับความสูงของแถว
+        def auto_resize_rows(ws):
+            for row in ws.iter_rows():
+                max_height = 0
+                for cell in row:
+                    if cell.value:
+                        max_height = max(max_height, len(str(cell.value)) // 20 + 1)
+                ws.row_dimensions[row[0].row].height = max_height * 15  # ปรับความสูงตามขนาดตัวอักษร
+        
+        # เรียกใช้ฟังก์ชันเพื่อปรับขนาดตาราง
+        auto_resize_columns(ws)
+        auto_resize_rows(ws)
 
         # สร้างไฟล์ Excel
         wb = Workbook()
