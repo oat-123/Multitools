@@ -274,16 +274,34 @@ elif mode == "ceremony_duty":
         output_df = selected_df[columns]
 
         def render_centered_table(df):
-            html = "<style>th, td {text-align: center !important;}</style>"
-            html += "<table border='1' style='width: 100%; border-collapse: collapse;'>"
+            html = """
+            <style>
+                table.custom-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    table-layout: fixed;
+                }
+                table.custom-table th, table.custom-table td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: center;
+                    height: 40px; /* ปรับความสูงแถว */
+                    word-wrap: break-word;
+                }
+                table.custom-table th {
+                    background-color: #f2f2f2;
+                    font-weight: bold;
+                }
+            </style>
+            """
+        
+            html += "<table class='custom-table'>"
             html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
             html += "<tbody>"
             for _, row in df.iterrows():
                 html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
             html += "</tbody></table>"
             st.markdown(html, unsafe_allow_html=True)
-        
-        render_centered_table(output_df)
 
 
         # สร้างไฟล์ Excel
