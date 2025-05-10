@@ -12,7 +12,7 @@ import io
 from collections import defaultdict
 
 
-st.image("assist.jpg", width=120)
+
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
 st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
 @st.cache_data(ttl=300)  # cache ไว้ 5 นาที
