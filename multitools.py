@@ -263,7 +263,6 @@ elif mode == "ceremony_duty":
         selected_df = selected_df.reset_index(drop=True)
         selected_df.index += 1
         selected_df.insert(0, "ลำดับ", selected_df.index)
-        st.write(selected_df.head())
         selected_df["ยศ ชื่อ-สกุล"] = (
             selected_df.iloc[:, 1].fillna("") + " " +
             selected_df.iloc[:, 2].fillna("") + " " +
