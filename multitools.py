@@ -50,11 +50,11 @@ if mode == "night_duty":
         # ให้ผู้ใช้เลือกระหว่างชีทแทกเวร หรือ ใบเวร (สรุป)
         sheet_option = st.radio(
             "เลือกดูชีท",
-            ("แทกเวร", "ใบเวร (สรุป)")
+            ("แท็กเวร", "ใบเวร (สรุป)")
         )
         
         # สร้างลิงก์สำหรับชีทที่เลือก
-        if sheet_option == "แทกเวร":
+        if sheet_option == "แท็กเวร":
             iframe_link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"  # ลิงก์ชีทแทกเวร
             edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit#gid=0"  # ลิงก์แก้ไขชีทแทกเวร
         else:
