@@ -302,8 +302,8 @@ elif mode == "ceremony_duty":
                 html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
             html += "</tbody></table>"
             st.markdown(html, unsafe_allow_html=True)
-
-
+        render_centered_table(output_df)
+        
         # สร้างไฟล์ Excel
         wb = Workbook()
         ws = wb.active
