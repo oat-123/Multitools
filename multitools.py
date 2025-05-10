@@ -43,7 +43,20 @@ mode = st.session_state.get("mode", None)
 
 if mode == "night_duty":
     st.info("คุณเลือก: เวรยืนกลางคืน")
-    st.markdown("https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU")
+        # ลิงก์ CSV export (จากชีทแรก)
+    csv_url = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/export?format=csv"
+
+    try:
+        df = pd.read_csv(csv_url)
+        st.dataframe(df)
+        st.success("โหลดข้อมูลเวรยืนกลางคืนสำเร็จ")
+
+        # ลิงก์แก้ไข
+        edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit"
+        st.markdown(f"[✏️ แก้ไข Google Sheets คลิกที่นี่]({edit_link})")
+
+    except Exception as e:
+        st.error(f"โหลดข้อมูลไม่สำเร็จ: {e}")
 
 elif mode == "weekend_duty":
     st.info("คุณเลือก: เวรเสาร์-อาทิตย์")
