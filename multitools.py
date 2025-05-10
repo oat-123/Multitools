@@ -267,6 +267,7 @@ elif mode == "ceremony_duty":
         # กำหนดลำดับคอลัมน์
         columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
+        st.dataframe(output_df)
 
         # สร้างไฟล์ Excel
         wb = Workbook()
