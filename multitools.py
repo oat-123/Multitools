@@ -299,13 +299,17 @@ elif mode == "ceremony_duty":
                 }
                 /* ปรับขนาดความกว้างของคอลัมน์ */
                 table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; } /* ลำดับ */
-                table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; } /* ยศ */
-                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 5%; } /* ชื่อ-สกุล */
-                table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; } /* ชั้นปีที่ */
-                table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; } /* ตอน */
-                table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; } /* ตำแหน่ง */
-                table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 10%; } /* สังกัด */
-                table.custom-table th:nth-child(8), table.custom-table td:nth-child(8) { width: 5%; } /* หมายเหตุ */
+                table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; } /* ยศ ชื่อ-สกุล*/
+                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 5%; } /* ชั้นปีที่ */
+                table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; } /* ตอน */
+                table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; } /* ตำแหน่ง */
+                table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; } /* สังกัด */
+                table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 10%; } /* หมายเหตุ */
+
+                /* 👇 จัดข้อมูลในคอลัมน์ "ยศ ชื่อ-สกุล" ให้อยู่ชิดซ้าย (เฉพาะข้อมูล ไม่รวมหัวตาราง) */
+                table.custom-table td:nth-child(2) {
+                text-align: left;
+                padding-left: 10px;}
             </style>
             """
             html += "<table class='custom-table'>"
