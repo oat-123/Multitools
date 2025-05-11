@@ -260,8 +260,14 @@ elif mode == "count":
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
-    worksheet = connect_gsheet()
-    data = worksheet.get_all_values()
+    client = gspread.authorize(creds)
+    
+    # เปิดชีตจากชื่อ/URL (เปลี่ยนตามชื่อจริงของคุณ)
+    sheet = client.open("ชื่อชีตของคุณ").worksheet("ชั้น4พัน4")
+    
+    # ดึงข้อมูลทั้งหมดมาเป็น DataFrame
+    data = sheet.get_all_values()
+    df = pd.DataFrame(data[1:], columns=data[0])  # ข้าม header แรก
 
     
     # แปลงคอลัมน์ที่ใช้ให้เป็นชนิดข้อมูลที่เหมาะสม
