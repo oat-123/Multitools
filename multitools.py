@@ -261,7 +261,7 @@ elif mode == "count":
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
     # เปิดชีตจากชื่อ/URL (เปลี่ยนตามชื่อจริงของคุณ)
-    sheet = client.open("ชื่อชีตของคุณ").worksheet("ชั้น4พัน4")
+    sheet = client.open("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0").worksheet("ชีต1")
     
     # ดึงข้อมูลทั้งหมดมาเป็น DataFrame
     data = sheet.get_all_values()
