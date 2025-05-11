@@ -173,7 +173,7 @@ elif mode == "home":
                 color: white;
             }
             </style>
-            <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185" target="_blank">
+            <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=351113778#gid=351113778" target="_blank">
                 <button class="export-link">📗 ทำไฟล์</button>
             </a>
         """, unsafe_allow_html=True)
