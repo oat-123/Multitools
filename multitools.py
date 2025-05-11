@@ -190,6 +190,15 @@ elif mode == "home":
         lines.append("จึงเรียนมาเพื่อกรุณาทราบ")
     
         st.text_area("รายงานยอด", value="\n".join(lines), height=600)
+          # ปุ่มลิงก์มุมขวาล่าง
+        st.markdown(
+            """
+            <div style="position: fixed; bottom: 10px; right: 10px;">
+                <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185#gid=207726185" target="_blank">
+                    <button style="padding: 10px 16px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 8px;">ทำไฟล์</button>
+                </a>
+            </div>
+            """,unsafe_allow_html=True)
 
 
 elif mode == "count":
