@@ -23,7 +23,7 @@ def connect_gsheet():
     client = gspread.authorize(creds)
     gc = gspread.authorize(creds)
     sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0")
-    worksheet = sheet.worksheet("ชีต1")
+    worksheet = sheet.worksheet("ชั้น4พัน4_only")
     return worksheet
 
 st.image("assist.jpg", width=120)
