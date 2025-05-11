@@ -260,12 +260,9 @@ elif mode == "count":
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
-    # เปิดชีตจากชื่อ/URL (เปลี่ยนตามชื่อจริงของคุณ)
-    sheet = client.open("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0").worksheet("ชีต1")
-    
-    # ดึงข้อมูลทั้งหมดมาเป็น DataFrame
-    data = sheet.get_all_values()
-    df = pd.DataFrame(data[1:], columns=data[0])  # ข้าม header แรก
+    worksheet = connect_gsheet()
+    data = worksheet.get_all_values()
+
     
     # แปลงคอลัมน์ที่ใช้ให้เป็นชนิดข้อมูลที่เหมาะสม
     if "สถิติโดนยอด" in df.columns:
