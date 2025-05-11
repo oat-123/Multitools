@@ -151,44 +151,37 @@ elif mode == "home":
                 val = st.number_input(f"{cat} ชั้นปีที่ {year}", min_value=0, step=1, key=f"{cat}_{year}")
                 data[year][cat] = val
     
-    # ปุ่มสร้างรายงาน + ทำไฟล์ (อยู่ในแถวเดียวกัน ตกแต่งสวยงาม)
-    st.markdown("""
-        <style>
-        .button-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 1rem;
-        }
-        .button-container button {
-            padding: 6px 12px;
-            font-size: 14px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-        }
-        .generate-btn {
-            background-color: #1f77b4;
-            color: white;
-        }
-        .export-btn {
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .export-btn:hover {
-            background-color: #218838;
-        }
-        </style>
-        <div class="button-container">
-            <form action="" method="post">
-                <button class="generate-btn" name="generate" type="submit">สร้างรายงาน</button>
-            </form>
-            <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185" target="_blank" class="export-btn">
-                ทำไฟล์
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        generate = st.button("สร้างรายงาน")
+    
+    with col2:
+        st.markdown("""
+            <style>
+            .stButton>button.export-link {
+                background-color: #28a745;
+                color: white;
+                border-radius: 6px;
+                padding: 0.4em 1em;
+                border: none;
+                font-size: 14px;
+            }
+            .stButton>button.export-link:hover {
+                background-color: #218838;
+                color: white;
+            }
+            </style>
+            <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185" target="_blank">
+                <button class="export-link">ทำไฟล์</button>
             </a>
-        </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+    
+    # ✅ ต่อจากนี้ ใช้ generate เป็นตัวตรวจเงื่อนไข
+    if generate:
+        # สร้างรายงานตรงนี้
+        st.success("รายงานถูกสร้างเรียบร้อย")
+
     
     # ตรวจสอบว่าปุ่ม "สร้างรายงาน" ถูกกด
     generate = st.session_state.get("generate") or st.query_params.get("generate") is not None
