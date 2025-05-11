@@ -178,17 +178,10 @@ elif mode == "home":
             </a>
         """, unsafe_allow_html=True)
     
-    # ✅ ต่อจากนี้ ใช้ generate เป็นตัวตรวจเงื่อนไข
+    # ✅ ทำงานต่อเมื่อกดปุ่ม
     if generate:
-        # สร้างรายงานตรงนี้
         st.success("รายงานถูกสร้างเรียบร้อย")
-
     
-    # ตรวจสอบว่าปุ่ม "สร้างรายงาน" ถูกกด
-    generate = st.session_state.get("generate") or st.query_params.get("generate") is not None
-    
-    # ทำงานต่อเมื่อกดสร้างรายงาน
-    if generate:
         lines = []
         start_str = start_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
         end_str = end_date.strftime("%-d %b %y").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
@@ -224,8 +217,6 @@ elif mode == "home":
         lines.append("จึงเรียนมาเพื่อกรุณาทราบ")
     
         st.text_area("รายงานยอด", value="\n".join(lines), height=600)
-
-
 
 
 elif mode == "count":
