@@ -151,24 +151,6 @@ elif mode == "home":
                 val = st.number_input(f"{cat} ชั้นปีที่ {year}", min_value=0, step=1, key=f"{cat}_{year}")
                 data[year][cat] = val
     
-    # ปุ่มสร้างรายงาน + ปุ่มทำไฟล์ อยู่ในแถวเดียวกัน
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        generate = st.button("สร้างรายงาน")
-    
-    with col2:
-        st.markdown(
-            """
-            <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185" target="_blank">
-                <button style="padding: 8px 16px; font-size: 16px; background-color: #00B050; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%;">
-                    ทำไฟล์
-                </button>
-            </a>
-            """,
-            unsafe_allow_html=True
-        )
-    
     # ปุ่มสร้างรายงาน + ทำไฟล์ (อยู่ในแถวเดียวกัน ตกแต่งสวยงาม)
     st.markdown("""
         <style>
