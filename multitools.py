@@ -259,11 +259,13 @@ elif mode == "count":
             st.error("❌ ไฟล์ยอดไม่ครบคอลัมน์ A–D กรุณาตรวจสอบไฟล์ก่อนอัปโหลด")
 
 
+
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
-    # เปิดชีตจากชื่อ/URL (เปลี่ยนตามชื่อจริงของคุณ)
-    sheet = client.open("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0").worksheet("ชีต1")
-    
+
+    # เรียกใช้ worksheet ที่เชื่อมต่อไว้
+    sheet = connect_gsheet()
+
     # ดึงข้อมูลทั้งหมดมาเป็น DataFrame
     data = sheet.get_all_values()
     df = pd.DataFrame(data[1:], columns=data[0])  # ข้าม header แรก
