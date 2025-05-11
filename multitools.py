@@ -139,8 +139,7 @@ elif mode == "home":
     # ยอดเดิมแต่ละชั้นปี
     defaults = {5: 67, 4: 101, 3: 94, 2: 85}
     
-    categories = [
-        "เวรเตรียมพร้อม", "กักบริเวณ", "อยู่โรงเรียน","ราชการ", "โรงพยาบาล", "ลา", "อื่นๆ"]
+    categories = ["เวรเตรียมพร้อม", "กักบริเวณ", "อยู่โรงเรียน","ราชการ", "โรงพยาบาล", "ลา", "อื่นๆ"]
     
     # กรอกข้อมูล
     st.subheader("กรอกข้อมูลเเต่ละชั้นปี")
@@ -152,8 +151,26 @@ elif mode == "home":
                 val = st.number_input(f"{cat} ชั้นปีที่ {year}", min_value=0, step=1, key=f"{cat}_{year}")
                 data[year][cat] = val
     
-    # ปุ่มสร้างรายงาน
-    if st.button("สร้างรายงาน"):
+    # ปุ่มสร้างรายงาน + ปุ่มทำไฟล์ อยู่ในแถวเดียวกัน
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        generate = st.button("สร้างรายงาน")
+    
+    with col2:
+        st.markdown(
+            """
+            <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185" target="_blank">
+                <button style="padding: 8px 16px; font-size: 16px; background-color: #00B050; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%;">
+                    ทำไฟล์
+                </button>
+            </a>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    # ถ้ากดสร้างรายงาน
+    if generate:
         lines = []
         start_str = start_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
         end_str = end_date.strftime("%-d %b %y").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
@@ -174,7 +191,7 @@ elif mode == "home":
             show_total = f"{total}" if total != 0 else "-"
             lines.append(f"   -รวม {show_total} นาย")
     
-        # 1. ยอดปล่อยบ้าน = ยอดเดิม - (ยอดอื่น ๆ)
+        # 1. ยอดปล่อยบ้าน
         lines.append("1.ยอดปล่อยพักบ้าน")
         total_home = 0
         for y in [5, 4, 3, 2]:
@@ -184,21 +201,12 @@ elif mode == "home":
             lines.append(f"   -ชั้นปีที่ {y} จำนวน {val} นาย")
         lines.append(f"   -รวม {total_home} นาย")
     
-        # หมวดอื่น ๆ
         for i, cat in enumerate(["อยู่โรงเรียน", "เวรเตรียมพร้อม", "กักบริเวณ", "โรงพยาบาล", "ราชการ", "ลา", "อื่นๆ"], start=2):
             section(cat, i)
         lines.append("จึงเรียนมาเพื่อกรุณาทราบ")
     
         st.text_area("รายงานยอด", value="\n".join(lines), height=600)
-          # ปุ่มลิงก์มุมขวาล่าง
-        st.markdown(
-            """
-            <div style="position: fixed; bottom: 10px; right: 10px;">
-                <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185#gid=207726185" target="_blank">
-                    <button style="padding: 10px 16px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 8px;">ทำไฟล์</button>
-                </a>
-            </div>
-            """,unsafe_allow_html=True)
+
 
 
 elif mode == "count":
