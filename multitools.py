@@ -191,7 +191,7 @@ elif mode == "home":
     """, unsafe_allow_html=True)
     
     # ตรวจสอบว่าปุ่ม "สร้างรายงาน" ถูกกด
-    generate = st.session_state.get("generate") or st.experimental_get_query_params().get("generate") is not None
+    generate = st.session_state.get("generate") or st.query_params.get("generate") is not None
     
     # ทำงานต่อเมื่อกดสร้างรายงาน
     if generate:
