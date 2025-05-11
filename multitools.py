@@ -20,6 +20,7 @@ def connect_gsheet():
     creds_dict = st.secrets["gcp_service_account"]
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+    client = gspread.authorize(creds)
     gc = gspread.authorize(creds)
     sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0")
     worksheet = sheet.worksheet("ชีต1")
@@ -260,8 +261,6 @@ elif mode == "count":
 
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
-    client = gspread.authorize(creds)
-    
     # เปิดชีตจากชื่อ/URL (เปลี่ยนตามชื่อจริงของคุณ)
     sheet = client.open("ชื่อชีตของคุณ").worksheet("ชั้น4พัน4")
     
@@ -269,7 +268,6 @@ elif mode == "ceremony_duty":
     data = sheet.get_all_values()
     df = pd.DataFrame(data[1:], columns=data[0])  # ข้าม header แรก
 
-    
     # แปลงคอลัมน์ที่ใช้ให้เป็นชนิดข้อมูลที่เหมาะสม
     if "สถิติโดนยอด" in df.columns:
         df["สถิติโดนยอด"] = pd.to_numeric(df["สถิติโดนยอด"], errors="coerce").fillna(0)
