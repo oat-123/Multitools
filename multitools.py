@@ -151,10 +151,11 @@ elif mode == "home":
                 val = st.number_input(f"{cat} ชั้นปีที่ {year}", min_value=0, step=1, key=f"{cat}_{year}")
                 data[year][cat] = val
     
+    # ปุ่ม "สร้างรายงาน" และ "ทำไฟล์" ในแถวเดียวกัน ตกแต่งด้วย CSS
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        generate = st.button("สร้างรายงาน")
+        generate = st.button("📘 สร้างรายงาน")
     
     with col2:
         st.markdown("""
@@ -173,7 +174,7 @@ elif mode == "home":
             }
             </style>
             <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185" target="_blank">
-                <button class="export-link">ทำไฟล์</button>
+                <button class="export-link">📗 ทำไฟล์</button>
             </a>
         """, unsafe_allow_html=True)
     
