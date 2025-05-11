@@ -169,12 +169,54 @@ elif mode == "home":
             unsafe_allow_html=True
         )
     
-    # ถ้ากดสร้างรายงาน
+    # ปุ่มสร้างรายงาน + ทำไฟล์ (อยู่ในแถวเดียวกัน ตกแต่งสวยงาม)
+    st.markdown("""
+        <style>
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .button-container button {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        .generate-btn {
+            background-color: #1f77b4;
+            color: white;
+        }
+        .export-btn {
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .export-btn:hover {
+            background-color: #218838;
+        }
+        </style>
+        <div class="button-container">
+            <form action="" method="post">
+                <button class="generate-btn" name="generate" type="submit">สร้างรายงาน</button>
+            </form>
+            <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=207726185" target="_blank" class="export-btn">
+                ทำไฟล์
+            </a>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # ตรวจสอบว่าปุ่ม "สร้างรายงาน" ถูกกด
+    generate = st.session_state.get("generate") or st.experimental_get_query_params().get("generate") is not None
+    
+    # ทำงานต่อเมื่อกดสร้างรายงาน
     if generate:
         lines = []
         start_str = start_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
         end_str = end_date.strftime("%-d %b %y").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
-        
+    
         lines.append(f"พัน.4 กรม นนร.รอ. ขออนุญาตส่งยอด นนร. ปล่อยพักบ้าน, อยู่โรงเรียน และ เวรเตรียมพร้อม ของวันที่   {start_str} - {end_str} ดังนี้")
     
         for y in [5, 4, 3, 2]:
@@ -206,6 +248,7 @@ elif mode == "home":
         lines.append("จึงเรียนมาเพื่อกรุณาทราบ")
     
         st.text_area("รายงานยอด", value="\n".join(lines), height=600)
+
 
 
 
