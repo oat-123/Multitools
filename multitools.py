@@ -13,8 +13,10 @@ from collections import defaultdict
 import gspread
 from google.oauth2.service_account import Credentials
 from google.oauth2 import service_account
-import tempfile
-from weasyprint import HTML, CSS
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab import pdfmetrics
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 # 1. เชื่อมต่อ Google Sheets
 @st.cache_resource
@@ -455,66 +457,50 @@ elif mode == "ceremony_duty":
             with open(output_filename, "rb") as f:
                 st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
 
-        def convert_df_to_pdf(df, filename="output.pdf", title="รายชื่อยอดพิธี"):
-            font_path = os.path.abspath("THSarabunNew.ttf")
+    # โหลดฟอนต์ THSarabunNew
+    pdfmetrics.registerFont(TTFont('THSarabunNew', 'THSarabunNew.ttf'))
+    
+    # ฟังก์ชันสำหรับสร้าง PDF
+    def convert_df_to_pdf(df, title="รายชื่อยอดพิธี"):
+        buffer = io.BytesIO()
+        c = canvas.Canvas(buffer, pagesize=letter)
         
-            # HTML ที่รองรับฟอนต์ไทย
-            html = f"""
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <style>
-                    @font-face {{
-                        font-family: 'THSarabunNew';
-                        src: url("file://{font_path}");
-                    }}
-                    body {{
-                        font-family: 'THSarabunNew';
-                        font-size: 16pt;
-                    }}
-                    table {{
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin-top: 20px;
-                    }}
-                    th, td {{
-                        border: 1px solid black;
-                        padding: 8px;
-                        text-align: center;
-                    }}
-                    th {{
-                        background-color: #f2f2f2;
-                    }}
-                    h3 {{
-                        text-align: center;
-                    }}
-                </style>
-            </head>
-            <body>
-                <h3>{title}</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            {''.join(f'<th>{col}</th>' for col in df.columns)}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {''.join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in df.values)}
-                    </tbody>
-                </table>
-            </body>
-            </html>
-            """
+        # ตั้งค่าให้ใช้ฟอนต์ THSarabunNew
+        c.setFont("THSarabunNew", 12)
+    
+        # เขียนหัวเรื่อง
+        c.drawString(250, 750, title)
+    
+        # กำหนดตำแหน่งเริ่มต้น
+        y_position = 730
+    
+        # เขียนชื่อคอลัมน์
+        for col_num, col_name in enumerate(df.columns):
+            c.drawString(30 + col_num * 120, y_position, col_name)
         
-            # สร้าง PDF ชั่วคราว
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-                HTML(string=html).write_pdf(tmp_file.name)
-                return tmp_file.name
-        
-        # เรียกใช้
-        pdf_path = convert_df_to_pdf(output_df, title=ยอด_name)
-        with open(pdf_path, "rb") as f:
-            st.download_button("📄 ดาวน์โหลด PDF", f, file_name=f"{ยอด_name}.pdf", mime="application/pdf")
+        y_position -= 20
+    
+        # เขียนข้อมูลแต่ละแถว
+        for row in df.values:
+            for col_num, cell in enumerate(row):
+                c.drawString(30 + col_num * 120, y_position, str(cell))
+            y_position -= 20
+    
+            # เมื่อ y_position ต่ำเกินไป ให้เพิ่มหน้าใหม่
+            if y_position < 100:
+                c.showPage()
+                c.setFont("THSarabunNew", 12)
+                y_position = 750
+    
+        # บันทึก PDF
+        c.save()
+        buffer.seek(0)
+    
+        return buffer
+    
+    # ตัวอย่างการใช้งาน
+    pdf_data = convert_df_to_pdf(output_df, title="รายชื่อยอดพิธี")
+    st.download_button("📄 ดาวน์โหลด PDF", pdf_data, file_name="ยอดพิธี.pdf", mime="application/pdf")
 
 
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
