@@ -13,10 +13,6 @@ from collections import defaultdict
 import gspread
 from google.oauth2.service_account import Credentials
 from google.oauth2 import service_account
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab import pdfmetrics
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 
 # 1. เชื่อมต่อ Google Sheets
 @st.cache_resource
@@ -456,52 +452,6 @@ elif mode == "ceremony_duty":
             st.success(f"✅ สร้างไฟล์ Excel สำเร็จ: {output_filename}")
             with open(output_filename, "rb") as f:
                 st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
-
-    # โหลดฟอนต์ THSarabunNew
-    pdfmetrics.registerFont(TTFont('THSarabunNew', 'THSarabunNew.ttf'))
-    
-    # ฟังก์ชันสำหรับสร้าง PDF
-    def convert_df_to_pdf(df, title="รายชื่อยอดพิธี"):
-        buffer = io.BytesIO()
-        c = canvas.Canvas(buffer, pagesize=letter)
-        
-        # ตั้งค่าให้ใช้ฟอนต์ THSarabunNew
-        c.setFont("THSarabunNew", 12)
-    
-        # เขียนหัวเรื่อง
-        c.drawString(250, 750, title)
-    
-        # กำหนดตำแหน่งเริ่มต้น
-        y_position = 730
-    
-        # เขียนชื่อคอลัมน์
-        for col_num, col_name in enumerate(df.columns):
-            c.drawString(30 + col_num * 120, y_position, col_name)
-        
-        y_position -= 20
-    
-        # เขียนข้อมูลแต่ละแถว
-        for row in df.values:
-            for col_num, cell in enumerate(row):
-                c.drawString(30 + col_num * 120, y_position, str(cell))
-            y_position -= 20
-    
-            # เมื่อ y_position ต่ำเกินไป ให้เพิ่มหน้าใหม่
-            if y_position < 100:
-                c.showPage()
-                c.setFont("THSarabunNew", 12)
-                y_position = 750
-    
-        # บันทึก PDF
-        c.save()
-        buffer.seek(0)
-    
-        return buffer
-    
-    # ตัวอย่างการใช้งาน
-    pdf_data = convert_df_to_pdf(output_df, title="รายชื่อยอดพิธี")
-    st.download_button("📄 ดาวน์โหลด PDF", pdf_data, file_name="ยอดพิธี.pdf", mime="application/pdf")
-
 
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
