@@ -455,50 +455,42 @@ elif mode == "ceremony_duty":
             with open(output_filename, "rb") as f:
                 st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
 
-        # EXPORT PDF
-        if "PDF (.pdf)" in export_type:
-            import pdfkit
-            from jinja2 import Template
-            html_template = """
-            <!DOCTYPE html>
+        def convert_df_to_pdf(df, filename="output.pdf", title="รายชื่อยอดพิธี"):
+            html = f"""
             <html>
             <head>
-                <meta charset="utf-8">
                 <style>
-                    body { font-family: 'TH SarabunPSK', sans-serif; font-size: 14pt; }
-                    table { width: 100%; border-collapse: collapse; }
-                    th, td { border: 1px solid black; padding: 5px; text-align: center; }
-                    th:nth-child(2), td:nth-child(2) { text-align: left; padding-left: 10px; }
+                    table {{
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 12px;
+                    }}
+                    th, td {{
+                        border: 1px solid #000;
+                        padding: 6px;
+                        text-align: center;
+                    }}
+                    th {{
+                        background-color: #f2f2f2;
+                    }}
                 </style>
             </head>
             <body>
-                <h2 style="text-align:center;">{{ title }}</h2>
+                <h3 style="text-align: center;">{title}</h3>
                 <table>
-                    <thead><tr>
-                        {% for col in cols %}
-                            <th>{{ col }}</th>
-                        {% endfor %}
-                    </tr></thead>
-                    <tbody>
-                        {% for row in rows %}
-                        <tr>
-                            {% for cell in row %}
-                                <td>{{ cell if cell else "" }}</td>
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
+                    <tr>
+                        {''.join(f'<th>{col}</th>' for col in df.columns)}
+                    </tr>
+                    {''.join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in df.values)}
                 </table>
             </body>
             </html>
             """
-            template = Template(html_template)
-            html_out = template.render(title=ยอด_name, cols=output_df.columns, rows=output_df.values.tolist())
-            pdf_filename = f"{ยอด_name}.pdf"
-            pdfkit.from_string(html_out, pdf_filename)
-            st.success(f"✅ สร้างไฟล์ PDF สำเร็จ: {pdf_filename}")
-            with open(pdf_filename, "rb") as f:
-                st.download_button("📥 ดาวน์โหลด PDF", f, file_name=pdf_filename)
+        
+            # สร้างไฟล์ PDF ชั่วคราว
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as f:
+                pisa.CreatePDF(html, dest=f)
+                return f.name  # คืน path ของ PDF ชั่วคราว
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
 
