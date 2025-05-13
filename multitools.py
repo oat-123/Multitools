@@ -491,6 +491,10 @@ elif mode == "ceremony_duty":
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as f:
                 pisa.CreatePDF(html, dest=f)
                 return f.name  # คืน path ของ PDF ชั่วคราว
+        pdf_path = convert_df_to_pdf(output_df, title=ยอด_name)
+        with open(pdf_path, "rb") as f:
+            st.download_button("📄 ดาวน์โหลด PDF", f, file_name=f"{ยอด_name}.pdf", mime="application/pdf")
+
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
 
