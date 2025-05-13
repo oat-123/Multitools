@@ -390,13 +390,7 @@ elif mode == "ceremony_duty":
             st.markdown(html, unsafe_allow_html=True)
 
         render_centered_table(output_df)
-
-        # EXPORT EXCEL
-        if "Excel (.xlsx)" in export_type:
-            from openpyxl import Workbook
-            from openpyxl.styles import Alignment, Border, Side
-            from openpyxl.utils.dataframe import dataframe_to_rows
-
+        
             wb = Workbook()
             ws = wb.active
             ws.title = "ยอดพิธี"
