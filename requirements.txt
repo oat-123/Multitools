@@ -4,5 +4,4 @@ requests
 openpyxl
 gspread
 oauth2client
-reportlab==3.5.33
 
