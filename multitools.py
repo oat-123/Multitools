@@ -346,6 +346,50 @@ elif mode == "ceremony_duty":
 
         columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
+        
+        # ใส่ฟังก์ชันนี้ก่อนมีการเรียกใช้ render_centered_table
+        def render_centered_table(df):
+            html = """
+            <style>
+                table.custom-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    table-layout: auto;
+                    font-size: 11px;
+                }
+                table.custom-table th, table.custom-table td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: center;
+                    height: 40px;
+                }
+                table.custom-table th {
+                    font-weight: bold;
+                }
+                table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; }
+                table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; }
+                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 8%; }
+                table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; }
+                table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; }
+                table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; }
+                table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 10%; }
+                table.custom-table td:nth-child(2) {
+                    text-align: left;
+                    padding-left: 10px;
+                }
+            </style>
+            """
+            html += "<table class='custom-table'>"
+            html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
+            html += "<tbody>"
+            for _, row in df.iterrows():
+                html += "<tr>"
+                for i, cell in enumerate(row):
+                    value = "" if pd.isna(cell) and i == 6 else cell
+                    html += f"<td>{value}</td>"
+                html += "</tr>"
+            html += "</tbody></table>"
+            st.markdown(html, unsafe_allow_html=True)
 
         render_centered_table(output_df)
 
