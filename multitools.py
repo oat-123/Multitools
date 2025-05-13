@@ -13,7 +13,8 @@ from collections import defaultdict
 import gspread
 from google.oauth2.service_account import Credentials
 from google.oauth2 import service_account
-import pdfkit
+from xhtml2pdf import pisa
+import tempfile
 
 # 1. เชื่อมต่อ Google Sheets
 @st.cache_resource
