@@ -14,7 +14,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 from google.oauth2 import service_account
 import tempfile
-from xhtml2pdf import pisa
+from weasyprint import HTML, CSS
 
 # 1. เชื่อมต่อ Google Sheets
 @st.cache_resource
@@ -456,60 +456,66 @@ elif mode == "ceremony_duty":
                 st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
 
         def convert_df_to_pdf(df, filename="output.pdf", title="รายชื่อยอดพิธี"):
-        # กำหนด path ฟอนต์ไทย
         font_path = os.path.abspath("THSarabunNew.ttf")
     
-        # HTML พร้อมฝังฟอนต์ไทย
+        # HTML ที่รองรับฟอนต์ไทย
         html = f"""
         <html>
         <head>
-            <meta charset="UTF-8">
+            <meta charset="utf-8">
             <style>
                 @font-face {{
                     font-family: 'THSarabunNew';
-                    src: url('file://{font_path}');
+                    src: url("file://{font_path}");
                 }}
                 body {{
                     font-family: 'THSarabunNew';
-                    font-size: 16px;
+                    font-size: 16pt;
                 }}
                 table {{
                     width: 100%;
                     border-collapse: collapse;
-                    font-size: 16px;
-                    font-family: 'THSarabunNew';
+                    margin-top: 20px;
                 }}
                 th, td {{
-                    border: 1px solid #000;
-                    padding: 6px;
+                    border: 1px solid black;
+                    padding: 8px;
                     text-align: center;
                 }}
                 th {{
                     background-color: #f2f2f2;
                 }}
+                h3 {{
+                    text-align: center;
+                }}
             </style>
         </head>
         <body>
-            <h3 style="text-align: center;">{title}</h3>
+            <h3>{title}</h3>
             <table>
-                <tr>
-                    {''.join(f'<th>{col}</th>' for col in df.columns)}
-                </tr>
-                {''.join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in df.values)}
+                <thead>
+                    <tr>
+                        {''.join(f'<th>{col}</th>' for col in df.columns)}
+                    </tr>
+                </thead>
+                <tbody>
+                    {''.join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in df.values)}
+                </tbody>
             </table>
         </body>
         </html>
         """
     
-        # สร้างไฟล์ PDF ชั่วคราว
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as f:
-            pisa.CreatePDF(html, dest=f)
-            return f.name  # คืน path ของ PDF ชั่วคราว
+        # สร้าง PDF ชั่วคราว
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+            HTML(string=html).write_pdf(tmp_file.name)
+            return tmp_file.name
     
-    # การเรียกใช้
+    # เรียกใช้
     pdf_path = convert_df_to_pdf(output_df, title=ยอด_name)
     with open(pdf_path, "rb") as f:
         st.download_button("📄 ดาวน์โหลด PDF", f, file_name=f"{ยอด_name}.pdf", mime="application/pdf")
+
 
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
