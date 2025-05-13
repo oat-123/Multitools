@@ -456,65 +456,65 @@ elif mode == "ceremony_duty":
                 st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
 
         def convert_df_to_pdf(df, filename="output.pdf", title="รายชื่อยอดพิธี"):
-        font_path = os.path.abspath("THSarabunNew.ttf")
-    
-        # HTML ที่รองรับฟอนต์ไทย
-        html = f"""
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                @font-face {{
-                    font-family: 'THSarabunNew';
-                    src: url("file://{font_path}");
-                }}
-                body {{
-                    font-family: 'THSarabunNew';
-                    font-size: 16pt;
-                }}
-                table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }}
-                th, td {{
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                }}
-                th {{
-                    background-color: #f2f2f2;
-                }}
-                h3 {{
-                    text-align: center;
-                }}
-            </style>
-        </head>
-        <body>
-            <h3>{title}</h3>
-            <table>
-                <thead>
-                    <tr>
-                        {''.join(f'<th>{col}</th>' for col in df.columns)}
-                    </tr>
-                </thead>
-                <tbody>
-                    {''.join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in df.values)}
-                </tbody>
-            </table>
-        </body>
-        </html>
-        """
-    
-        # สร้าง PDF ชั่วคราว
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-            HTML(string=html).write_pdf(tmp_file.name)
-            return tmp_file.name
-    
-    # เรียกใช้
-    pdf_path = convert_df_to_pdf(output_df, title=ยอด_name)
-    with open(pdf_path, "rb") as f:
-        st.download_button("📄 ดาวน์โหลด PDF", f, file_name=f"{ยอด_name}.pdf", mime="application/pdf")
+            font_path = os.path.abspath("THSarabunNew.ttf")
+        
+            # HTML ที่รองรับฟอนต์ไทย
+            html = f"""
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    @font-face {{
+                        font-family: 'THSarabunNew';
+                        src: url("file://{font_path}");
+                    }}
+                    body {{
+                        font-family: 'THSarabunNew';
+                        font-size: 16pt;
+                    }}
+                    table {{
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 20px;
+                    }}
+                    th, td {{
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: center;
+                    }}
+                    th {{
+                        background-color: #f2f2f2;
+                    }}
+                    h3 {{
+                        text-align: center;
+                    }}
+                </style>
+            </head>
+            <body>
+                <h3>{title}</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            {''.join(f'<th>{col}</th>' for col in df.columns)}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {''.join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in df.values)}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+            """
+        
+            # สร้าง PDF ชั่วคราว
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+                HTML(string=html).write_pdf(tmp_file.name)
+                return tmp_file.name
+        
+        # เรียกใช้
+        pdf_path = convert_df_to_pdf(output_df, title=ยอด_name)
+        with open(pdf_path, "rb") as f:
+            st.download_button("📄 ดาวน์โหลด PDF", f, file_name=f"{ยอด_name}.pdf", mime="application/pdf")
 
 
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
