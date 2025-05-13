@@ -281,57 +281,46 @@ elif mode == "count":
 
 
 
+# โค้ดเวอร์ชันปรับปรุงแล้ว สำหรับฟีเจอร์ "จัดยอดพิธี"
+
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
 
-    # เรียกใช้ worksheet ที่เชื่อมต่อไว้
     sheet = connect_gsheet()
-
-    # ดึงข้อมูลทั้งหมดมาเป็น DataFrame
     data = sheet.get_all_values()
     df = pd.DataFrame(data[1:], columns=data[0])  # ข้าม header แรก
 
-    # แปลงคอลัมน์ที่ใช้ให้เป็นชนิดข้อมูลที่เหมาะสม
     if "สถิติโดนยอด" in df.columns:
         df["สถิติโดนยอด"] = pd.to_numeric(df["สถิติโดนยอด"], errors="coerce").fillna(0)
-        
-    # อินพุตจากผู้ใช้
+
     ยอด_name = st.text_input("🔖กรอกชื่อยอด")
     จำนวนคน = st.number_input("👥จำนวนคน", min_value=1, step=1)
 
-    # ตัวเลือกทั้งหมดของหน้าที่
-    ตัวเลือก_หน้าที่ = ["เลือกทั้งหมด", "ชั้นกรม", "ชั้นพัน", "ฝอ.1", "ฝอ.4", "ฝอ.5"]
-    ตัวกรอง_หน้าที่_เลือก = st.multiselect("⛔ไม่เลือกคนที่มีหน้าที่", ตัวเลือก_หน้าที่)
+    ตัวเลือก_หน้าที่ = ["ชั้นกรม", "ชั้นพัน", "ฝอ.1", "ฝอ.4", "ฝอ.5"]
+    ตัวกรอง_หน้าที่_เลือก = st.multiselect("⛔ไม่เลือกคนที่มีหน้าที่", ["เลือกทั้งหมด"] + ตัวเลือก_หน้าที่)
 
-    # เพิ่ม UI เลือกชมรมที่ไม่ต้องการให้เข้าร่วม
-    excluded_clubs = st.multiselect("⛔ไม่เลือกชมรม", ["กรีฑา", "จักรยาน", "ไซเบอร์", "ดนตรีไทย", "ดนตรีสากล","ดาบสากล", "นิเทศ", "บาส", "โปโลน้ำ", "ฟุตบอล", "ยูโด", "รักบี้", "แบตมินตัน"])
+    ตัวเลือก_ชมรม = ["กรีฑา", "จักรยาน", "ไซเบอร์", "ดนตรีไทย", "ดนตรีสากล", "ดาบสากล", "นิเทศ", "บาส", "โปโลน้ำ", "ฟุตบอล", "ยูโด", "รักบี้", "แบตมินตัน"]
+    excluded_clubs = st.multiselect("⛔ไม่เลือกชมรม", ["เลือกทั้งหมด"] + ตัวเลือก_ชมรม)
+
+    export_type = st.multiselect("📁 ต้องการส่งออกไฟล์ประเภทใด", ["Excel (.xlsx)", "PDF (.pdf)"], default=["Excel (.xlsx)"])
 
     if st.button("📤 จัดยอดและส่งออกไฟล์"):
-        # ถ้าเลือก "เลือกทั้งหมด" → ให้ถือว่าเลือกทั้งหมด (ยกเว้นตัว "เลือกทั้งหมด" เอง)
-        if "เลือกทั้งหมด" in ตัวกรอง_หน้าที่_เลือก:
-            ตัวกรอง_หน้าที่ = [x for x in ตัวเลือก_หน้าที่ if x != "เลือกทั้งหมด"]
-        else:
-            ตัวกรอง_หน้าที่ = ตัวกรอง_หน้าที่_เลือก
-        
-        # กรองข้อมูลตามหน้าที่และชมรม
+        # จัดการเงื่อนไข "เลือกทั้งหมด"
+        ตัวกรอง_หน้าที่ = ตัวเลือก_หน้าที่ if "เลือกทั้งหมด" in ตัวกรอง_หน้าที่_เลือก else ตัวกรอง_หน้าที่_เลือก
+        filtered_clubs = ตัวเลือก_ชมรม if "เลือกทั้งหมด" in excluded_clubs else excluded_clubs
+
         df_filtered = df.copy()
         if "หน้าที่" in df_filtered.columns and ตัวกรอง_หน้าที่:
             df_filtered = df_filtered[~df_filtered["หน้าที่"].isin(ตัวกรอง_หน้าที่)]
-        
-        if "ชมรม" in df_filtered.columns and excluded_clubs:
-            df_filtered = df_filtered[~df_filtered["ชมรม"].isin(excluded_clubs)]
-        
-        # เรียงจากสถิติโดนยอดน้อยสุดก่อน
+        if "ชมรม" in df_filtered.columns and filtered_clubs:
+            df_filtered = df_filtered[~df_filtered["ชมรม"].isin(filtered_clubs)]
         if "สถิติโดนยอด" in df_filtered.columns:
             df_filtered = df_filtered.sort_values(by="สถิติโดนยอด", ascending=True)
-            
-        # จัดกลุ่มตามสังกัด
+
         grouped = df_filtered.groupby("สังกัด")
         สังกัด_list = list(grouped.groups.keys())
-
         คนต่อสังกัด = defaultdict(list)
 
-        # วนสุ่มกระจายให้สังกัดละเท่าๆกัน
         while sum(len(v) for v in คนต่อสังกัด.values()) < จำนวนคน:
             for สังกัด in สังกัด_list:
                 available = grouped.get_group(สังกัด)
@@ -343,165 +332,127 @@ elif mode == "ceremony_duty":
 
         selected_indices = [i for indices in คนต่อสังกัด.values() for i in indices]
         selected_df = df.loc[selected_indices]
-
-        # เพิ่มลำดับ
         selected_df = selected_df.reset_index(drop=True)
         selected_df.index += 1
 
-        # ลบคอลัมน์ "ลำดับ" เดิม (ถ้ามี)
         if "ลำดับ" in selected_df.columns:
             selected_df = selected_df.drop(columns=["ลำดับ"])
-        
-        # เพิ่มคอลัมน์ลำดับ (เริ่มจาก 1)
-        selected_df = selected_df.reset_index(drop=True)
-        selected_df.index += 1
         selected_df.insert(0, "ลำดับ", selected_df.index)
-        
-        # แยกคอลัมน์ "ยศ", "ชื่อ", "สกุล"
+
         selected_df["ยศ"] = "นนร."
         selected_df["ชื่อ"] = selected_df.iloc[:, 2].fillna("")
         selected_df["สกุล"] = selected_df.iloc[:, 3].fillna("")
-        
-        # กำหนดลำดับคอลัมน์ใหม่
-        columns = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
-        output_df = selected_df[columns]
-
-        # รวมคอลัมน์ "ยศ", "ชื่อ", "สกุล" เป็น "ยศ ชื่อ-สกุล"
         selected_df["ยศ ชื่อ-สกุล"] = selected_df["ยศ"] + " " + selected_df["ชื่อ"] + " " + selected_df["สกุล"]
-        
-        # กำหนดลำดับคอลัมน์ใหม่
+
         columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
         output_df = selected_df[columns]
 
-        def render_centered_table(df):
-            html = """
-            <style>
-                table.custom-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    table-layout: auto;  /* ทำให้คอลัมน์ปรับขนาดตามเนื้อหา */
-                    font-size: 11px; /* 👈 ปรับขนาดฟอนต์ตรงนี้ เช่น 12px, 14px, 16px */
-                }
-                table.custom-table th, table.custom-table td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: center;
-                    height: 40px;
-                }
-                table.custom-table th {
-                    font-weight: bold;
-                }
-                /* ปรับขนาดความกว้างของคอลัมน์ */
-                table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; } /* ลำดับ */
-                table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; } /* ยศ ชื่อ-สกุล*/
-                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 8%; } /* ชั้นปีที่ */
-                table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; } /* ตอน */
-                table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; } /* ตำแหน่ง */
-                table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; } /* สังกัด */
-                table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 10%; } /* หมายเหตุ */
-
-                /* 👇 จัดข้อมูลในคอลัมน์ "ยศ ชื่อ-สกุล" ให้อยู่ชิดซ้าย (เฉพาะข้อมูล ไม่รวมหัวตาราง) */
-                table.custom-table td:nth-child(2) {
-                text-align: left;
-                padding-left: 10px;}
-            </style>
-            """
-            html += "<table class='custom-table'>"
-            html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
-            html += "<tbody>"
-            for _, row in df.iterrows():
-                html += "<tr>"
-                for i, cell in enumerate(row):
-                    value = "" if pd.isna(cell) and i == 6 else cell
-                    html += f"<td>{value}</td>"
-                html += "</tr>"
-            html += "</tbody></table>"
-            st.markdown(html, unsafe_allow_html=True)
-                
-        # แสดงผลลัพธ์
         render_centered_table(output_df)
 
-        # สร้างไฟล์ Excel
-        wb = Workbook()
-        ws = wb.active
-        ws.title = "ยอดพิธี"
+        # EXPORT EXCEL
+        if "Excel (.xlsx)" in export_type:
+            from openpyxl import Workbook
+            from openpyxl.styles import Alignment, Border, Side
+            from openpyxl.utils.dataframe import dataframe_to_rows
 
-        # เขียนชื่อยอดและเว้นแถว
-        ws.append([ยอด_name])
-        ws.append([])
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "ยอดพิธี"
+            ws.append([ยอด_name])
+            ws.append([])
+            ws.append(columns)
+            ws.merge_cells('A2:I2')
 
-        # 👉 เขียนหัวตารางก่อน (เพื่อให้เซลล์ row=3 มีอยู่จริง)
-        ws.append(columns)
-        ws.merge_cells('A2:I2')
+            selected_df["ยศ"] = "นนร."
+            selected_df["ชื่อ"] = selected_df.iloc[:, 2]
+            selected_df["สกุล"] = selected_df.iloc[:, 3]
+            columns_excel = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
+            output_df_excel = selected_df[columns_excel]
 
-        # นำข้อมูลจากคอลัมภ์ B, C, D มาแยกในคอลัมภ์ที่ถูกต้อง
-        selected_df["ยศ"] = "นนร."
-        selected_df["ชื่อ"] = selected_df.iloc[:, 2]  # คอลัมภ์ชื่อ
-        selected_df["สกุล"] = selected_df.iloc[:, 3]  # คอลัมภ์สกุล
-        
-        # ปรับคอลัมภ์ใน output_df ให้มีลำดับที่ถูกต้อง
-        columns = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
-        output_df = selected_df[columns]
+            ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
+            ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
+            ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
+            ws.cell(row=3, column=5).value = "ชั้นปีที่"
+            ws.cell(row=3, column=6).value = "ตอน"
+            ws.cell(row=3, column=7).value = "ตำแหน่ง"
+            ws.cell(row=3, column=8).value = "สังกัด"
+            ws.cell(row=3, column=9).value = "หมายเหตุ"
 
-        # ผสานเซลล์ "ยศ ชื่อ-สกุล" (B3-D3)
-        ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
-        ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
-        ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
-        
-        # หลังจากการผสาน "ยศ ชื่อ-สกุล" คอลัมน์อื่นๆ ก็ต้องกำหนดหัวตารางให้ถูกต้อง
-        ws.cell(row=3, column=5).value = "ชั้นปีที่"
-        ws.cell(row=3, column=6).value = "ตอน"
-        ws.cell(row=3, column=7).value = "ตำแหน่ง"
-        ws.cell(row=3, column=8).value = "สังกัด"
-        ws.cell(row=3, column=9).value = "หมายเหตุ"
-        
-        # เขียนข้อมูลแถวต่อจาก row 4
-        for r in dataframe_to_rows(output_df, index=False, header=False):
-            ws.append(r)
+            for r in dataframe_to_rows(output_df_excel, index=False, header=False):
+                ws.append(r)
 
-        # จัดหัวข้อยอดให้อยู่กลาง
-        ws.cell(row=1, column=1).alignment = Alignment(horizontal='center', vertical='center')
+            thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+            for row in ws.iter_rows(min_row=2):
+                for idx, cell in enumerate(row[:9]):
+                    if idx < 1 or idx > 3:
+                        cell.alignment = Alignment(horizontal='center', vertical='center')
+                    cell.border = thin_border
 
-        # ตั้งเส้นขอบบางๆ
-        thin_border = Border(
-            left=Side(style='thin'),
-            right=Side(style='thin'),
-            top=Side(style='thin'),
-            bottom=Side(style='thin'))
-
-        # จัดการข้อมูลในแถว (ตั้งแต่แถวที่ 2)
-        for row in ws.iter_rows(min_row=2):
-            for idx, cell in enumerate(row[:9]):
-                if idx < 1 or idx > 3:
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
+            ws.column_dimensions['A'].width = 6
+            ws.column_dimensions['B'].width = 5
+            ws.column_dimensions['C'].width = 15
+            ws.column_dimensions['D'].width = 15
+            ws.column_dimensions['E'].width = 8
+            ws.column_dimensions['F'].width = 8
+            ws.column_dimensions['G'].width = 20
+            ws.column_dimensions['H'].width = 15
+            ws.column_dimensions['I'].width = 15
+            ws.merge_cells('A1:I1')
+            ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
+            for cell in ws[1]:
+                cell.alignment = Alignment(horizontal='center', vertical='center')
                 cell.border = thin_border
 
-        # ตั้งความกว้างคอลัมน์
-        ws.column_dimensions['A'].width = 6
-        ws.column_dimensions['B'].width = 5
-        ws.column_dimensions['C'].width = 15
-        ws.column_dimensions['D'].width = 15
-        ws.column_dimensions['E'].width = 8
-        ws.column_dimensions['F'].width = 8
-        ws.column_dimensions['G'].width = 20
-        ws.column_dimensions['H'].width = 15
-        ws.column_dimensions['I'].width = 15
+            output_filename = f"{ยอด_name}.xlsx"
+            wb.save(output_filename)
+            st.success(f"✅ สร้างไฟล์ Excel สำเร็จ: {output_filename}")
+            with open(output_filename, "rb") as f:
+                st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
 
-        # สร้างเส้นขอบที่หัวตาราง
-        ws.merge_cells('A1:I1')
-        ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
-        for cell in ws[1]:
-            cell.alignment = Alignment(horizontal='center', vertical='center')
-            cell.border = thin_border
-
-        # บันทึกไฟล์ Excel
-        output_filename = f"{ยอด_name}.xlsx"
-        wb.save(output_filename)
-
-        # แจ้งผลสำเร็จและให้ดาวน์โหลด
-        st.success(f"✅ สร้างไฟล์สำเร็จ: {output_filename}")
-        with open(output_filename, "rb") as f:
-            st.download_button("📥 ดาวน์โหลดไฟล์ Excel", f, file_name=output_filename)
+        # EXPORT PDF
+        if "PDF (.pdf)" in export_type:
+            import pdfkit
+            from jinja2 import Template
+            html_template = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body { font-family: 'TH SarabunPSK', sans-serif; font-size: 14pt; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid black; padding: 5px; text-align: center; }
+                    th:nth-child(2), td:nth-child(2) { text-align: left; padding-left: 10px; }
+                </style>
+            </head>
+            <body>
+                <h2 style="text-align:center;">{{ title }}</h2>
+                <table>
+                    <thead><tr>
+                        {% for col in cols %}
+                            <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr></thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>{{ cell if cell else "" }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+            """
+            template = Template(html_template)
+            html_out = template.render(title=ยอด_name, cols=output_df.columns, rows=output_df.values.tolist())
+            pdf_filename = f"{ยอด_name}.pdf"
+            pdfkit.from_string(html_out, pdf_filename)
+            st.success(f"✅ สร้างไฟล์ PDF สำเร็จ: {pdf_filename}")
+            with open(pdf_filename, "rb") as f:
+                st.download_button("📥 ดาวน์โหลด PDF", f, file_name=pdf_filename)
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
 
