@@ -30,7 +30,7 @@ if st.sidebar.button("เข้าสู่ระบบ"):
         st.session_state["username"] = username
         st.session_state["sheet_name"] = users[username]["sheet_name"]
         st.sidebar.success(f"ยินดีต้อนรับ {username}/n ")
-        st.sidebar.success(f"ตอนนี้คุณกำลังใช้ฐานข้อมูลจาก : {st.session_state['sheet_name']}")
+        st.sidebar.success(f"ฐานข้อมูล : {st.session_state['sheet_name']}")
     else:
         st.sidebar.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
