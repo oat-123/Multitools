@@ -29,32 +29,35 @@ if st.sidebar.button("เข้าสู่ระบบ"):
         st.session_state["logged_in"] = True
         st.session_state["username"] = username
         st.session_state["sheet_name"] = users[username]["sheet_name"]
-        st.sidebar.success(f"ยินดีต้อนรับ {username}")
-        st.sidebar.success(f"ฐานข้อมูล : {st.session_state['sheet_name']}")
+        st.rerun()  # รีโหลดเพื่อให้ค่าถูกต้อง
     else:
         st.sidebar.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
+# ตรวจสอบสถานะการล็อกอิน
 if not st.session_state.get("logged_in"):
-    st.stop()  # หยุดโปรแกรมทันทีหากยังไม่ได้ล็อกอิน
+    st.stop()  # หยุดโปรแกรมหากยังไม่ได้ล็อกอิน
 
+# แสดงผลใน Sidebar หลังล็อกอิน
+st.sidebar.success(f"ยินดีต้อนรับ {st.session_state['username']}")
+st.sidebar.success(f"ฐานข้อมูล : {st.session_state['sheet_name']}")
 
 # 1. เชื่อมต่อ Google Sheets
-@st.cache_resource
-def connect_gsheet():
+def connect_gsheet(sheet_name):
     creds_dict = st.secrets["gcp_service_account"]
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     client = gspread.authorize(creds)
-    gc = gspread.authorize(creds)
-    sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0")
-    # ใช้ชื่อชีทตามผู้ใช้ที่ล็อกอิน
-    sheet_name = st.session_state["sheet_name"]
+    sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?usp=drivesdk")
     worksheet = sheet.worksheet(sheet_name)
     return worksheet
 
+worksheet = connect_gsheet(st.session_state["sheet_name"])
+
+# ส่วนแสดงหน้าเว็บ
 st.image("assist.jpg", width=120)
 st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
 st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
+
 
 
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
@@ -163,7 +166,6 @@ elif mode == "home":
     
     # ยอดเดิมแต่ละชั้นปี
     defaults = {5: 67, 4: 101, 3: 94, 2: 85}
-    
     categories = ["เวรเตรียมพร้อม", "กักบริเวณ", "อยู่โรงเรียน","ราชการ", "โรงพยาบาล", "ลา", "อื่นๆ"]
     
     # กรอกข้อมูล
