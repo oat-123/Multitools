@@ -313,7 +313,7 @@ elif mode == "count":
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
 
-    sheet = connect_gsheet()
+    sheet = connect_gsheet(st.session_state["sheet_name"])
     data = sheet.get_all_values()
     df = pd.DataFrame(data[1:], columns=data[0])  # ข้าม header แรก
 
