@@ -14,6 +14,29 @@ import gspread
 from google.oauth2.service_account import Credentials
 from google.oauth2 import service_account
 
+# ===== ระบบ Login =====
+users = {
+    "oat": {"password": "crma74", "sheet_name": "ชั้น4พัน4_only"},
+    "time": {"password": "crma74", "sheet_name": "ชั้น4พัน1_only"},
+}
+
+st.sidebar.title("🔐 เข้าสู่ระบบ")
+username = st.sidebar.text_input("ชื่อผู้ใช้")
+password = st.sidebar.text_input("รหัสผ่าน", type="password")
+
+if st.sidebar.button("เข้าสู่ระบบ"):
+    if username in users and users[username]["password"] == password:
+        st.session_state["logged_in"] = True
+        st.session_state["username"] = username
+        st.session_state["sheet_name"] = users[username]["sheet_name"]
+        st.sidebar.success(f"ยินดีต้อนรับ {username}")
+    else:
+        st.sidebar.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+
+if not st.session_state.get("logged_in"):
+    st.stop()  # หยุดโปรแกรมทันทีหากยังไม่ได้ล็อกอิน
+
+
 # 1. เชื่อมต่อ Google Sheets
 @st.cache_resource
 def connect_gsheet():
@@ -23,7 +46,9 @@ def connect_gsheet():
     client = gspread.authorize(creds)
     gc = gspread.authorize(creds)
     sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?gid=0#gid=0")
-    worksheet = sheet.worksheet("ชั้น4พัน4_only")
+    # ใช้ชื่อชีทตามผู้ใช้ที่ล็อกอิน
+    sheet_name = st.session_state["sheet_name"]
+    worksheet = sheet.worksheet(sheet_name)
     return worksheet
 
 st.image("assist.jpg", width=120)
