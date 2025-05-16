@@ -63,11 +63,11 @@ st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
 # สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
 col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
-    if st.button("🛡 เวรยืนกลางคืน", use_container_width=True):
+    if st.button("🛡 เวรรักษาการณ์", use_container_width=True):
         st.session_state["mode"] = "night_duty"
 
 with col2:
-    if st.button("📅 เวรเสา-อา", use_container_width=True):
+    if st.button("📅 เวรเตรียมการ", use_container_width=True):
         st.session_state["mode"] = "weekend_duty"
 
 with col3:
