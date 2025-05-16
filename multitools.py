@@ -105,6 +105,16 @@ st.markdown("""
             margin-top: 10px;
             margin-bottom: 25px;
         }
+                @media (max-width: 768px) {
+            .element-container .stColumns {
+                flex-direction: column !important;
+            }
+            .element-container .stColumn {
+                width: 100% !important;
+                margin-bottom: 16px;
+            }
+        }
+    </style>
     </style>
 """, unsafe_allow_html=True)
 
