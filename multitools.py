@@ -393,6 +393,8 @@ elif mode == "count":
             เหนื่อย = st.slider("ระดับความเหนื่อยของยอดนี้ (1–5)", 1, 5, 3)
 
             if st.button("✅ อัปเดตแต้มเข้า Google Sheets"):
+                username = st.session_state.get("username", "")
+                sheet_name = username
                 ws = connect_gsheet(sheet_name)
                 gsheet_data = ws.get_all_values()
                 gsheet_df = pd.DataFrame(gsheet_data)
