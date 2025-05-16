@@ -140,7 +140,7 @@ def get_base64_image(image_path):
         b64_data = base64.b64encode(img_file.read()).decode()
         return f"data:image/png;base64,{b64_data}"
 
-image_base64 = get_base64_image("assist.jpg")
+image_base64 = get_base64_image(src="https://images4.alphacoders.com/112/1127690.png")
 
 st.markdown("""
     <div style='text-align: center;'>
