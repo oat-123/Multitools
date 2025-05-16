@@ -144,7 +144,7 @@ st.markdown("""
         <div class='title-text'>
             <span style='color:#ff4b4b;'>J.A.R.V.I.S</span> <span style='color:#1f77b4;'>ระบบผู้ช่วย ฝอ.1</span>
         </div>
-        <div class='subtitle-text'>เลือกฟังก์ชันที่ต้องการจากด้านล่าง</div>
+        <div class='subtitle-text'>⏬เลือกฟังก์ชันที่ต้องการจากด้านล่าง⏬</div>
         <hr style='border: 1px solid #ccc; margin-top: 10px; margin-bottom: 25px;'>
     </div>
 """, unsafe_allow_html=True)
