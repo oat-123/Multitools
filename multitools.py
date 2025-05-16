@@ -353,29 +353,29 @@ elif mode == "home":
 
 
 elif mode == "count":
-    if ยอด_file:
-            # กำหนด sheet_id ของ Google Sheets หลัก
-            sheet_id = "1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk"
-        
-            # map ชื่อ user -> gid
-            user_gid_map = {
-                "oat": "0",
-                "time": "589142731",
-                "chai": "258225546",
-            }
-        
-            username = st.session_state.get("username", "")
-            gid = user_gid_map.get(username, "0")  # ถ้าไม่เจอให้เป็น gid=0
-        
-            url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
-        
-            st.markdown(f"[🔍 กดเพื่อดูสถิติโดนยอดปัจจุบันของคุณ (ชีท: {username})]({url})", unsafe_allow_html=True)
-            try:
-                ยอด_df = pd.read_excel(ยอด_file, header=None, skiprows=3)
-                ยอด_df = ยอด_df.dropna(how='all')
-            except Exception as e:
-                st.error(f"❌ ไม่สามารถอ่านไฟล์: {e}")
-                st.stop()
+if ยอด_file:
+        # กำหนด sheet_id ของ Google Sheets หลัก
+        sheet_id = "1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk"
+    
+        # map ชื่อ user -> gid
+        user_gid_map = {
+            "oat": "0",
+            "time": "589142731",
+            "chai": "258225546",
+        }
+    
+        username = st.session_state.get("username", "")
+        gid = user_gid_map.get(username, "0")  # ถ้าไม่เจอให้เป็น gid=0
+    
+        url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
+    
+        st.markdown(f"[🔍 กดเพื่อดูสถิติโดนยอดปัจจุบันของคุณ (ชีท: {username})]({url})", unsafe_allow_html=True)
+        try:
+            ยอด_df = pd.read_excel(ยอด_file, header=None, skiprows=3)
+            ยอด_df = ยอด_df.dropna(how='all')
+        except Exception as e:
+            st.error(f"❌ ไม่สามารถอ่านไฟล์: {e}")
+            st.stop()
 
         if ยอด_df.shape[1] >= 4:
             # สร้างชื่อเต็มไว้เทียบกับ Google Sheet
