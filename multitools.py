@@ -57,65 +57,86 @@ worksheet = connect_gsheet(st.session_state["sheet_name"])
 # ส่วนหัวและภาพ
 st.markdown("""
     <style>
-        .title-text {
-            font-size: 36px;
+        :root {
+            --text-light: #1f1f1f;
+            --text-dark: #f1f1f1;
+            --accent-light: #1f77b4;
+            --accent-dark: #4ab0f9;
+            --bg-card-light: #f9f9f9;
+            --bg-card-dark: #2a2a2a;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-dark: rgba(0, 0, 0, 0.3);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: var(--text-dark);
+                background-color: #181818;
+            }
+        }
+
+        .header-container {
             text-align: center;
-            margin-top: 10px;
-            color: #1f77b4;
-            font-weight: bold;
         }
-        .subtitle-text {
-            text-align: center;
-            font-size: 18px;
-            color: #444;
-            margin-bottom: 30px;
-        }
-        .card {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-            transition: 0.2s ease-in-out;
-        }
-        .card:hover {
-            box-shadow: 4px 4px 12px rgba(0,0,0,0.15);
-            transform: scale(1.01);
-        }
-        .card h4 {
+
+        .header-container img {
+            width: 90px;
             margin-bottom: 10px;
-            color: #333;
         }
-        .stButton > button {
-            font-size: 16px;
-            padding: 8px 20px;
-            border-radius: 10px;
-            border: 1px solid #1f77b4;
-            background-color: #eaf4ff;
-            color: #1f77b4;
+
+        .title-text {
+            font-size: 32px;
             font-weight: bold;
-            transition: 0.3s ease;
-        }
-        .stButton > button:hover {
-            background-color: #1f77b4;
-            color: white;
-        }
-        hr {
-            border: 1px solid #ccc;
             margin-top: 10px;
-            margin-bottom: 25px;
         }
-                @media (max-width: 768px) {
-            .element-container .stColumns {
-                flex-direction: column !important;
+
+        .subtitle-text {
+            font-size: 18px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+
+        .title-text span {
+            color: #ff4b4b;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .subtitle-text {
+                color: var(--text-dark);
             }
-            .element-container .stColumn {
-                width: 100% !important;
-                margin-bottom: 16px;
+
+            .title-text {
+                color: var(--text-dark);
+            }
+
+            hr {
+                border-top: 1px solid #444;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .subtitle-text {
+                color: var(--text-light);
+            }
+
+            .title-text {
+                color: var(--text-light);
             }
         }
     </style>
-    </style>
+
+    <div class='header-container'>
+        <img src='assist.jpg'>
+        <div class='title-text'><span>J.A.R.V.I.S</span> ระบบผู้ช่วย ฝอ.1</div>
+        <div class='subtitle-text'>เลือกฟังก์ชันที่ต้องการจากด้านล่าง</div>
+        <hr>
+    </div>
 """, unsafe_allow_html=True)
 
 st.markdown("""
