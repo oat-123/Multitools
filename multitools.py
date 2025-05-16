@@ -132,9 +132,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<div class='centered-image'>", unsafe_allow_html=True)
-st.image("assist.jpg", width=90)
-st.markdown("</div>", unsafe_allow_html=True)
+import base64
+
+# แปลง assist.jpg เป็น base64
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        b64_data = base64.b64encode(img_file.read()).decode()
+        return f"data:image/png;base64,{b64_data}"
+
+image_base64 = get_base64_image("assist.jpg")
 
 st.markdown("""
     <div style='text-align: center;'>
