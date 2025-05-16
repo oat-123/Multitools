@@ -370,12 +370,12 @@ elif mode == "count":
             url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
         
             st.markdown(f"[🔍 กดเพื่อดูสถิติโดนยอดปัจจุบันของคุณ (ชีท: {username})]({url})", unsafe_allow_html=True)
-        try:
-            ยอด_df = pd.read_excel(ยอด_file, header=None, skiprows=3)
-            ยอด_df = ยอด_df.dropna(how='all')
-        except Exception as e:
-            st.error(f"❌ ไม่สามารถอ่านไฟล์: {e}")
-            st.stop()
+            try:
+                ยอด_df = pd.read_excel(ยอด_file, header=None, skiprows=3)
+                ยอด_df = ยอด_df.dropna(how='all')
+            except Exception as e:
+                st.error(f"❌ ไม่สามารถอ่านไฟล์: {e}")
+                st.stop()
 
         if ยอด_df.shape[1] >= 4:
             # สร้างชื่อเต็มไว้เทียบกับ Google Sheet
