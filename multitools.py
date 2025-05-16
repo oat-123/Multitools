@@ -101,7 +101,7 @@ st.markdown("<div class='subtitle-text'>เลือกฟังก์ชัน�
 st.markdown("<hr>", unsafe_allow_html=True)
 
 # ปุ่มเรียงใน Grid อย่างมีระยะ
-col1, col2, col3 = st.columns([1, 1, 1])
+col1, col2, col3, col4, col5 = st.columns([1, 1, 1])
 with col1:
     st.markdown("#### 🛡 เวรรักษาการณ์")
     if st.button("ดู-อัพเดต", use_container_width=True, key="night_duty_btn"):
