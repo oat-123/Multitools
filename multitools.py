@@ -175,7 +175,7 @@ with col3:
 col4, col5, _ = st.columns([1, 1, 1])
 with col4:
     st.markdown("<div class='card'>", unsafe_allow_html=True)
-    st.markdown("#### 📝 พิมพ์ยอดปล่อย")
+    st.markdown("#### 📝 ยอดปล่อย")
     if st.button("พิมพ์", key="home_btn"):
         st.session_state["mode"] = "home"
     st.markdown("</div>", unsafe_allow_html=True)
