@@ -118,10 +118,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.image("assist.jpg", width=90)
-st.markdown("<div class='title-text'>ระบบผู้ช่วย ฝอ.1 <span style='color:#ff4b4b;'>J.A.R.V.I.S</span></div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle-text'>เลือกฟังก์ชันที่ต้องการจากด้านล่าง</div>", unsafe_allow_html=True)
-st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown("""
+    <div style='text-align: center;'>
+        <img src='assist.jpg' width='90'>
+        <div class='title-text'>
+            <span style='color:#ff4b4b;'>J.A.R.V.I.S</span> ระบบผู้ช่วย ฝอ.1
+        </div>
+        <div class='subtitle-text'>เลือกฟังก์ชันที่ต้องการจากด้านล่าง</div>
+        <hr style='border: 1px solid #ccc; margin-top: 10px; margin-bottom: 25px;'>
+    </div>
+""", unsafe_allow_html=True)
 
 # แสดงแบบ card layout
 col1, col2, col3 = st.columns(3)
