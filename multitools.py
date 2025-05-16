@@ -20,8 +20,6 @@ users = {
     "time": {"password": "crma74", "sheet_name": "ชั้น4_พัน1"},
     "chai": {"password": "crma74", "sheet_name": "ชั้น4_พัน3"}
 }
-sheet_name = users.get(username, {}).get("sheet_name", username)
-ws = connect_gsheet(sheet_name)
 
 st.sidebar.title("🔐 เข้าสู่ระบบ")
 username = st.sidebar.text_input("ชื่อผู้ใช้")
@@ -396,7 +394,7 @@ elif mode == "count":
 
             if st.button("✅ อัปเดตแต้มเข้า Google Sheets"):
                 username = st.session_state.get("username", "")
-                sheet_name = username
+                sheet_name = users.get(username, {}).get("sheet_name", username)
                 ws = connect_gsheet(sheet_name)
                 gsheet_data = ws.get_all_values()
                 gsheet_df = pd.DataFrame(gsheet_data)
