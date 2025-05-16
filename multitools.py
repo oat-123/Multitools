@@ -353,24 +353,25 @@ elif mode == "home":
 
 
 elif mode == "count":
+    # STEP 1: สร้างลิงก์ดูสถิติโดนยอดของ user
+    sheet_id = "1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk"
+    user_gid_map = {
+        "oat": "0",
+        "time": "589142731",
+        "chai": "258225546",
+    }
+
+    username = st.session_state.get("username", "")
+    gid = user_gid_map.get(username, "0")
+    sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
+
+    # แสดงลิงก์ก่อนอัปโหลด
+    st.markdown(f"🔍 [กดเพื่อดูสถิติโดนยอดปัจจุบันของคุณ (ชีท: {username})]({sheet_url})", unsafe_allow_html=True)
+
+    # STEP 2: ให้ผู้ใช้อัปโหลดไฟล์
     ยอด_file = st.file_uploader("📤 อัปโหลดไฟล์ยอด (.xlsx)", type="xlsx")
+
     if ยอด_file:
-        # กำหนด sheet_id ของ Google Sheets หลัก
-        sheet_id = "1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk"
-    
-        # map ชื่อ user -> gid
-        user_gid_map = {
-            "oat": "0",
-            "time": "589142731",
-            "chai": "258225546",
-        }
-    
-        username = st.session_state.get("username", "")
-        gid = user_gid_map.get(username, "0")  # ถ้าไม่เจอให้เป็น gid=0
-    
-        url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
-    
-        st.markdown(f"[🔍 กดเพื่อดูสถิติโดนยอดปัจจุบันของคุณ (ชีท: {username})]({url})", unsafe_allow_html=True)
         try:
             ยอด_df = pd.read_excel(ยอด_file, header=None, skiprows=3)
             ยอด_df = ยอด_df.dropna(how='all')
@@ -379,54 +380,47 @@ elif mode == "count":
             st.stop()
 
         if ยอด_df.shape[1] >= 4:
-            # สร้างชื่อเต็มไว้เทียบกับ Google Sheet
             ยอด_df["ชื่อเต็ม"] = ยอด_df.iloc[:, 2].astype(str).str.strip() + " " + ยอด_df.iloc[:, 3].astype(str).str.strip()
 
-            # พรีวิวเฉพาะลำดับ, ชื่อ, สกุล
             preview_df = pd.DataFrame({
                 "ลำดับ": ยอด_df.iloc[:, 0],
                 "ชื่อ": ยอด_df.iloc[:, 2],
-                "สกุล": ยอด_df.iloc[:, 3],})
+                "สกุล": ยอด_df.iloc[:, 3],
+            })
             st.info("👀 พรีวิวรายชื่อจากไฟล์ยอด:")
             st.dataframe(preview_df, use_container_width=True)
 
-            # Slider เลือกความเหนื่อย
             เหนื่อย = st.slider("ระดับความเหนื่อยของยอดนี้ (1–5)", 1, 5, 3)
 
-            # ปุ่มอัปเดตแต้ม
             if st.button("✅ อัปเดตแต้มเข้า Google Sheets"):
-                # 1. โหลดข้อมูลจาก Google Sheet
                 ws = connect_gsheet()
                 gsheet_data = ws.get_all_values()
-
-                # 2. สร้าง DataFrame พร้อม header
                 gsheet_df = pd.DataFrame(gsheet_data)
                 gsheet_df.columns = gsheet_df.iloc[0]
                 gsheet_df = gsheet_df[1:].reset_index(drop=True)
 
-                # 3. สร้างคอลัมน์ชื่อเต็ม
                 gsheet_df["ชื่อเต็ม"] = gsheet_df.iloc[:, 2].astype(str).str.strip() + " " + gsheet_df.iloc[:, 3].astype(str).str.strip()
 
-                # 4. ตรวจสอบหรือเพิ่มคอลัมน์ 'สถิติโดนยอด'
                 if "สถิติโดนยอด" not in gsheet_df.columns:
                     gsheet_df["สถิติโดนยอด"] = 0
                 gsheet_df["สถิติโดนยอด"] = pd.to_numeric(gsheet_df["สถิติโดนยอด"], errors='coerce').fillna(0).astype(int)
 
-                # 5. บวกแต้มเฉพาะคนที่มีชื่อในยอด
-                gsheet_df["สถิติโดนยอด"] = gsheet_df.apply(lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in ยอด_df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],axis=1)
+                gsheet_df["สถิติโดนยอด"] = gsheet_df.apply(
+                    lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in ยอด_df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],
+                    axis=1
+                )
 
-                # 6. เขียนค่ากลับเฉพาะคอลัมน์ N
                 updated_column_values = gsheet_df["สถิติโดนยอด"].astype(str).tolist()
                 start_cell = 'N2'
                 end_cell = f'N{1 + len(updated_column_values)}'
                 cell_range = f'{start_cell}:{end_cell}'
                 ws.update(cell_range, [[val] for val in updated_column_values])
 
+                # ✅ แสดงผลลัพธ์หลังอัปเดต
                 st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
-                st.markdown("[🔗 เปิดดู Google Sheets](https://docs.google.com/spreadsheets/d/e/2PACX-1vSf6OB3YE98NPUBjuN7c7tdp93kmj0kEAQMvMiu4FECY4OgbQgQ-AWwz31TcabtrlzWPgcilDmsG4uZ/pubhtml)")
+                st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {username})]({sheet_url})", unsafe_allow_html=True)
         else:
             st.error("❌ ไฟล์ยอดไม่ครบคอลัมน์ A–D กรุณาตรวจสอบไฟล์ก่อนอัปโหลด")
-
 
 
 # "จัดยอดพิธี"
