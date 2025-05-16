@@ -353,7 +353,7 @@ elif mode == "home":
 
 
 elif mode == "count":
-if ยอด_file:
+    if ยอด_file:
         # กำหนด sheet_id ของ Google Sheets หลัก
         sheet_id = "1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk"
     
