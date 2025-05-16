@@ -104,28 +104,28 @@ st.markdown("<hr>", unsafe_allow_html=True)
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
     st.markdown("#### 🛡 เวรรักษาการณ์")
-    if st.button("เวรยืนกลางคืน", use_container_width=True):
+    if st.button("ดู-อัพเดต", use_container_width=True):
         st.session_state["mode"] = "night_duty"
 
 with col2:
     st.markdown("#### 📅 เวรเตรียมการ")
-    if st.button("เวรเสา-อา", use_container_width=True):
+    if st.button("ดู-อัพเดต", use_container_width=True):
         st.session_state["mode"] = "weekend_duty"
 
 with col3:
     st.markdown("#### 🏅 จัดยอดพิธี")
-    if st.button("จัดยอดพิธี", use_container_width=True):
+    if st.button("จัดยอด(สุ่ม)", use_container_width=True):
         st.session_state["mode"] = "ceremony_duty"
 
 col4, col5, col6 = st.columns([1, 1, 1])
 with col4:
     st.markdown("#### 📝 ยอดปล่อย")
-    if st.button("พิมพ์ยอดปล่อย", use_container_width=True):
+    if st.button("พิมพ์-ทำไฟล์", use_container_width=True):
         st.session_state["mode"] = "home"
 
 with col5:
     st.markdown("#### 📊 สถิติโดนยอด")
-    if st.button("สถิติโดนยอด", use_container_width=True):
+    if st.button("อัพเดต-ตรวจสอบ", use_container_width=True):
         st.session_state["mode"] = "count"
 
 
