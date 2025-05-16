@@ -366,7 +366,7 @@ elif mode == "count":
     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
 
     # แสดงลิงก์ก่อนอัปโหลด
-    st.markdown(f"🔍 [กดเพื่อดูสถิติโดนยอดปัจจุบัน (ชีท: {username})]({sheet_url})", unsafe_allow_html=True)
+    st.markdown(f"🔍 [กดเพื่อดูสถิติโดนยอดปัจจุบัน (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
 
     # STEP 2: ให้ผู้ใช้อัปโหลดไฟล์
     ยอด_file = st.file_uploader("📤 อัปโหลดไฟล์ยอด (.xlsx)", type="xlsx")
@@ -420,7 +420,7 @@ elif mode == "count":
 
                 # ✅ แสดงผลลัพธ์หลังอัปเดต
                 st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
-                st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {username})]({sheet_url})", unsafe_allow_html=True)
+                st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
         else:
             st.error("❌ ไฟล์ยอดไม่ครบคอลัมน์ A–D กรุณาตรวจสอบไฟล์ก่อนอัปโหลด")
 
