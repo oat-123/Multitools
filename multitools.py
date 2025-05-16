@@ -104,30 +104,28 @@ st.markdown("<hr>", unsafe_allow_html=True)
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
     st.markdown("#### 🛡 เวรรักษาการณ์")
-    if st.button("ดู and อัพเดต", use_container_width=True):
+    if st.button("ดู-อัพเดต", use_container_width=True, key="night_duty_btn"):
         st.session_state["mode"] = "night_duty"
 
 with col2:
-    st.markdown("#### 📅 เวรเตรียมการ")
-    if st.button("ดู and อัพเดต", use_container_width=True):
+    st.markdown("#### 📅 เวรเเตรียมการ")
+    if st.button("ดู-อัพเดต", use_container_width=True, key="weekend_duty_btn"):
         st.session_state["mode"] = "weekend_duty"
 
 with col3:
     st.markdown("#### 🏅 จัดยอดพิธี")
-    if st.button("จัดยอด(สุ่ม)", use_container_width=True):
+    if st.button("จัดยอด(สุ่ม)", use_container_width=True, key="ceremony_duty_btn"):
         st.session_state["mode"] = "ceremony_duty"
 
-col4, col5, col6 = st.columns([1, 1, 1])
 with col4:
-    st.markdown("#### 📝 ยอดปล่อย")
-    if st.button("พิมพ์ and ทำไฟล์", use_container_width=True):
+    st.markdown("#### 📝 พิมพ์ยอดปล่อย")
+    if st.button("พิมพ์ยอดปล่อย", use_container_width=True, key="home_btn"):
         st.session_state["mode"] = "home"
 
 with col5:
     st.markdown("#### 📊 สถิติโดนยอด")
-    if st.button("อัพเดต and ตรวจสอบ", use_container_width=True):
+    if st.button("อัพเดต-ตรวจสอบ", use_container_width=True, key="count_btn"):
         st.session_state["mode"] = "count"
-
 
 # ตรวจสอบและแสดง UI เฉพาะส่วนที่เลือก
 mode = st.session_state.get("mode", None)
