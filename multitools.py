@@ -43,7 +43,7 @@ st.sidebar.success(f"ยินดีต้อนรับ {st.session_state['use
 st.sidebar.success(f"ฐานข้อมูล : {st.session_state['sheet_name']}")
 
 # 1. เชื่อมต่อ Google Sheets
-def connect_gsheet(sheet_name):
+def connect_gsheet(sheet_name: str):
     creds_dict = st.secrets["gcp_service_account"]
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
@@ -366,7 +366,7 @@ elif mode == "count":
     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
 
     # แสดงลิงก์ก่อนอัปโหลด
-    st.markdown(f"🔍 [กดเพื่อดูสถิติโดนยอดปัจจุบันของคุณ (ชีท: {username})]({sheet_url})", unsafe_allow_html=True)
+    st.markdown(f"🔍 [กดเพื่อดูสถิติโดนยอดปัจจุบัน (ชีท: {username})]({sheet_url})", unsafe_allow_html=True)
 
     # STEP 2: ให้ผู้ใช้อัปโหลดไฟล์
     ยอด_file = st.file_uploader("📤 อัปโหลดไฟล์ยอด (.xlsx)", type="xlsx")
@@ -393,7 +393,7 @@ elif mode == "count":
             เหนื่อย = st.slider("ระดับความเหนื่อยของยอดนี้ (1–5)", 1, 5, 3)
 
             if st.button("✅ อัปเดตแต้มเข้า Google Sheets"):
-                ws = connect_gsheet()
+                ws = connect_gsheet(sheet_name)
                 gsheet_data = ws.get_all_values()
                 gsheet_df = pd.DataFrame(gsheet_data)
                 gsheet_df.columns = gsheet_df.iloc[0]
