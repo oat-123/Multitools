@@ -119,7 +119,7 @@ with col3:
 
 col4, col5, col6 = st.columns([1, 1, 1])
 with col4:
-    st.markdown("#### 📝 พิมพ์ยอดปล่อย")
+    st.markdown("#### 📝 ยอดปล่อย")
     if st.button("พิมพ์ยอดปล่อย", use_container_width=True):
         st.session_state["mode"] = "home"
 
