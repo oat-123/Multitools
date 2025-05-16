@@ -130,13 +130,6 @@ st.markdown("""
             }
         }
     </style>
-
-    <div class='header-container'>
-        <img src='assist.jpg'>
-        <div class='title-text'><span>J.A.R.V.I.S</span> ระบบผู้ช่วย ฝอ.1</div>
-        <div class='subtitle-text'>เลือกฟังก์ชันที่ต้องการจากด้านล่าง</div>
-        <hr>
-    </div>
 """, unsafe_allow_html=True)
 
 st.markdown("""
