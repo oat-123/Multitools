@@ -103,12 +103,12 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # ปุ่มเรียงใน Grid อย่างมีระยะ
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
-    st.markdown("#### 🛡 เวรยืนกลางคืน")
+    st.markdown("#### 🛡 เวรรักษาการณ์")
     if st.button("เวรยืนกลางคืน", use_container_width=True):
         st.session_state["mode"] = "night_duty"
 
 with col2:
-    st.markdown("#### 📅 เวรเสาร์-อาทิตย์")
+    st.markdown("#### 📅 เวรเตรียมการ")
     if st.button("เวรเสา-อา", use_container_width=True):
         st.session_state["mode"] = "weekend_duty"
 
