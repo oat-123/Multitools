@@ -20,6 +20,8 @@ users = {
     "time": {"password": "crma74", "sheet_name": "ชั้น4_พัน1"},
     "chai": {"password": "crma74", "sheet_name": "ชั้น4_พัน3"}
 }
+sheet_name = users.get(username, {}).get("sheet_name", username)
+ws = connect_gsheet(sheet_name)
 
 st.sidebar.title("🔐 เข้าสู่ระบบ")
 username = st.sidebar.text_input("ชื่อผู้ใช้")
