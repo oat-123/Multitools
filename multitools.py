@@ -144,6 +144,9 @@ image_base64 = get_base64_image("assist.jpg")
 
 st.markdown("""
     <div style='text-align: center;'>
+    <div class="centered-content">
+        <img src="{image_base64}" width="90">
+        <div class="title-text">
         <div class='title-text'>
             <span style='color:#ff4b4b;'>J.A.R.V.I.S</span> <span style='color:#1f77b4;'>ระบบผู้ช่วย ฝอ.1</span>
         </div>
