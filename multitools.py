@@ -59,73 +59,97 @@ st.markdown("""
         .title-text {
             font-size: 36px;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
             color: #1f77b4;
             font-weight: bold;
         }
         .subtitle-text {
             text-align: center;
             font-size: 18px;
-            color: #555;
+            color: #444;
+            margin-bottom: 30px;
         }
-        .button-row {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
+        .card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+            transition: 0.2s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.15);
+            transform: scale(1.01);
+        }
+        .card h4 {
+            margin-bottom: 10px;
+            color: #333;
         }
         .stButton > button {
             font-size: 16px;
-            padding: 10px 24px;
-            border-radius: 12px;
+            padding: 8px 20px;
+            border-radius: 10px;
             border: 1px solid #1f77b4;
-            background-color: #f0f8ff;
+            background-color: #eaf4ff;
             color: #1f77b4;
             font-weight: bold;
-            transition: 0.3s;
+            transition: 0.3s ease;
         }
         .stButton > button:hover {
             background-color: #1f77b4;
             color: white;
         }
         hr {
-            border: 1px solid #bbb;
-            margin-top: 15px;
-            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+            margin-bottom: 25px;
         }
     </style>
 """, unsafe_allow_html=True)
 
-st.image("assist.jpg", width=100)
+st.image("assist.jpg", width=90)
 st.markdown("<div class='title-text'>ระบบผู้ช่วย ฝอ.1 <span style='color:#ff4b4b;'>J.A.R.V.I.S</span></div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle-text'>เลือกฟังก์ชันที่ต้องการด้านล่าง</div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle-text'>เลือกฟังก์ชันที่ต้องการจากด้านล่าง</div>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# ปุ่มเรียงใน Grid อย่างมีระยะ
-col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
+# แสดงแบบ card layout
+col1, col2, col3 = st.columns(3)
 with col1:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("#### 🛡 เวรรักษาการณ์")
-    if st.button("ดู-อัพเดต", use_container_width=True, key="night_duty_btn"):
+    if st.button("ดู-อัพเดต", key="night_duty_btn"):
         st.session_state["mode"] = "night_duty"
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with col2:
-    st.markdown("#### 📅 เวรเเตรียมการ")
-    if st.button("ดู-อัพเดต", use_container_width=True, key="weekend_duty_btn"):
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("#### 📅 เวรเตรียมการ")
+    if st.button("ดู-อัพเดต", key="weekend_duty_btn"):
         st.session_state["mode"] = "weekend_duty"
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with col3:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("#### 🏅 จัดยอดพิธี")
-    if st.button("จัดยอด(สุ่ม)", use_container_width=True, key="ceremony_duty_btn"):
+    if st.button("จัดยอด(สุ่ม)", key="ceremony_duty_btn"):
         st.session_state["mode"] = "ceremony_duty"
+    st.markdown("</div>", unsafe_allow_html=True)
 
+col4, col5, _ = st.columns([1, 1, 1])
 with col4:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("#### 📝 พิมพ์ยอดปล่อย")
-    if st.button("พิมพ์ยอดปล่อย", use_container_width=True, key="home_btn"):
+    if st.button("พิมพ์ยอดปล่อย", key="home_btn"):
         st.session_state["mode"] = "home"
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with col5:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("#### 📊 สถิติโดนยอด")
-    if st.button("อัพเดต-ตรวจสอบ", use_container_width=True, key="count_btn"):
+    if st.button("อัพเดต-ตรวจสอบ", key="count_btn"):
         st.session_state["mode"] = "count"
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 # ตรวจสอบและแสดง UI เฉพาะส่วนที่เลือก
 mode = st.session_state.get("mode", None)
