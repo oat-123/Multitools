@@ -132,9 +132,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+st.markdown("<div class='centered-image'>", unsafe_allow_html=True)
+st.image("assist.jpg", width=90)
+st.markdown("</div>", unsafe_allow_html=True)
+
 st.markdown("""
     <div style='text-align: center;'>
-        <img src='assist.jpg' width='90'>
         <div class='title-text'>
             <span style='color:#ff4b4b;'>J.A.R.V.I.S</span> <span style='color:#1f77b4;'>ระบบผู้ช่วย ฝอ.1</span>
         </div>
