@@ -258,7 +258,7 @@ if mode == "night_duty":
 
 elif mode == "weekend_duty":
     st.info("คุณเลือก: เวรเสาร์-อาทิตย์")
-    st.markdown("https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?gid=1888956716#gid=1888956716")
+    st.markdown("[คลิกเพื่อดู Google Sheet](https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?gid=1888956716)", unsafe_allow_html=True)
 
 elif mode == "home":
     st.header("📋 พิมพ์ยอดปล่อย")
