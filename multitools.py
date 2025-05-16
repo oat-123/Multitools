@@ -133,14 +133,20 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 import base64
+import requests
 
-# แปลง assist.jpg เป็น base64
-def get_base64_image(image_path):
-    with open(image_path, "rb") as img_file:
-        b64_data = base64.b64encode(img_file.read()).decode()
-        return f"data:image/png;base64,{b64_data}"
+def get_base64_image(source):
+    if source.startswith("http"):
+        response = requests.get(source)
+        b64_data = base64.b64encode(response.content).decode()
+    else:
+        with open(source, "rb") as img_file:
+            b64_data = base64.b64encode(img_file.read()).decode()
+    return f"data:image/png;base64,{b64_data}"
 
-image_base64 = get_base64_image(src="https://images4.alphacoders.com/112/1127690.png")
+# ใช้กับภาพจาก URL
+image_base64 = get_base64_image("https://images4.alphacoders.com/112/1127690.png")
+
 
 st.markdown("""
     <div style='text-align: center;'>
