@@ -132,7 +132,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.image("assist.jpg", width=90)  # หรือ URL
+# สร้าง layout แบ่งเป็น 3 คอลัมน์
+col1, col2, col3 = st.columns([1, 2, 1])
+
+# ใส่ภาพตรงกลาง (คอลัมน์ที่ 2)
+with col2:
+    st.image("https://images4.alphacoders.com/112/1127690.png", width=250)
+    
 st.markdown("""
     <div style='text-align: center;'>
         <div class='title-text'>
