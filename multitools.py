@@ -137,7 +137,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 
 # ใส่ภาพตรงกลาง (คอลัมน์ที่ 2)
 with col2:
-    st.image("https://images4.alphacoders.com/112/1127690.png", width=250)
+    st.image("https://images4.alphacoders.com/112/1127690.png", width=300)
     
 st.markdown("""
     <div style='text-align: center;'>
