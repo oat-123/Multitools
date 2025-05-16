@@ -132,14 +132,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# สร้าง layout แบ่งเป็น 3 คอลัมน์
-col1, col2, col3 = st.columns([1, 2, 1])
-
-# ใส่ภาพตรงกลาง (คอลัมน์ที่ 2)
-with col2:
-    st.image("https://images4.alphacoders.com/112/1127690.png", width=250)
+image_url = "https://images4.alphacoders.com/112/1127690.png"
     
 st.markdown("""
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <img src="{image_url}" width="90" style="margin-bottom: 10px;" />
     <div style='text-align: center;'>
         <div class='title-text'>
             <span style='color:#ff4b4b;'>J.A.R.V.I.S</span> <span style='color:#1f77b4;'>ระบบผู้ช่วย ฝอ.1</span>
@@ -176,7 +173,7 @@ col4, col5, _ = st.columns([1, 1, 1])
 with col4:
     st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("#### 📝 พิมพ์ยอดปล่อย")
-    if st.button("พิมพ์ยอดปล่อย", key="home_btn"):
+    if st.button("พิมพ์", key="home_btn"):
         st.session_state["mode"] = "home"
     st.markdown("</div>", unsafe_allow_html=True)
 
