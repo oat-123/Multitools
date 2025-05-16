@@ -53,34 +53,81 @@ def connect_gsheet(sheet_name):
 
 worksheet = connect_gsheet(st.session_state["sheet_name"])
 
-# ส่วนแสดงหน้าเว็บ
-st.image("assist.jpg", width=120)
-st.markdown("<h1 style='text-align: center;'>ระบบผู้ช่วย ฝอ.1 <span style='color:#1f77b4;'>J.A.R.V.I.S</span></h1>", unsafe_allow_html=True)
-st.markdown("<hr style='border:1px solid #bbb;'>", unsafe_allow_html=True)
+# ส่วนหัวและภาพ
+st.markdown("""
+    <style>
+        .title-text {
+            font-size: 36px;
+            text-align: center;
+            margin-top: 20px;
+            color: #1f77b4;
+            font-weight: bold;
+        }
+        .subtitle-text {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+        .button-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .stButton > button {
+            font-size: 16px;
+            padding: 10px 24px;
+            border-radius: 12px;
+            border: 1px solid #1f77b4;
+            background-color: #f0f8ff;
+            color: #1f77b4;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .stButton > button:hover {
+            background-color: #1f77b4;
+            color: white;
+        }
+        hr {
+            border: 1px solid #bbb;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
+st.image("assist.jpg", width=100)
+st.markdown("<div class='title-text'>ระบบผู้ช่วย ฝอ.1 <span style='color:#ff4b4b;'>J.A.R.V.I.S</span></div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle-text'>เลือกฟังก์ชันที่ต้องการด้านล่าง</div>", unsafe_allow_html=True)
+st.markdown("<hr>", unsafe_allow_html=True)
 
-
-# สร้าง Grid ของปุ่ม (เช่น 3 ปุ่มเรียงกัน)
-col1, col2, col3, col4, col5 = st.columns(5)
+# ปุ่มเรียงใน Grid อย่างมีระยะ
+col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
-    if st.button("🛡 เวรรักษาการณ์", use_container_width=True):
+    st.markdown("#### 🛡 เวรยืนกลางคืน")
+    if st.button("เวรยืนกลางคืน", use_container_width=True):
         st.session_state["mode"] = "night_duty"
 
 with col2:
-    if st.button("📅 เวรเตรียมการ", use_container_width=True):
+    st.markdown("#### 📅 เวรเสาร์-อาทิตย์")
+    if st.button("เวรเสา-อา", use_container_width=True):
         st.session_state["mode"] = "weekend_duty"
 
 with col3:
-    if st.button("🏅 จัดยอดพิธี", use_container_width=True):
+    st.markdown("#### 🏅 จัดยอดพิธี")
+    if st.button("จัดยอดพิธี", use_container_width=True):
         st.session_state["mode"] = "ceremony_duty"
 
+col4, col5, col6 = st.columns([1, 1, 1])
 with col4:
-    if st.button("📝 พิมพ์ยอดปล่อย", use_container_width=True):
+    st.markdown("#### 📝 พิมพ์ยอดปล่อย")
+    if st.button("พิมพ์ยอดปล่อย", use_container_width=True):
         st.session_state["mode"] = "home"
 
 with col5:
-    if st.button("📊 สถิติโดนยอด", use_container_width=True):
+    st.markdown("#### 📊 สถิติโดนยอด")
+    if st.button("สถิติโดนยอด", use_container_width=True):
         st.session_state["mode"] = "count"
+
 
 # ตรวจสอบและแสดง UI เฉพาะส่วนที่เลือก
 mode = st.session_state.get("mode", None)
