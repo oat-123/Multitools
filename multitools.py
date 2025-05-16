@@ -16,8 +16,8 @@ from google.oauth2 import service_account
 
 # ===== ระบบ Login =====
 users = {
-    "oat": {"password": "crma74", "sheet_name": "ชั้น4พัน4_only"},
-    "time": {"password": "crma74", "sheet_name": "ชั้น4พัน1_only"},
+    "oat": {"password": "crma74", "sheet_name": "ชั้น4_พัน4"},
+    "time": {"password": "crma74", "sheet_name": "ชั้น4_พัน1"},
 }
 
 st.sidebar.title("🔐 เข้าสู่ระบบ")
