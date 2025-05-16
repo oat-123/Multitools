@@ -132,22 +132,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-import base64
-import requests
-
-def get_base64_image(source):
-    if source.startswith("http"):
-        response = requests.get(source)
-        b64_data = base64.b64encode(response.content).decode()
-    else:
-        with open(source, "rb") as img_file:
-            b64_data = base64.b64encode(img_file.read()).decode()
-    return f"data:image/png;base64,{b64_data}"
-
-# ใช้กับภาพจาก URL
-image_base64 = get_base64_image("https://images4.alphacoders.com/112/1127690.png")
-
-
+st.image("assist.jpg", width=90)  # หรือ URL
 st.markdown("""
     <div style='text-align: center;'>
     <div class="centered-content">
