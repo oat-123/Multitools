@@ -361,7 +361,14 @@ elif mode == "count":
         "chai": "258225546",
     }
 
+    users = {
+        "oat": {"password": "crma74", "sheet_name": "ชั้น4_พัน4"},
+        "time": {"password": "crma74", "sheet_name": "ชั้น4_พัน1"},
+        "chai": {"password": "crma74", "sheet_name": "ชั้น4_พัน3"}
+    }
+
     username = st.session_state.get("username", "")
+    sheet_name = users.get(username, {}).get("sheet_name", username)
     gid = user_gid_map.get(username, "0")
     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
 
