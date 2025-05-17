@@ -317,7 +317,8 @@ elif mode == "home":
     
         lines = []
         start_str = start_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
-        end_str = end_date.strftime("%-d %b %y").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
+        thai_year = end_date.year + 543  # แปลง ค.ศ. -> พ.ศ.
+        end_str = end_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.") + f" {str(thai_year)[-2:]}"
     
         lines.append(f"พัน.4 กรม นนร.รอ. ขออนุญาตส่งยอด นนร. ปล่อยพักบ้าน, อยู่โรงเรียน และ เวรเตรียมพร้อม ของวันที่   {start_str} - {end_str} ดังนี้")
     
