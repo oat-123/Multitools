@@ -550,7 +550,6 @@ if st.button("📤 จัดยอดและส่งออกไฟล์"):
     ws.title = "ยอดพิธี"
     ws.append([ยอด_name])
     ws.append([])
-    ws.append(columns)
     ws.merge_cells('A2:j2')
 
     selected_df["ยศ"] = "นนร."
