@@ -454,96 +454,97 @@ elif mode == "ceremony_duty":
     ตัวเลือก_ชมรม_ทั้งหมด = ["เลือกทั้งหมด"] + ตัวเลือก_ชมรม
     excluded_clubs = st.multiselect("⛔ไม่เลือกชมรม", ตัวเลือก_ชมรม_ทั้งหมด)
     
-    if st.button("📤 จัดยอดและส่งออกไฟล์"):
-        # จัดการเงื่อนไข "เลือกทั้งหมด"
-        ตัวกรอง_หน้าที่ = ตัวเลือก_หน้าที่ if "เลือกทั้งหมด" in ตัวกรอง_หน้าที่_เลือก else ตัวกรอง_หน้าที่_เลือก
-        filtered_clubs = ตัวเลือก_ชมรม if "เลือกทั้งหมด" in excluded_clubs else excluded_clubs
+if st.button("📤 จัดยอดและส่งออกไฟล์"):
+    # จัดการเงื่อนไข "เลือกทั้งหมด"
+    ตัวกรอง_หน้าที่ = ตัวเลือก_หน้าที่ if "เลือกทั้งหมด" in ตัวกรอง_หน้าที่_เลือก else ตัวกรอง_หน้าที่_เลือก
+    filtered_clubs = ตัวเลือก_ชมรม if "เลือกทั้งหมด" in excluded_clubs else excluded_clubs
 
-        df_filtered = df.copy()
-        if "หน้าที่" in df_filtered.columns and ตัวกรอง_หน้าที่:
-            df_filtered = df_filtered[~df_filtered["หน้าที่"].isin(ตัวกรอง_หน้าที่)]
-        if "ชมรม" in df_filtered.columns and filtered_clubs:
-            df_filtered = df_filtered[~df_filtered["ชมรม"].isin(filtered_clubs)]
-        if "สถิติโดนยอด" in df_filtered.columns:
-            df_filtered = df_filtered.sort_values(by="สถิติโดนยอด", ascending=True)
+    df_filtered = df.copy()
+    if "หน้าที่" in df_filtered.columns and ตัวกรอง_หน้าที่:
+        df_filtered = df_filtered[~df_filtered["หน้าที่"].isin(ตัวกรอง_หน้าที่)]
+    if "ชมรม" in df_filtered.columns and filtered_clubs:
+        df_filtered = df_filtered[~df_filtered["ชมรม"].isin(filtered_clubs)]
+    if "สถิติโดนยอด" in df_filtered.columns:
+        df_filtered = df_filtered.sort_values(by="สถิติโดนยอด", ascending=True)
 
-        grouped = df_filtered.groupby("สังกัด")
-        สังกัด_list = list(grouped.groups.keys())
-        คนต่อสังกัด = defaultdict(list)
+    grouped = df_filtered.groupby("สังกัด")
+    สังกัด_list = list(grouped.groups.keys())
+    คนต่อสังกัด = defaultdict(list)
 
-        while sum(len(v) for v in คนต่อสังกัด.values()) < จำนวนคน:
-            for สังกัด in สังกัด_list:
-                available = grouped.get_group(สังกัด)
-                used_indices = set().union(*คนต่อสังกัด.values())
-                choices = available[~available.index.isin(used_indices)]
-                if not choices.empty and sum(len(v) for v in คนต่อสังกัด.values()) < จำนวนคน:
-                    chosen = choices.sample(1)
-                    คนต่อสังกัด[สังกัด].append(chosen.index[0])
+    while sum(len(v) for v in คนต่อสังกัด.values()) < จำนวนคน:
+        for สังกัด in สังกัด_list:
+            available = grouped.get_group(สังกัด)
+            used_indices = set().union(*คนต่อสังกัด.values())
+            choices = available[~available.index.isin(used_indices)]
+            if not choices.empty and sum(len(v) for v in คนต่อสังกัด.values()) < จำนวนคน:
+                chosen = choices.sample(1)
+                คนต่อสังกัด[สังกัด].append(chosen.index[0])
 
-        selected_indices = [i for indices in คนต่อสังกัด.values() for i in indices]
-        selected_df = df.loc[selected_indices]
-        selected_df = selected_df.reset_index(drop=True)
-        selected_df.index += 1
+    selected_indices = [i for indices in คนต่อสังกัด.values() for i in indices]
+    selected_df = df.loc[selected_indices]
+    selected_df = selected_df.reset_index(drop=True)
+    selected_df.index += 1
 
-        if "ลำดับ" in selected_df.columns:
-            selected_df = selected_df.drop(columns=["ลำดับ"])
-        selected_df.insert(0, "ลำดับ", selected_df.index)
+    if "ลำดับ" in selected_df.columns:
+        selected_df = selected_df.drop(columns=["ลำดับ"])
+    selected_df.insert(0, "ลำดับ", selected_df.index)
 
-        selected_df["ยศ"] = "นนร."
-        selected_df["ชื่อ"] = selected_df.iloc[:, 2].fillna("")
-        selected_df["สกุล"] = selected_df.iloc[:, 3].fillna("")
-        selected_df["ยศ ชื่อ-สกุล"] = selected_df["ยศ"] + " " + selected_df["ชื่อ"] + " " + selected_df["สกุล"]
+    selected_df["ยศ"] = "นนร."
+    selected_df["ชื่อ"] = selected_df.iloc[:, 2].fillna("")
+    selected_df["สกุล"] = selected_df.iloc[:, 3].fillna("")
+    selected_df["ยศ ชื่อ-สกุล"] = selected_df["ยศ"] + " " + selected_df["ชื่อ"] + " " + selected_df["สกุล"]
 
-        columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
-        output_df = selected_df[columns]
-        
-        # ใส่ฟังก์ชันนี้ก่อนมีการเรียกใช้ render_centered_table
-        def render_centered_table(df):
-            html = """
-            <style>
-                table.custom-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    table-layout: auto;
-                    font-size: 11px;
-                }
-                table.custom-table th, table.custom-table td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: center;
-                    height: 40px;
-                }
-                table.custom-table th {
-                    font-weight: bold;
-                }
-                table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; }
-                table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; }
-                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 8%; }
-                table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; }
-                table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; }
-                table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; }
-                table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 10%; }
-                table.custom-table td:nth-child(2) {
-                    text-align: left;
-                    padding-left: 10px;
-                }
-            </style>
-            """
-            html += "<table class='custom-table'>"
-            html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
-            html += "<tbody>"
-            for _, row in df.iterrows():
-                html += "<tr>"
-                for i, cell in enumerate(row):
-                    value = "" if pd.isna(cell) and i == 6 else cell
-                    html += f"<td>{value}</td>"
-                html += "</tr>"
-            html += "</tbody></table>"
-            st.markdown(html, unsafe_allow_html=True)
+    # แสดงตารางบนหน้าเว็บพร้อมคอลัมน์เบอร์โทรศัพท์
+    columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "เบอร์โทรศัพท์", "หมายเหตุ"]
+    output_df = selected_df[columns]
 
-        render_centered_table(output_df)
-        
-            # สร้าง Excel
+    def render_centered_table(df):
+        html = """
+        <style>
+            table.custom-table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: auto;
+                font-size: 11px;
+            }
+            table.custom-table th, table.custom-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+                height: 40px;
+            }
+            table.custom-table th {
+                font-weight: bold;
+            }
+            table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; }
+            table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; }
+            table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 8%; }
+            table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; }
+            table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; }
+            table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; }
+            table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 15%; }
+            table.custom-table th:nth-child(8), table.custom-table td:nth-child(8) { width: 10%; }
+            table.custom-table td:nth-child(2) {
+                text-align: left;
+                padding-left: 10px;
+            }
+        </style>
+        """
+        html += "<table class='custom-table'>"
+        html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
+        html += "<tbody>"
+        for _, row in df.iterrows():
+            html += "<tr>"
+            for i, cell in enumerate(row):
+                value = "" if pd.isna(cell) and i == 7 else cell
+                html += f"<td>{value}</td>"
+            html += "</tr>"
+        html += "</tbody></table>"
+        st.markdown(html, unsafe_allow_html=True)
+
+    render_centered_table(output_df)
+
+    # สร้าง Excel
     wb = Workbook()
     ws = wb.active
     ws.title = "ยอดพิธี"
