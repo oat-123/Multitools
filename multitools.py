@@ -543,59 +543,63 @@ elif mode == "ceremony_duty":
 
         render_centered_table(output_df)
         
-        wb = Workbook()
-        ws = wb.active
-        ws.title = "ยอดพิธี"
-        ws.append([ยอด_name])
-        ws.append([])
-        ws.append(columns)
-        ws.merge_cells('A2:I2')
+            # สร้าง Excel
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "ยอดพิธี"
+    ws.append([ยอด_name])
+    ws.append([])
 
-        selected_df["ยศ"] = "นนร."
-        selected_df["ชื่อ"] = selected_df.iloc[:, 2]
-        selected_df["สกุล"] = selected_df.iloc[:, 3]
-        columns_excel = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "หมายเหตุ"]
-        output_df_excel = selected_df[columns_excel]
+    selected_df["ยศ"] = "นนร."
+    selected_df["ชื่อ"] = selected_df.iloc[:, 2]
+    selected_df["สกุล"] = selected_df.iloc[:, 3]
 
-        ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
-        ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
-        ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
-        ws.cell(row=3, column=5).value = "ชั้นปีที่"
-        ws.cell(row=3, column=6).value = "ตอน"
-        ws.cell(row=3, column=7).value = "ตำแหน่ง"
-        ws.cell(row=3, column=8).value = "สังกัด"
-        ws.cell(row=3, column=9).value = "หมายเหตุ"
+    columns_excel = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "เบอร์โทรศัพท์", "หมายเหตุ"]
+    output_df_excel = selected_df[columns_excel]
 
-        for r in dataframe_to_rows(output_df_excel, index=False, header=False):
-            ws.append(r)
+    # เขียนหัวตาราง Excel
+    ws.append(["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "เบอร์โทรศัพท์", "หมายเหตุ"])
+    ws.merge_cells('A1:J1')
+    ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
+    ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
+    ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
+    ws.cell(row=3, column=5).value = "ชั้นปีที่"
+    ws.cell(row=3, column=6).value = "ตอน"
+    ws.cell(row=3, column=7).value = "ตำแหน่ง"
+    ws.cell(row=3, column=8).value = "สังกัด"
+    ws.cell(row=3, column=9).value = "เบอร์โทรศัพท์"
+    ws.cell(row=3, column=10).value = "หมายเหตุ"
 
-        thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
-        for row in ws.iter_rows(min_row=2):
-            for idx, cell in enumerate(row[:9]):
-                if idx < 1 or idx > 3:
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
-                cell.border = thin_border
+    for r in dataframe_to_rows(output_df_excel, index=False, header=False):
+        ws.append(r)
 
-        ws.column_dimensions['A'].width = 6
-        ws.column_dimensions['B'].width = 5
-        ws.column_dimensions['C'].width = 15
-        ws.column_dimensions['D'].width = 15
-        ws.column_dimensions['E'].width = 8
-        ws.column_dimensions['F'].width = 8
-        ws.column_dimensions['G'].width = 20
-        ws.column_dimensions['H'].width = 15
-        ws.column_dimensions['I'].width = 15
-        ws.merge_cells('A1:I1')
-        ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
-        for cell in ws[1]:
-            cell.alignment = Alignment(horizontal='center', vertical='center')
+    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+    for row in ws.iter_rows(min_row=2):
+        for idx, cell in enumerate(row[:10]):
+            if idx < 1 or idx > 3:
+                cell.alignment = Alignment(horizontal='center', vertical='center')
             cell.border = thin_border
 
-        output_filename = f"{ยอด_name}.xlsx"
-        wb.save(output_filename)
-        st.success(f"✅ สร้างไฟล์ Excel สำเร็จ: {output_filename}")
-        with open(output_filename, "rb") as f:
-            st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
+    ws.column_dimensions['A'].width = 6
+    ws.column_dimensions['B'].width = 5
+    ws.column_dimensions['C'].width = 15
+    ws.column_dimensions['D'].width = 15
+    ws.column_dimensions['E'].width = 8
+    ws.column_dimensions['F'].width = 8
+    ws.column_dimensions['G'].width = 20
+    ws.column_dimensions['H'].width = 15
+    ws.column_dimensions['I'].width = 15
+    ws.column_dimensions['J'].width = 15
+
+    for cell in ws[1]:
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.border = thin_border
+
+    output_filename = f"{ยอด_name}.xlsx"
+    wb.save(output_filename)
+    st.success(f"✅ สร้างไฟล์ Excel สำเร็จ: {output_filename}")
+    with open(output_filename, "rb") as f:
+        st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
 
 st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
