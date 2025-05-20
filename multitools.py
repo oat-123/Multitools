@@ -438,7 +438,6 @@ elif mode == "count":
                 end_cell = f'N{1 + len(updated_column_values)}'
                 cell_range = f'{start_cell}:{end_cell}'
                 ws.update(cell_range, [[val] for val in updated_column_values])
-                time.sleep(2)
                 st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
                 st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
         
