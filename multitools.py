@@ -354,7 +354,7 @@ elif mode == "home":
 
 
 elif mode == "count":
-    # STEP 1: สร้างลิงก์ดูสถิติโดนยอดของ user
+    # STEP 1: ลิงก์ดูสถิติ
     sheet_id = "1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk"
     user_gid_map = {
         "oat": "0",
@@ -373,36 +373,43 @@ elif mode == "count":
     gid = user_gid_map.get(username, "0")
     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
 
-    # แสดงลิงก์ก่อนอัปโหลด
     st.markdown(f"🔍 [กดเพื่อดูสถิติโดนยอดปัจจุบัน (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
 
-    # STEP 2: ให้ผู้ใช้อัปโหลดไฟล์
+    # STEP 2: อัปโหลดไฟล์
     ยอด_file = st.file_uploader("📤 อัปโหลดไฟล์ยอด (.xlsx)", type="xlsx")
 
     if ยอด_file:
         try:
-            ยอด_df = pd.read_excel(ยอด_file, header=None, skiprows=3)
-            ยอด_df = ยอด_df.dropna(how='all')
-        except Exception as e:
-            st.error(f"❌ ไม่สามารถอ่านไฟล์: {e}")
-            st.stop()
+            xls = pd.ExcelFile(ยอด_file)
+            sheet_names = xls.sheet_names
 
-        if ยอด_df.shape[1] >= 4:
-            ยอด_df["ชื่อเต็ม"] = ยอด_df.iloc[:, 2].astype(str).str.strip() + " " + ยอด_df.iloc[:, 3].astype(str).str.strip()
+            selected_sheets = st.multiselect("📄 เลือกชีทที่ต้องการนับแต้ม", sheet_names)
+            sheet_data = {}
 
-            preview_df = pd.DataFrame({
-                "ลำดับ": ยอด_df.iloc[:, 0],
-                "ชื่อ": ยอด_df.iloc[:, 2],
-                "สกุล": ยอด_df.iloc[:, 3],
-            })
-            st.info("👀 พรีวิวรายชื่อจากไฟล์ยอด:")
-            st.dataframe(preview_df, use_container_width=True)
+            for sheet in selected_sheets:
+                st.markdown(f"### 📌 ตั้งค่าความเหนื่อยสำหรับชีท: `{sheet}`")
+                เหนื่อย = st.slider(f"ระดับความเหนื่อยของ '{sheet}' (1–5)", 1, 5, 3, key=sheet)
 
-            เหนื่อย = st.slider("ระดับความเหนื่อยของยอดนี้ (1–5)", 1, 5, 3)
+                try:
+                    df = pd.read_excel(xls, sheet_name=sheet, header=None, skiprows=3)
+                    df = df.dropna(how='all')
+
+                    if df.shape[1] >= 4:
+                        df["ชื่อเต็ม"] = df.iloc[:, 2].astype(str).str.strip() + " " + df.iloc[:, 3].astype(str).str.strip()
+                        preview_df = pd.DataFrame({
+                            "ลำดับ": df.iloc[:, 0],
+                            "ชื่อ": df.iloc[:, 2],
+                            "สกุล": df.iloc[:, 3],
+                        })
+                        st.dataframe(preview_df, use_container_width=True)
+
+                        sheet_data[sheet] = {"df": df, "เหนื่อย": เหนื่อย}
+                    else:
+                        st.warning(f"⚠️ ไฟล์ชีท '{sheet}' มีคอลัมน์ไม่ครบ A–D")
+                except Exception as e:
+                    st.error(f"❌ ไม่สามารถอ่านชีท '{sheet}': {e}")
 
             if st.button("✅ อัปเดตแต้มเข้า Google Sheets"):
-                username = st.session_state.get("username", "")
-                sheet_name = users.get(username, {}).get("sheet_name", username)
                 ws = connect_gsheet(sheet_name)
                 gsheet_data = ws.get_all_values()
                 gsheet_df = pd.DataFrame(gsheet_data)
@@ -415,10 +422,14 @@ elif mode == "count":
                     gsheet_df["สถิติโดนยอด"] = 0
                 gsheet_df["สถิติโดนยอด"] = pd.to_numeric(gsheet_df["สถิติโดนยอด"], errors='coerce').fillna(0).astype(int)
 
-                gsheet_df["สถิติโดนยอด"] = gsheet_df.apply(
-                    lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in ยอด_df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],
-                    axis=1
-                )
+                # รวมยอดจากทุกชีทตามความเหนื่อย
+                for sheet, data in sheet_data.items():
+                    df = data["df"]
+                    เหนื่อย = data["เหนื่อย"]
+                    gsheet_df["สถิติโดนยอด"] = gsheet_df.apply(
+                        lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],
+                        axis=1
+                    )
 
                 updated_column_values = gsheet_df["สถิติโดนยอด"].astype(str).tolist()
                 start_cell = 'N2'
@@ -426,11 +437,12 @@ elif mode == "count":
                 cell_range = f'{start_cell}:{end_cell}'
                 ws.update(cell_range, [[val] for val in updated_column_values])
 
-                # ✅ แสดงผลลัพธ์หลังอัปเดต
                 st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
                 st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
-        else:
-            st.error("❌ ไฟล์ยอดไม่ครบคอลัมน์ A–D กรุณาตรวจสอบไฟล์ก่อนอัปโหลด")
+
+        except Exception as e:
+            st.error(f"❌ ไม่สามารถประมวลผลไฟล์: {e}")
+
 
 
 # "จัดยอดพิธี"
