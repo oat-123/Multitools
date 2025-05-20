@@ -395,7 +395,7 @@ elif mode == "count":
                     df = df.dropna(how='all')
 
                     if df.shape[1] >= 4:
-                        df["ชื่อเต็ม"] = df.iloc[:, 2].astype(str).str.strip() + " " + df.iloc[:, 3].astype(str).str.strip()
+                        df["ชื่อเต็ม"] = df.iloc[:, 2].fillna("").astype(str).str.strip() + " " + df.iloc[:, 3].fillna("").astype(str).str.strip()
                         preview_df = pd.DataFrame({
                             "ลำดับ": df.iloc[:, 0],
                             "ชื่อ": df.iloc[:, 2],
