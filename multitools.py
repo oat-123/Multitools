@@ -436,11 +436,11 @@ elif mode == "count":
                 end_cell = f'N{1 + len(updated_column_values)}'
                 cell_range = f'{start_cell}:{end_cell}'
                 for i, val in enumerate(updated_column_values):
-                try:
-                    ws.update(f'N{2 + i}', [[val]])
-                except Exception as e:
-                    st.error(f"❌ Error at row {i+2}: {e}")
-                    break
+                    try:
+                        ws.update(f'N{2 + i}', [[val]])
+                    except Exception as e:
+                        st.error(f"❌ Error at row {i+2}: {e}")
+                        break
 
 
                 st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
