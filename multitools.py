@@ -444,7 +444,8 @@ elif mode == "count":
             
                 except Exception as e:
                     st.error(f"❌ ไม่สามารถประมวลผลไฟล์: {e}")
-
+        except Exception as e:
+                st.error(f"❌ ไม่สามารถประมวลผลไฟล์: {e}")
 # "จัดยอดพิธี"
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
