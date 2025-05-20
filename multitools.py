@@ -387,7 +387,7 @@ elif mode == "count":
             sheet_data = {}
 
             for sheet in selected_sheets:
-                st.markdown(f"### 📌 ตั้งค่าความเหนื่อยสำหรับชีท: `{sheet}`")
+                st.markdown(f"### 📌 ตั้งค่าความเหนื่อยสำหรับชีท: {sheet}")
                 เหนื่อย = st.slider(f"ระดับความเหนื่อยของ '{sheet}' (1–5)", 1, 5, 3, key=sheet)
 
                 try:
@@ -410,44 +410,40 @@ elif mode == "count":
                     st.error(f"❌ ไม่สามารถอ่านชีท '{sheet}': {e}")
 
             if st.button("✅ อัปเดตแต้มเข้า Google Sheets"):
-                try:
-                    ws = connect_gsheet(sheet_name)
-                    gsheet_data = ws.get_all_values()
-                    gsheet_df = pd.DataFrame(gsheet_data)
-                    gsheet_df.columns = gsheet_df.iloc[0]
-                    gsheet_df = gsheet_df[1:].reset_index(drop=True)
-
-                    gsheet_df["ชื่อเต็ม"] = gsheet_df.iloc[:, 2].astype(str).str.strip() + " " + gsheet_df.iloc[:, 3].astype(str).str.strip()
-
-                    if "สถิติโดนยอด" not in gsheet_df.columns:
-                        gsheet_df["สถิติโดนยอด"] = 0
-                    gsheet_df["สถิติโดนยอด"] = pd.to_numeric(gsheet_df["สถิติโดนยอด"], errors='coerce').fillna(0).astype(int)
-
-                    # ✅ รวมแต้มจากหลายชีทตามความเหนื่อย
-                    for sheet, data in sheet_data.items():
-                        df = data["df"]
-                        เหนื่อย = data["เหนื่อย"]
-                        gsheet_df["สถิติโดนยอด"] = gsheet_df.apply(
-                            lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],
-                            axis=1
-                        )
-
-                    # ✅ อัปเดตคอลัมน์เดียวทั้งหมดในครั้งเดียว
-                    updated_column_values = gsheet_df["สถิติโดนยอด"].astype(str).tolist()
-                    start_cell = 'N2'
-                    end_cell = f'N{1 + len(updated_column_values)}'
-                    cell_range = f'{start_cell}:{end_cell}'
-                    ws.update(cell_range, [[val] for val in updated_column_values])
-                    time.sleep(1.5)
-                    st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
-                    st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
-
-                except Exception as e:
-                    st.error(f"❌ ไม่สามารถประมวลผลไฟล์: {e}")
-
-
-
-
+            try:
+                ws = connect_gsheet(sheet_name)
+                gsheet_data = ws.get_all_values()
+                gsheet_df = pd.DataFrame(gsheet_data)
+                gsheet_df.columns = gsheet_df.iloc[0]
+                gsheet_df = gsheet_df[1:].reset_index(drop=True)
+        
+                gsheet_df["ชื่อเต็ม"] = gsheet_df.iloc[:, 2].astype(str).str.strip() + " " + gsheet_df.iloc[:, 3].astype(str).str.strip()
+        
+                if "สถิติโดนยอด" not in gsheet_df.columns:
+                    gsheet_df["สถิติโดนยอด"] = 0
+                gsheet_df["สถิติโดนยอด"] = pd.to_numeric(gsheet_df["สถิติโดนยอด"], errors='coerce').fillna(0).astype(int)
+        
+                # ✅ รวมแต้มจากหลายชีทตามความเหนื่อย
+                for sheet, data in sheet_data.items():
+                    df = data["df"]
+                    เหนื่อย = data["เหนื่อย"]
+                    gsheet_df["สถิติโดนยอด"] = gsheet_df.apply(
+                        lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],
+                        axis=1
+                    )
+        
+                # ✅ อัปเดตคอลัมน์เดียวทั้งหมดในครั้งเดียว
+                updated_column_values = gsheet_df["สถิติโดนยอด"].astype(str).tolist()
+                start_cell = 'N2'
+                end_cell = f'N{1 + len(updated_column_values)}'
+                cell_range = f'{start_cell}:{end_cell}'
+                ws.update(cell_range, [[val] for val in updated_column_values])
+        
+                st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
+                st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
+        
+            except Exception as e:
+                st.error(f"❌ ไม่สามารถประมวลผลไฟล์: {e}")
 
 # "จัดยอดพิธี"
 elif mode == "ceremony_duty":
