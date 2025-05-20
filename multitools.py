@@ -9,6 +9,7 @@ from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 from datetime import date
 import io
+import time
 from collections import defaultdict
 import gspread
 from google.oauth2.service_account import Credentials
@@ -438,14 +439,14 @@ elif mode == "count":
                     end_cell = f'N{1 + len(updated_column_values)}'
                     cell_range = f'{start_cell}:{end_cell}'
                     ws.update(cell_range, [[val] for val in updated_column_values])
-                        time.sleep(2)
+                    time.sleep(2)
                     st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
                     st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
             
                 except Exception as e:
                     st.error(f"❌ ไม่สามารถประมวลผลไฟล์: {e}")
         except Exception as e:
-                st.error(f"❌ ไม่สามารถประมวลผลไฟล์: {e}")
+                st.error(f"❌ Error: {e}")
 # "จัดยอดพิธี"
 elif mode == "ceremony_duty":
     st.info("คุณเลือก: จัดยอดพิธี")
