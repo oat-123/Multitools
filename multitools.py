@@ -435,7 +435,13 @@ elif mode == "count":
                 start_cell = 'N2'
                 end_cell = f'N{1 + len(updated_column_values)}'
                 cell_range = f'{start_cell}:{end_cell}'
-                ws.update(cell_range, [[val] for val in updated_column_values])
+                for i, val in enumerate(updated_column_values):
+                try:
+                    ws.update(f'N{2 + i}', [[val]])
+                except Exception as e:
+                    st.error(f"❌ Error at row {i+2}: {e}")
+                    break
+
 
                 st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
                 st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
