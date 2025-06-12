@@ -278,12 +278,28 @@ elif mode == "home":
     # กรอกข้อมูล
     st.subheader("กรอกข้อมูลเเต่ละชั้นปี")
     data = {}
+    year_colors = {
+    5: "#b3e5fc",  # สีฟ้าอ่อน
+    4: "#c8e6c9",  # สีเขียวอ่อน
+    3: "#bbdefb",  # สีน้ำเงินอ่อน
+    2: "#f8bbd0",  # สีชมพูอ่อน}
     for year in [5, 4, 3, 2]:
         data[year] = {}
         with st.expander(f"ชั้นปีที่ {year}"):
+            st.markdown(
+                f"""
+                <div style="background-color: {year_colors[year]}; padding: 10px; border-radius: 10px;">
+                """,unsafe_allow_html=True)
+          
             for cat in categories:
-                val = st.number_input(f"{cat} ชั้นปีที่ {year}", min_value=0, step=1, key=f"{cat}_{year}")
+                val = st.number_input(
+                    f"{cat} ชั้นปีที่ {year}",
+                    min_value=0,
+                    step=1,
+                    key=f"{cat}_{year}"
+                )
                 data[year][cat] = val
+            st.markdown("</div>", unsafe_allow_html=True)
     
     # ปุ่ม "สร้างรายงาน" และ "ทำไฟล์" ในแถวเดียวกัน ตกแต่งด้วย CSS
     col1, col2 = st.columns([1, 1])
