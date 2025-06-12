@@ -215,6 +215,8 @@ if mode == "night_duty":
         st.markdown(f"""
             <style>
                 .iframe-container {{
+                    width: 100%;
+                    max-width: 100%;
                     border: 2px solid #4CAF50;
                     border-radius: 10px;
                     overflow: hidden;
@@ -222,9 +224,16 @@ if mode == "night_duty":
                 }}
                 .iframe-container iframe {{
                     width: 100%;
-                    height: 1400px;
+                    min-height: 85vh;
                     border: none;
-                    zoom: 0.75;
+                    transform: scale(1);   /* ✅ แทน zoom */
+                    transform-origin: top left;
+                }}
+                @media (max-width: 768px) {{
+                    .iframe-container iframe {{
+                        min-height: 100vh;
+                        transform: scale(1); /* ✅ ไม่ zoom บนมือถือ */
+                    }}
                 }}
                 .edit-link {{
                     text-align: right;
@@ -253,6 +262,7 @@ if mode == "night_duty":
                 <a href="{edit_link}" target="_blank">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
             </div>
         """, unsafe_allow_html=True)
+
 
     except Exception as e:
         st.error(f"โหลดข้อมูลไม่สำเร็จ: {e}")
