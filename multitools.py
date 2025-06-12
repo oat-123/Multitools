@@ -222,7 +222,7 @@ if mode == "night_duty":
                 }}
                 .iframe-container iframe {{
                     width: 100%;
-                    height: 1200px;
+                    height: 1400px;
                     border: none;
                     zoom: 0.75;
                 }}
