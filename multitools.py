@@ -236,7 +236,7 @@ if mode == "night_duty":
                 @media (max-width: 768px) {{
                     .iframe-container iframe {{
                         height: 1200px;
-                        transform: scale(0.7);  /* ✅ ซูมออกเล็กลง */
+                        transform: scale(0.9);  /* ✅ ซูมออกเล็กลง */
                         transform-origin: top left;
                     }}
                 }}
