@@ -289,9 +289,10 @@ elif mode == "home":
         with st.expander(f"ชั้นปีที่ {year}"):
             st.markdown(
                 f"""
-                <div style="background-color: {year_colors[year]}; padding: 10px; border-radius: 10px;">
-                """,unsafe_allow_html=True)
-          
+                <div style="background-color: {year_colors[year]}; padding: 15px; border-radius: 10px;">
+                """,
+                unsafe_allow_html=True
+            )
             for cat in categories:
                 val = st.number_input(
                     f"{cat} ชั้นปีที่ {year}",
