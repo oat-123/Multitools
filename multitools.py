@@ -282,7 +282,8 @@ elif mode == "home":
         5: "#b3e5fc",  # สีฟ้าอ่อน
         4: "#c8e6c9",  # สีเขียวอ่อน
         3: "#bbdefb",  # สีน้ำเงินอ่อน
-        2: "#f8bbd0",  # สีชมพูอ่อน}
+        2: "#f8bbd0",  # สีชมพูอ่อน
+    }
     for year in [5, 4, 3, 2]:
         data[year] = {}
         with st.expander(f"ชั้นปีที่ {year}"):
