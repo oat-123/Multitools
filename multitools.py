@@ -228,7 +228,7 @@ if mode == "night_duty":
                     width: 100%;
                     height: 1400px;  /* ✅ ความสูงของ iframe สำหรับ PC */
                     border: none;
-                    transform: scale(1); 
+                    transform: scale(0.8); 
                     transform-origin: top left;
                 }}
         
