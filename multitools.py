@@ -216,25 +216,31 @@ if mode == "night_duty":
             <style>
                 .iframe-container {{
                     width: 100%;
-                    max-width: 100%;
+                    max-width: 1200px;
+                    margin: auto;
                     border: 2px solid #4CAF50;
                     border-radius: 10px;
                     overflow: hidden;
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 }}
+        
                 .iframe-container iframe {{
                     width: 100%;
-                    min-height: 85vh;
+                    height: 1400px;  /* ✅ ความสูงของ iframe สำหรับ PC */
                     border: none;
-                    transform: scale(1);   /* ✅ แทน zoom */
+                    transform: scale(1); 
                     transform-origin: top left;
                 }}
+        
+                /* ✅ สำหรับหน้าจอเล็ก (iPhone/มือถือ) */
                 @media (max-width: 768px) {{
                     .iframe-container iframe {{
-                        min-height: 100vh;
-                        transform: scale(1); /* ✅ ไม่ zoom บนมือถือ */
+                        height: 1200px;
+                        transform: scale(0.7);  /* ✅ ซูมออกเล็กลง */
+                        transform-origin: top left;
                     }}
                 }}
+        
                 .edit-link {{
                     text-align: right;
                     margin-top: 10px;
@@ -255,13 +261,16 @@ if mode == "night_duty":
                     text-decoration: underline;
                 }}
             </style>
+        
             <div class="iframe-container">
                 <iframe src="{iframe_link}"></iframe>
             </div>
+        
             <div class="edit-link">
                 <a href="{edit_link}" target="_blank">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
             </div>
         """, unsafe_allow_html=True)
+
 
 
     except Exception as e:
