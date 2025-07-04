@@ -81,7 +81,7 @@ def render_header():
     """, unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image("https://images4.alphacoders.com/112/1127690.png", use_column_width=True)
+        st.image("https://images4.alphacoders.com/112/1127690.png", use_container_width=True)
     st.markdown("""
         <div style='text-align: center;'>
             <div class='title-text'>
