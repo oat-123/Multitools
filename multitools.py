@@ -466,7 +466,15 @@ def show_login_page():
     </div>
     """, unsafe_allow_html=True)
 
-    # เพิ่มฟอร์ม login
+    # Centered login form card
+    st.markdown("""
+    <div style='display: flex; justify-content: center; align-items: center; min-height: 40vh;'>
+        <div class="login-form" style="max-width: 400px; width: 100%; margin: 0 auto;">
+            <form>
+            </form>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     with st.form("login_form"):
         username = st.text_input("ชื่อผู้ใช้", placeholder="กรอกชื่อผู้ใช้")
         password = st.text_input("รหัสผ่าน", type="password", placeholder="กรอกรหัสผ่าน")
@@ -508,9 +516,18 @@ def show_dashboard():
                 <h4>{st.session_state['user_data']['display_name']}</h4>
                 <p>{st.session_state['user_data']['sheet_name']}</p>
             </div>
+            <form style='display:inline;'>
+                <button type='submit' name='logout' style='background: linear-gradient(135deg, #ff6b6b 0%, #e53e3e 100%); color: white; border: none; border-radius: 8px; padding: 0.5em 1.2em; font-size: 1rem; font-weight: 600; margin-left: 1em; cursor:pointer;'>ออกจากระบบ</button>
+            </form>
         </div>
     </div>
     """, unsafe_allow_html=True)
+    # Logout button (Streamlit native)
+    if st.button("🚪 ออกจากระบบ", key="logout_btn"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.rerun()
+    # ...existing code...
     st.markdown("""
     <div class="hero-section">
         <h1 class="hero-title">THE FUTURE OF</h1>
