@@ -56,12 +56,32 @@ worksheet = connect_gsheet(st.session_state["sheet_name"])
 def render_header():
     st.markdown("""
         <style>
-        ... (style block as in your original code)
+        /* Responsive header and image */
+        .title-text {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .subtitle-text {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        @media (max-width: 600px) {
+            .title-text {
+                font-size: 1.3rem;
+            }
+            .subtitle-text {
+                font-size: 1rem;
+            }
+            img {
+                width: 180px !important;
+            }
+        }
         </style>
     """, unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image("https://images4.alphacoders.com/112/1127690.png", width=300)
+        st.image("https://images4.alphacoders.com/112/1127690.png", use_column_width=True)
     st.markdown("""
         <div style='text-align: center;'>
             <div class='title-text'>
@@ -73,6 +93,32 @@ def render_header():
     """, unsafe_allow_html=True)
 
 def render_menu():
+    st.markdown("""
+        <style>
+        .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 1.2em 0.5em 1em 0.5em;
+            margin-bottom: 1em;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .stColumns {
+                flex-direction: column !important;
+            }
+            .card {
+                margin-bottom: 1.2em;
+                padding: 1em 0.2em;
+            }
+        }
+        .stButton>button {
+            width: 100%;
+            font-size: 1.1rem;
+            border-radius: 8px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown("<div class='card'>", unsafe_allow_html=True)
@@ -134,24 +180,24 @@ def night_duty_mode():
                     margin: auto;
                     border: 2px solid #4CAF50;
                     border-radius: 10px;
-                    overflow: hidden;
+                    overflow: auto;
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 }}
         
                 .iframe-container iframe {{
                     width: 100%;
-                    height: 1400px;  /* ✅ ความสูงของ iframe สำหรับ PC */
+                    min-width: 320px;
+                    height: 1400px;
                     border: none;
                     transform: scale(1); 
                     transform-origin: top left;
                 }}
         
-                /* ✅ สำหรับหน้าจอเล็ก (iPhone/มือถือ) */
                 @media (max-width: 768px) {{
                     .iframe-container iframe {{
-                        height: 1200px;
-                        transform: scale(0.9);  /* ✅ ซูมออกเล็กลง */
-                        transform-origin: top left;
+                        height: 900px;
+                        min-width: 320px;
+                        transform: scale(0.95);
                     }}
                 }}
         
@@ -469,6 +515,7 @@ def ceremony_duty_mode():
                     border-collapse: collapse;
                     table-layout: auto;
                     font-size: 11px;
+                    overflow-x: auto;
                 }
                 table.custom-table th, table.custom-table td {
                     border: 1px solid #ddd;
@@ -491,8 +538,17 @@ def ceremony_duty_mode():
                     text-align: left;
                     padding-left: 10px;
                 }
+                @media (max-width: 600px) {
+                    table.custom-table {
+                        font-size: 9px;
+                        min-width: 600px;
+                        overflow-x: auto;
+                        display: block;
+                    }
+                }
             </style>
             """
+            html += "<div style='overflow-x:auto;'>"
             html += "<table class='custom-table'>"
             html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
             html += "<tbody>"
@@ -503,6 +559,7 @@ def ceremony_duty_mode():
                     html += f"<td>{value}</td>"
                 html += "</tr>"
             html += "</tbody></table>"
+            html += "</div>"
             st.markdown(html, unsafe_allow_html=True)
     
         render_centered_table(output_df)
