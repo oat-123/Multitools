@@ -281,7 +281,6 @@ def show_login_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        st.markdown('<div class="login-card">', unsafe_allow_html=True)
         st.markdown('<h2 class="login-title">เข้าสู่ระบบ</h2>', unsafe_allow_html=True)
         
         with st.form("login_form"):
