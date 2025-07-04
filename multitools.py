@@ -25,77 +25,448 @@ users = {
     "chai": {"password": "crma74", "sheet_name": "ชั้น4_พัน3", "display_name": "ผู้ใช้ CHAI", "role": "ผู้ใช้งาน"}
 }
 
-# ===== ฟังก์ชันสำหรับ SpaceX Style CSS =====
-def load_spacex_css():
+# ===== ฟังก์ชันสำหรับ Hi-Tech Login CSS =====
+def load_hitech_css():
     st.markdown("""
     <style>
+    /* Import Futuristic Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+    
+    /* Global Styles */
     body, .stApp {
         background: #000 !important;
         min-height: 100vh;
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
     }
+    
+    /* Animated Space Background */
     .space-background {
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
-        z-index: -1;
-        background: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1500&q=80') center center/cover no-repeat;
-        filter: brightness(0.5);
+        z-index: -2;
+        background: 
+            radial-gradient(ellipse at center, #001122 0%, #000000 70%),
+            linear-gradient(45deg, #000011 0%, #000033 50%, #000000 100%);
     }
+    
+    /* Animated Stars */
+    .space-background::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: 
+            radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+            radial-gradient(2px 2px at 40px 70px, rgba(74,144,226,0.6), transparent),
+            radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.9), transparent),
+            radial-gradient(1px 1px at 130px 80px, rgba(74,144,226,0.4), transparent),
+            radial-gradient(2px 2px at 160px 30px, rgba(255,255,255,0.7), transparent),
+            radial-gradient(1px 1px at 200px 120px, rgba(74,144,226,0.5), transparent);
+        background-repeat: repeat;
+        background-size: 250px 150px;
+        animation: starfield 25s linear infinite;
+        opacity: 0.8;
+    }
+    
+    /* Floating Particles */
+    .space-background::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: 
+            radial-gradient(1px 1px at 50px 100px, rgba(74,144,226,0.3), transparent),
+            radial-gradient(1px 1px at 150px 200px, rgba(255,255,255,0.2), transparent),
+            radial-gradient(1px 1px at 300px 50px, rgba(74,144,226,0.4), transparent);
+        background-repeat: repeat;
+        background-size: 400px 300px;
+        animation: particles 30s linear infinite reverse;
+        opacity: 0.6;
+    }
+    
+    @keyframes starfield {
+        from { transform: translateX(0) translateY(0); }
+        to { transform: translateX(-250px) translateY(-150px); }
+    }
+    
+    @keyframes particles {
+        from { transform: translateX(0) translateY(0) rotate(0deg); }
+        to { transform: translateX(400px) translateY(300px) rotate(360deg); }
+    }
+    
+    /* Login Container */
     .login-container {
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         min-height: 100vh;
+        padding: 2rem;
+        position: relative;
     }
+    
+    /* Holographic Grid Background */
+    .login-container::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: 
+            linear-gradient(rgba(74,144,226,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(74,144,226,0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: grid-move 20s linear infinite;
+        opacity: 0.3;
+        z-index: -1;
+    }
+    
+    @keyframes grid-move {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
+    }
+    
+    /* Hi-Tech Login Card */
     .login-card {
-        background: rgba(20, 24, 32, 0.92);
-        border-radius: 18px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-        padding: 2.5rem 2.5rem 2rem 2.5rem;
-        max-width: 400px;
-        margin: 2rem auto 0 auto;
-        color: #fff;
+        background: 
+            linear-gradient(135deg, rgba(10,15,25,0.95) 0%, rgba(15,25,40,0.9) 100%),
+            radial-gradient(circle at 50% 0%, rgba(74,144,226,0.1) 0%, transparent 50%);
+        border: 2px solid transparent;
+        border-radius: 20px;
+        box-shadow: 
+            0 0 50px rgba(74,144,226,0.3),
+            inset 0 1px 0 rgba(255,255,255,0.1),
+            inset 0 -1px 0 rgba(0,0,0,0.5);
+        padding: 3rem 2.5rem;
+        max-width: 450px;
+        width: 100%;
+        position: relative;
+        backdrop-filter: blur(20px);
+        animation: card-glow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes card-glow {
+        0% { 
+            box-shadow: 
+                0 0 30px rgba(74,144,226,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        100% { 
+            box-shadow: 
+                0 0 60px rgba(74,144,226,0.4),
+                0 0 100px rgba(74,144,226,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+    }
+    
+    /* Animated Border */
+    .login-card::before {
+        content: '';
+        position: absolute;
+        top: -2px; left: -2px; right: -2px; bottom: -2px;
+        background: linear-gradient(45deg, 
+            #4A90E2, #357ABD, #4A90E2, #357ABD, 
+            #4A90E2, #357ABD, #4A90E2, #357ABD);
+        background-size: 400% 400%;
+        border-radius: 20px;
+        z-index: -1;
+        animation: border-animation 4s ease infinite;
+    }
+    
+    @keyframes border-animation {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    /* Logo Section */
+    .login-logo {
         text-align: center;
-        border: 1.5px solid #222b3a;
+        margin-bottom: 2.5rem;
+        position: relative;
     }
+    
+    .login-avatar {
+        width: 100px;
+        height: 100px;
+        background: 
+            linear-gradient(135deg, #4A90E2 0%, #357ABD 50%, #2E5F8A 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem auto;
+        font-size: 3rem;
+        position: relative;
+        animation: logo-pulse 2s ease-in-out infinite;
+        box-shadow: 
+            0 0 30px rgba(74,144,226,0.5),
+            inset 0 2px 10px rgba(255,255,255,0.2);
+    }
+    
+    @keyframes logo-pulse {
+        0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 30px rgba(74,144,226,0.5);
+        }
+        50% { 
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(74,144,226,0.8);
+        }
+    }
+    
+    /* Holographic Ring */
+    .login-avatar::before {
+        content: '';
+        position: absolute;
+        top: -10px; left: -10px; right: -10px; bottom: -10px;
+        border: 2px solid rgba(74,144,226,0.3);
+        border-radius: 50%;
+        animation: ring-rotate 8s linear infinite;
+    }
+    
+    .login-avatar::after {
+        content: '';
+        position: absolute;
+        top: -20px; left: -20px; right: -20px; bottom: -20px;
+        border: 1px solid rgba(74,144,226,0.2);
+        border-radius: 50%;
+        animation: ring-rotate 12s linear infinite reverse;
+    }
+    
+    @keyframes ring-rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Typography */
     .login-title {
-        font-size: 2.2rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        color: #4A90E2;
+        font-family: 'Orbitron', monospace;
+        font-size: 2.8rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        color: #ffffff;
         margin-bottom: 0.5rem;
+        text-shadow: 
+            0 0 10px rgba(74,144,226,0.5),
+            0 0 20px rgba(74,144,226,0.3),
+            0 0 30px rgba(74,144,226,0.1);
+        animation: title-glow 3s ease-in-out infinite alternate;
     }
+    
+    @keyframes title-glow {
+        0% { 
+            text-shadow: 
+                0 0 10px rgba(74,144,226,0.5),
+                0 0 20px rgba(74,144,226,0.3);
+        }
+        100% { 
+            text-shadow: 
+                0 0 20px rgba(74,144,226,0.8),
+                0 0 30px rgba(74,144,226,0.5),
+                0 0 40px rgba(74,144,226,0.2);
+        }
+    }
+    
     .login-subtitle {
-        font-size: 1.1rem;
-        color: #bfc9d1;
-        margin-bottom: 1.5rem;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: rgba(74,144,226,0.8);
+        margin-bottom: 2rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
     }
-    .stTextInput>div>div>input, .stTextInput input, .stPasswordInput input {
-        background: #181c24 !important;
-        color: #fff !important;
-        border-radius: 10px;
-        border: 1.5px solid #2d3440;
-        font-size: 1.1rem;
-        padding: 0.7rem 1rem;
+    
+    /* Form Elements */
+    .stTextInput > div > div > input,
+    .stTextInput input {
+        background: 
+            linear-gradient(135deg, rgba(15,25,40,0.8) 0%, rgba(10,15,25,0.9) 100%) !important;
+        color: #ffffff !important;
+        border: 2px solid rgba(74,144,226,0.3) !important;
+        border-radius: 12px !important;
+        font-family: 'Rajdhani', sans-serif !important;
+        font-size: 1.1rem !important;
+        font-weight: 500 !important;
+        padding: 1rem 1.2rem !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 
+            inset 0 2px 10px rgba(0,0,0,0.3),
+            0 0 0 rgba(74,144,226,0) !important;
     }
-    .stTextInput>div>div>input:focus, .stPasswordInput input:focus {
-        border: 1.5px solid #4A90E2;
-        outline: none;
+    
+    .stTextInput > div > div > input:focus,
+    .stTextInput input:focus {
+        border: 2px solid rgba(74,144,226,0.8) !important;
+        outline: none !important;
+        box-shadow: 
+            inset 0 2px 10px rgba(0,0,0,0.3),
+            0 0 20px rgba(74,144,226,0.3) !important;
+        background: 
+            linear-gradient(135deg, rgba(15,25,40,0.9) 0%, rgba(20,30,45,0.9) 100%) !important;
     }
-    .stButton>button {
-        background: linear-gradient(90deg, #4A90E2 0%, #357ABD 100%);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        padding: 0.7em 1.5em;
-        margin-top: 1.2em;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-        transition: background 0.2s, color 0.2s;
+    
+    .stTextInput > div > div > input::placeholder {
+        color: rgba(255,255,255,0.5) !important;
+        font-style: italic;
     }
-    .stButton>button:hover {
-        background: linear-gradient(90deg, #357ABD 0%, #4A90E2 100%);
-        color: #fff;
+    
+    /* Labels */
+    .stTextInput label {
+        color: rgba(255,255,255,0.9) !important;
+        font-family: 'Rajdhani', sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        margin-bottom: 0.5rem !important;
     }
-    /* Dashboard */
+    
+    /* Hi-Tech Button */
+    .stButton > button {
+        background: 
+            linear-gradient(135deg, #4A90E2 0%, #357ABD 50%, #2E5F8A 100%) !important;
+        color: #ffffff !important;
+        border: 2px solid rgba(74,144,226,0.5) !important;
+        border-radius: 12px !important;
+        font-family: 'Orbitron', monospace !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.1em !important;
+        text-transform: uppercase !important;
+        padding: 1rem 2rem !important;
+        margin-top: 1.5rem !important;
+        position: relative !important;
+        overflow: hidden !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 
+            0 0 20px rgba(74,144,226,0.3),
+            inset 0 1px 0 rgba(255,255,255,0.2) !important;
+    }
+    
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, 
+            transparent, 
+            rgba(255,255,255,0.2), 
+            transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .stButton > button:hover {
+        background: 
+            linear-gradient(135deg, #357ABD 0%, #4A90E2 50%, #5BA0F2 100%) !important;
+        border-color: rgba(74,144,226,0.8) !important;
+        box-shadow: 
+            0 0 30px rgba(74,144,226,0.5),
+            0 0 50px rgba(74,144,226,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.3) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    .stButton > button:hover::before {
+        left: 100%;
+    }
+    
+    .stButton > button:active {
+        transform: translateY(0) !important;
+    }
+    
+    /* Error Messages */
+    .stError {
+        background: 
+            linear-gradient(135deg, rgba(220,38,38,0.2) 0%, rgba(185,28,28,0.1) 100%) !important;
+        border: 1px solid rgba(220,38,38,0.5) !important;
+        border-radius: 10px !important;
+        color: #ff6b6b !important;
+        font-family: 'Rajdhani', sans-serif !important;
+        font-weight: 500 !important;
+        backdrop-filter: blur(10px) !important;
+        animation: error-pulse 0.5s ease-in-out;
+    }
+    
+    @keyframes error-pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Success Messages */
+    .stSuccess {
+        background: 
+            linear-gradient(135deg, rgba(34,197,94,0.2) 0%, rgba(22,163,74,0.1) 100%) !important;
+        border: 1px solid rgba(34,197,94,0.5) !important;
+        border-radius: 10px !important;
+        color: #4ade80 !important;
+        font-family: 'Rajdhani', sans-serif !important;
+        font-weight: 500 !important;
+        backdrop-filter: blur(10px) !important;
+    }
+    
+    /* Loading Animation */
+    .login-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 1rem;
+    }
+    
+    .loading-spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid rgba(74,144,226,0.3);
+        border-top: 3px solid #4A90E2;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .login-card {
+            margin: 1rem;
+            padding: 2rem 1.5rem;
+        }
+        
+        .login-title {
+            font-size: 2.2rem;
+        }
+        
+        .login-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 2.5rem;
+        }
+        
+        .login-subtitle {
+            font-size: 1.1rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .login-container {
+            padding: 1rem;
+        }
+        
+        .login-card {
+            padding: 1.5rem 1rem;
+        }
+        
+        .login-title {
+            font-size: 1.8rem;
+        }
+        
+        .login-avatar {
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+        }
+    }
+    
+    /* Dashboard Styles (keeping existing) */
     .spacex-header {
         display: flex; align-items: center; justify-content: space-between;
         background: rgba(20, 24, 32, 0.92);
@@ -220,7 +591,6 @@ def load_spacex_css():
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 600px) {
-        .login-card { padding: 1.2rem 0.5rem; }
         .spacex-header { flex-direction: column; gap: 1.2rem; padding: 1rem 0.5rem; }
         .stats-grid { grid-template-columns: 1fr; }
         .hero-title { font-size: 1.5rem; }
@@ -248,28 +618,76 @@ def connect_gsheet(sheet_name: str):
 # ===== ฟังก์ชันสำหรับการแสดงหน้า Login =====
 def show_login_page():
     st.markdown('<div class="space-background"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    st.markdown('<div class="login-card">', unsafe_allow_html=True)
-    st.markdown('<div style="text-align: center; margin-bottom: 2rem;">', unsafe_allow_html=True)
-    st.markdown('<div style="width: 80px; height: 80px; background: linear-gradient(135deg, #4A90E2, #357ABD); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 2rem;">🛡️</div>', unsafe_allow_html=True)
-    st.markdown('<h1 class="login-title">J.A.R.V.I.S</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="login-subtitle">ระบบผู้ช่วย ฝอ.1</p>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    with st.form("login_form"):
-        username = st.text_input("ชื่อผู้ใช้", placeholder="กรอกชื่อผู้ใช้")
-        password = st.text_input("รหัสผ่าน", type="password", placeholder="กรอกรหัสผ่าน")
-        login_button = st.form_submit_button("เข้าสู่ระบบ")
-        if login_button:
-            if username in users and users[username]["password"] == password:
-                st.session_state["logged_in"] = True
-                st.session_state["username"] = username
-                st.session_state["user_data"] = users[username]
-                st.session_state["current_page"] = "dashboard"
-                st.rerun()
-            else:
-                st.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="login-avatar">🛡️</div>
+                <h1 class="login-title">J.A.R.V.I.S</h1>
+                <p class="login-subtitle">Military Assistance System</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Login Form with better spacing
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        with st.form("login_form", clear_on_submit=False):
+            st.markdown("### 🔐 เข้าสู่ระบบ")
+            
+            username = st.text_input(
+                "ชื่อผู้ใช้", 
+                placeholder="กรอกชื่อผู้ใช้งาน...",
+                help="ใช้ชื่อผู้ใช้ที่ได้รับจากระบบ"
+            )
+            
+            password = st.text_input(
+                "รหัสผ่าน", 
+                type="password", 
+                placeholder="กรอกรหัสผ่าน...",
+                help="รหัสผ่านที่ได้รับจากผู้ดูแลระบบ"
+            )
+            
+            # Add some spacing
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            login_button = st.form_submit_button(
+                "🚀 เข้าสู่ระบบ", 
+                use_container_width=True
+            )
+            
+            if login_button:
+                if username and password:  # Check if fields are not empty
+                    # Add loading effect
+                    with st.spinner('กำลังตรวจสอบข้อมูล...'):
+                        time.sleep(1)  # Simulate processing time
+                        
+                        if username in users and users[username]["password"] == password:
+                            st.success("✅ เข้าสู่ระบบสำเร็จ!")
+                            time.sleep(0.5)
+                            
+                            st.session_state["logged_in"] = True
+                            st.session_state["username"] = username
+                            st.session_state["user_data"] = users[username]
+                            st.session_state["current_page"] = "dashboard"
+                            st.rerun()
+                        else:
+                            st.error("❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+                else:
+                    st.warning("⚠️ กรุณากรอกชื่อผู้ใช้และรหัสผ่าน")
+        
+        # Add system info
+        st.markdown("---")
+        st.markdown("""
+        <div style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.9rem;">
+            <p>🔒 ระบบรักษาความปลอดภัยระดับสูง</p>
+            <p>💻 รองรับทุกอุปกรณ์</p>
+            <p>⚡ ประมวลผลด้วย AI</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 # ===== ฟังก์ชันสำหรับการแสดง Dashboard =====
 def show_dashboard():
@@ -395,7 +813,7 @@ def show_count_page():
 
 # ===== Main Application =====
 def main():
-    load_spacex_css()
+    load_hitech_css()
     
     # ตรวจสอบสถานะการล็อกอิน
     if not st.session_state.get("logged_in", False):
