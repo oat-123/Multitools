@@ -588,6 +588,10 @@ def show_count_page():
         "อัพเดตและตรวจสอบสถิติการโดนยอด"
     )
 
+# ===== ฟังก์ชันสำหรับ Streamlit-Compatible CSS =====
+def load_spacex_css():
+    load_streamlit_css()
+
 # ===== Main Application =====
 def main():
     load_spacex_css()
