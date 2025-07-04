@@ -274,6 +274,7 @@ def connect_gsheet(sheet_name: str):
 
 # ===== ฟังก์ชันสำหรับการแสดงหน้า Login =====
 def show_login_page():
+    st.markdown('<div class="main-header">', unsafe_allow_html=True)
     st.markdown('<h1 class="header-title">🛡️ J.A.R.V.I.S</h1>', unsafe_allow_html=True)
     st.markdown('<p class="header-subtitle">ระบบผู้ช่วยอัจฉริยะ ฝอ.1</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -281,6 +282,7 @@ def show_login_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
+        st.markdown('<div class="login-card">', unsafe_allow_html=True)
         st.markdown('<h2 class="login-title">เข้าสู่ระบบ</h2>', unsafe_allow_html=True)
         
         with st.form("login_form"):
