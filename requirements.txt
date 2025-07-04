@@ -4,4 +4,4 @@ requests
 openpyxl
 gspread
 oauth2client
-
+plotly>=5.0.0
