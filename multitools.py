@@ -25,17 +25,18 @@ users = {
     "chai": {"password": "crma74", "sheet_name": "ชั้น4_พัน3", "display_name": "ผู้ใช้ CHAI", "role": "ผู้ใช้งาน"}
 }
 
-# ===== ฟังก์ชันสำหรับ CSS และการตกแต่ง =====
-def load_custom_css():
+# ===== ฟังก์ชันสำหรับ SpaceX Style CSS =====
+def load_spacex_css():
     st.markdown("""
     <style>
     /* Import Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* Global Styles */
+    /* Global Styles - SpaceX Theme */
     .stApp {
         font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #000000;
+        color: #ffffff;
         min-height: 100vh;
     }
     
@@ -43,215 +44,481 @@ def load_custom_css():
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    .stDeployButton {visibility: hidden;}
     
-    /* Custom Header */
-    .main-header {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    /* Space Background with Stars */
+    .space-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #000000 0%, #0a0a23 50%, #000000 100%);
+        z-index: -2;
     }
     
-    .header-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: white;
-        text-align: center;
+    .space-background::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(2px 2px at 20px 30px, #ffffff, transparent),
+            radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+            radial-gradient(1px 1px at 90px 40px, #ffffff, transparent),
+            radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+            radial-gradient(2px 2px at 160px 30px, #ffffff, transparent);
+        background-repeat: repeat;
+        background-size: 200px 100px;
+        animation: sparkle 20s linear infinite;
+        opacity: 0.6;
+    }
+    
+    @keyframes sparkle {
+        from { transform: translateX(0); }
+        to { transform: translateX(200px); }
+    }
+    
+    /* SpaceX Header Navigation */
+    .spacex-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+    }
+    
+    .spacex-logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .spacex-logo h1 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #ffffff;
         margin: 0;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        letter-spacing: 0.2em;
     }
     
-    .header-subtitle {
-        font-size: 1.1rem;
-        color: rgba(255, 255, 255, 0.8);
+    .spacex-nav {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+    }
+    
+    .spacex-nav-item {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+    }
+    
+    .spacex-nav-item:hover {
+        color: #4A90E2;
+        background: rgba(74, 144, 226, 0.1);
+    }
+    
+    .spacex-nav-item.active {
+        color: #4A90E2;
+        background: rgba(74, 144, 226, 0.2);
+    }
+    
+    /* Mobile Navigation */
+    .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: 2px solid #ffffff;
+        color: #ffffff;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    
+    @media (max-width: 768px) {
+        .spacex-nav {
+            display: none;
+        }
+        .mobile-nav-toggle {
+            display: block;
+        }
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         text-align: center;
-        margin-top: 0.5rem;
+        padding: 2rem;
+        background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), 
+                    url('https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
     }
     
-    /* Login Card */
+    .hero-title {
+        font-size: clamp(3rem, 8vw, 8rem);
+        font-weight: 900;
+        color: #ffffff;
+        margin-bottom: 2rem;
+        letter-spacing: 0.02em;
+        line-height: 0.9;
+        text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    
+    .hero-subtitle {
+        font-size: clamp(1.2rem, 3vw, 2rem);
+        color: #4A90E2;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
+    
+    .hero-description {
+        font-size: clamp(1rem, 2vw, 1.3rem);
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 800px;
+        margin: 0 auto 3rem auto;
+        line-height: 1.6;
+    }
+    
+    .hero-button {
+        background: transparent;
+        border: 2px solid #ffffff;
+        color: #ffffff;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .hero-button:hover {
+        background: #ffffff;
+        color: #000000;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    
+    /* Login Card - SpaceX Style */
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), 
+                    url('https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    
     .login-card {
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(0, 0, 0, 0.8);
         backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0;
+        padding: 3rem;
         max-width: 400px;
-        margin: 2rem auto;
+        width: 100%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     }
     
     .login-title {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: #2d3748;
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #ffffff;
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.1em;
     }
     
-    /* Dashboard Cards */
-    .dashboard-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    .login-subtitle {
+        font-size: 1rem;
+        color: #4A90E2;
+        text-align: center;
+        margin-bottom: 2rem;
+        letter-spacing: 0.05em;
+    }
+    
+    /* Stats Section */
+    .stats-section {
+        background: #000000;
+        padding: 5rem 2rem;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 4rem;
+        font-weight: 900;
+        color: #4A90E2;
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+    
+    /* Module Content */
+    .module-container {
+        padding: 6rem 2rem 2rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .module-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .back-button {
+        background: transparent;
         border: 1px solid rgba(255, 255, 255, 0.3);
-        transition: all 0.3s ease;
+        color: #ffffff;
+        padding: 0.5rem 1rem;
         cursor: pointer;
-    }
-    
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
-    
-    .card-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-    
-    .card-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #2d3748;
-        text-align: center;
-        margin-bottom: 0.5rem;
-    }
-    
-    .card-description {
         font-size: 0.9rem;
-        color: #718096;
-        text-align: center;
-        line-height: 1.5;
+        transition: all 0.3s ease;
     }
     
-    /* Stats Cards */
-    .stats-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        margin: 0.5rem 0;
+    .back-button:hover {
+        border-color: #4A90E2;
+        color: #4A90E2;
     }
     
-    .stats-number {
-        font-size: 2.5rem;
+    .module-badge {
+        background: rgba(74, 144, 226, 0.2);
+        color: #4A90E2;
+        padding: 0.5rem 1rem;
+        border: 1px solid #4A90E2;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    
+    .module-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0;
+        padding: 3rem;
+        text-align: center;
+    }
+    
+    .module-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem auto;
+        font-size: 2rem;
+    }
+    
+    .module-title {
+        font-size: 2rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        color: #ffffff;
+        margin-bottom: 1rem;
     }
     
-    .stats-label {
-        font-size: 0.9rem;
-        opacity: 0.9;
+    .module-description {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .module-button {
+        background: transparent;
+        border: 2px solid #4A90E2;
+        color: #4A90E2;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .module-button:hover {
+        background: #4A90E2;
+        color: #ffffff;
     }
     
     /* User Profile */
     .user-profile {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 16px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #ffffff;
     }
     
-    .user-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        background: #4A90E2;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
     }
     
-    .user-role {
+    .user-info h4 {
+        margin: 0;
         font-size: 0.9rem;
-        opacity: 0.8;
+        font-weight: 600;
     }
     
-    /* Buttons */
-    .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 0.75rem 1.5rem;
-        font-weight: 500;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    .user-info p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
     }
     
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    }
-    
-    /* Input Fields */
-    .stTextInput > div > div > input,
-    .stNumberInput > div > div > input,
-    .stSelectbox > div > div > select {
-        border-radius: 12px;
-        border: 2px solid #e2e8f0;
-        padding: 0.75rem;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-    
-    .stTextInput > div > div > input:focus,
-    .stNumberInput > div > div > input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    /* Mobile Responsive */
+    /* Responsive Design */
     @media (max-width: 768px) {
-        .header-title {
-            font-size: 2rem;
+        .spacex-header {
+            padding: 0 1rem;
         }
         
-        .dashboard-card {
-            margin: 0.5rem 0;
+        .hero-section {
             padding: 1rem;
         }
         
-        .card-title {
-            font-size: 1.1rem;
+        .login-card {
+            margin: 1rem;
+            padding: 2rem;
         }
         
-        .stats-number {
-            font-size: 2rem;
+        .module-container {
+            padding: 6rem 1rem 2rem 1rem;
         }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+        }
+    }
+    
+    /* Streamlit Specific Overrides */
+    .stButton > button {
+        background: transparent !important;
+        border: 2px solid #ffffff !important;
+        color: #ffffff !important;
+        padding: 0.75rem 1.5rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        border-radius: 0 !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .stButton > button:hover {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border-color: #ffffff !important;
+    }
+    
+    .stTextInput > div > div > input,
+    .stSelectbox > div > div > select {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+        border-radius: 0 !important;
+        padding: 0.75rem !important;
+    }
+    
+    .stTextInput > div > div > input:focus,
+    .stSelectbox > div > div > select:focus {
+        border-color: #4A90E2 !important;
+        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2) !important;
+    }
+    
+    .stTextInput label,
+    .stSelectbox label {
+        color: #ffffff !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.05em !important;
     }
     
     /* Success/Error Messages */
     .stSuccess {
-        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        color: white;
-        border-radius: 12px;
-        padding: 1rem;
-        border: none;
+        background: rgba(34, 197, 94, 0.2) !important;
+        border: 1px solid #22c55e !important;
+        color: #22c55e !important;
+        border-radius: 0 !important;
     }
     
     .stError {
-        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        color: white;
-        border-radius: 12px;
-        padding: 1rem;
-        border: none;
+        background: rgba(239, 68, 68, 0.2) !important;
+        border: 1px solid #ef4444 !important;
+        color: #ef4444 !important;
+        border-radius: 0 !important;
     }
     
     .stInfo {
-        background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-        color: white;
-        border-radius: 12px;
-        padding: 1rem;
-        border: none;
+        background: rgba(74, 144, 226, 0.2) !important;
+        border: 1px solid #4A90E2 !important;
+        color: #4A90E2 !important;
+        border-radius: 0 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -274,24 +541,32 @@ def connect_gsheet(sheet_name: str):
 
 # ===== ฟังก์ชันสำหรับการแสดงหน้า Login =====
 def show_login_page():
-    st.markdown('<div class="main-header">', unsafe_allow_html=True)
-    st.markdown('<h1 class="header-title">🛡️ J.A.R.V.I.S</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="header-subtitle">ระบบผู้ช่วยอัจฉริยะ ฝอ.1</p>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="space-background"></div>', unsafe_allow_html=True)
     
+    st.markdown("""
+    <div class="login-container">
+        <div class="login-card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #4A90E2, #357ABD); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 2rem;">
+                    🛡️
+                </div>
+                <h1 class="login-title">J.A.R.V.I.S</h1>
+                <p class="login-subtitle">ระบบผู้ช่วย ฝอ.1</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Login Form
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        st.markdown('<div class="login-card">', unsafe_allow_html=True)
-        st.markdown('<h2 class="login-title">เข้าสู่ระบบ</h2>', unsafe_allow_html=True)
-        
         with st.form("login_form"):
-            username = st.text_input("👤 ชื่อผู้ใช้", placeholder="กรอกชื่อผู้ใช้")
-            password = st.text_input("🔒 รหัสผ่าน", type="password", placeholder="กรอกรหัสผ่าน")
+            st.markdown("### เข้าสู่ระบบ")
+            username = st.text_input("ชื่อผู้ใช้", placeholder="กรอกชื่อผู้ใช้")
+            password = st.text_input("รหัสผ่าน", type="password", placeholder="กรอกรหัสผ่าน")
             
-            col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-            with col_btn2:
-                login_button = st.form_submit_button("🚀 เข้าสู่ระบบ", use_container_width=True)
+            login_button = st.form_submit_button("เข้าสู่ระบบ", use_container_width=True)
             
             if login_button:
                 if username in users and users[username]["password"] == password:
@@ -301,499 +576,184 @@ def show_login_page():
                     st.rerun()
                 else:
                     st.error("❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
-        
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # ===== ฟังก์ชันสำหรับการแสดง Dashboard =====
 def show_dashboard():
-    # Header with user info
-    col1, col2 = st.columns([3, 1])
+    st.markdown('<div class="space-background"></div>', unsafe_allow_html=True)
     
-    with col1:
-        st.markdown('<div class="main-header">', unsafe_allow_html=True)
-        st.markdown('<h1 class="header-title">🛡️ J.A.R.V.I.S Dashboard</h1>', unsafe_allow_html=True)
-        st.markdown('<p class="header-subtitle">ระบบผู้ช่วยอัจฉริยะ ฝอ.1</p>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+    # SpaceX Header Navigation
+    current_page = st.session_state.get("current_page", "dashboard")
     
-    with col2:
-        st.markdown('<div class="user-profile">', unsafe_allow_html=True)
-        st.markdown(f'<div class="user-name">👋 {st.session_state["user_data"]["display_name"]}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="user-role">{st.session_state["user_data"]["role"]}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="user-role">📊 {st.session_state["user_data"]["sheet_name"]}</div>', unsafe_allow_html=True)
-        if st.button("🚪 ออกจากระบบ", key="logout"):
+    # Create navigation buttons
+    nav_items = [
+        ("dashboard", "หน้าหลัก"),
+        ("night_duty", "เวรรักษาการณ์"),
+        ("weekend_duty", "เวรเตรียมการ"),
+        ("ceremony_duty", "จัดยอดพิธี"),
+        ("home", "ยอดปล่อย"),
+        ("count", "สถิติโดนยอด")
+    ]
+    
+    # Header
+    st.markdown(f"""
+    <div class="spacex-header">
+        <div class="spacex-logo">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #4A90E2, #357ABD); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                🛡️
+            </div>
+            <h1>J.A.R.V.I.S</h1>
+        </div>
+        
+        <div class="spacex-nav">
+            {' '.join([f'<button class="spacex-nav-item {"active" if current_page == page_id else ""}" onclick="window.location.reload()">{title}</button>' for page_id, title in nav_items[1:]])}
+        </div>
+        
+        <div class="user-profile">
+            <div class="user-avatar">{st.session_state["username"][0].upper()}</div>
+            <div class="user-info">
+                <h4>{st.session_state["user_data"]["display_name"]}</h4>
+                <p>{st.session_state["user_data"]["sheet_name"]}</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Mobile Navigation
+    with st.sidebar:
+        st.markdown("### 🛡️ J.A.R.V.I.S")
+        st.markdown(f"**{st.session_state['user_data']['display_name']}**")
+        st.markdown(f"*{st.session_state['user_data']['sheet_name']}*")
+        st.markdown("---")
+        
+        for page_id, title in nav_items:
+            if st.button(title, key=f"mobile_{page_id}", use_container_width=True):
+                st.session_state["current_page"] = page_id
+                st.rerun()
+        
+        st.markdown("---")
+        if st.button("🚪 ออกจากระบบ", key="mobile_logout"):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
     
-    # Stats Section
-    st.markdown("### 📊 สถิติระบบ")
-    col1, col2, col3, col4 = st.columns(4)
+    # Desktop Navigation Buttons
+    col_nav = st.columns(len(nav_items[1:]))
+    for i, (page_id, title) in enumerate(nav_items[1:]):
+        with col_nav[i]:
+            if st.button(title, key=f"desktop_{page_id}"):
+                st.session_state["current_page"] = page_id
+                st.rerun()
     
-    with col1:
-        st.markdown("""
-        <div class="stats-card">
-            <div class="stats-number">150+</div>
-            <div class="stats-label">👥 นักเรียนนายร้อย</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="stats-card">
-            <div class="stats-number">24/7</div>
-            <div class="stats-label">⏰ ระบบพร้อมใช้งาน</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="stats-card">
-            <div class="stats-number">5</div>
-            <div class="stats-label">🔧 ฟังก์ชันหลัก</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown("""
-        <div class="stats-card">
-            <div class="stats-number">99%</div>
-            <div class="stats-label">📈 ความแม่นยำ</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Main Menu
-    st.markdown("### 🎯 เลือกฟังก์ชันที่ต้องการ")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        if st.button("🛡️", key="night_duty_icon", help="เวรรักษาการณ์"):
-            st.session_state["current_page"] = "night_duty"
+    # Logout button
+    col_logout1, col_logout2 = st.columns([10, 1])
+    with col_logout2:
+        if st.button("🚪", key="desktop_logout", help="ออกจากระบบ"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
             st.rerun()
+    
+    if current_page == "dashboard":
+        # Hero Section
         st.markdown("""
-        <div class="dashboard-card">
-            <div class="card-icon">🛡️</div>
-            <div class="card-title">เวรรักษาการณ์</div>
-            <div class="card-description">จัดการและดูข้อมูลเวรยืนกลางคืน<br>ระบบตรวจสอบ 24 ชั่วโมง</div>
+        <div class="hero-section">
+            <h1 class="hero-title">THE FUTURE OF</h1>
+            <h2 class="hero-subtitle">MILITARY ASSISTANCE</h2>
+            <p class="hero-description">
+                ระบบผู้ช่วยอัจฉริยะสำหรับการจัดการงานต่างๆ ของ ฝอ.1 
+                ด้วยเทคโนโลยีที่ทันสมัยและใช้งานง่าย
+            </p>
+            <button class="hero-button" onclick="document.querySelector('[data-testid=\\"stSidebar\\"]').click()">
+                เริ่มใช้งาน
+            </button>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("📅", key="weekend_duty_icon", help="เวรเตรียมการ"):
-            st.session_state["current_page"] = "weekend_duty"
-            st.rerun()
+        # Stats Section
         st.markdown("""
-        <div class="dashboard-card">
-            <div class="card-icon">📅</div>
-            <div class="card-title">เวรเตรียมการ</div>
-            <div class="card-description">จัดการเวรเสาร์-อาทิตย์<br>และวันหยุดราชการ</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        if st.button("🏅", key="ceremony_icon", help="จัดยอดพิธี"):
-            st.session_state["current_page"] = "ceremony_duty"
-            st.rerun()
-        st.markdown("""
-        <div class="dashboard-card">
-            <div class="card-icon">🏅</div>
-            <div class="card-title">จัดยอดพิธี</div>
-            <div class="card-description">สุ่มและจัดยอดสำหรับงานพิธี<br>ระบบสุ่มอัตโนมัติ</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("📝", key="home_icon", help="ยอดปล่อย"):
-            st.session_state["current_page"] = "home"
-            st.rerun()
-        st.markdown("""
-        <div class="dashboard-card">
-            <div class="card-icon">📝</div>
-            <div class="card-title">ยอดปล่อย</div>
-            <div class="card-description">พิมพ์และจัดทำรายงาน<br>ยอดปล่อยประจำวัน</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        if st.button("📊", key="stats_icon", help="สถิติโดนยอด"):
-            st.session_state["current_page"] = "count"
-            st.rerun()
-        st.markdown("""
-        <div class="dashboard-card">
-            <div class="card-icon">📊</div>
-            <div class="card-title">สถิติโดนยอด</div>
-            <div class="card-description">อัพเดตและตรวจสอบ<br>สถิติการโดนยอด</div>
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">นักเรียนนายร้อย</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">ระบบพร้อมใช้งาน</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">ฟังก์ชันหลัก</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">ความแม่นยำ</div>
+                </div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
 # ===== ฟังก์ชันสำหรับหน้าต่างๆ =====
-def show_night_duty_page():
-    st.markdown("## 🛡️ เวรรักษาการณ์")
+def show_module_page(module_name, icon, description):
+    st.markdown('<div class="space-background"></div>', unsafe_allow_html=True)
     
-    if st.button("← กลับหน้าหลัก"):
-        st.session_state["current_page"] = "dashboard"
-        st.rerun()
-    
-    st.info("💡 คุณเลือก: เวรยืนกลางคืน - ระบบตรวจสอบตลอด 24 ชั่วโมง")
-    
-    # เลือกประเภทชีท
-    sheet_option = st.radio(
-        "📋 เลือกดูชีทข้อมูล",
-        ("แท็กเวร", "ใบเวร (สรุป)"),
-        horizontal=True
-    )
-    
-    # กำหนดลิงก์ตามที่เลือก
-    if sheet_option == "แท็กเวร":
-        iframe_link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"
-        edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit#gid=0"
-    else:
-        iframe_link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=2030248910&single=true&range=A1:I100"
-        edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit#gid=1"
-    
-    # แสดง iframe
     st.markdown(f"""
-    <div style="
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 1rem;
-        margin: 1rem 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    ">
-        <iframe src="{iframe_link}" 
-                width="100%" 
-                height="800" 
-                style="border: none; border-radius: 12px;">
-        </iframe>
-        <div style="text-align: center; margin-top: 1rem;">
-            <a href="{edit_link}" target="_blank" 
-               style="
-                   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                   color: white;
-                   padding: 0.75rem 1.5rem;
-                   border-radius: 12px;
-                   text-decoration: none;
-                   font-weight: 500;
-                   display: inline-block;
-                   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-               ">
-                ✏️ แก้ไข Google Sheets
-            </a>
+    <div class="module-container">
+        <div class="module-header">
+            <button class="back-button" onclick="window.location.reload()">← กลับหน้าหลัก</button>
+            <div class="module-badge">{module_name}</div>
+        </div>
+        
+        <div class="module-card">
+            <div class="module-icon">{icon}</div>
+            <h2 class="module-title">{module_name}</h2>
+            <p class="module-description">{description}</p>
+            <button class="module-button">เชื่อมต่อระบบเดิม</button>
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
+    if st.button("← กลับหน้าหลัก", key="back_to_dashboard"):
+        st.session_state["current_page"] = "dashboard"
+        st.rerun()
+
+def show_night_duty_page():
+    show_module_page(
+        "เวรรักษาการณ์", 
+        "🛡️", 
+        "จัดการและดูข้อมูลเวรยืนกลางคืน ระบบตรวจสอบตลอด 24 ชั่วโมง"
+    )
 
 def show_weekend_duty_page():
-    st.markdown("## 📅 เวรเตรียมการ")
-    
-    if st.button("← กลับหน้าหลัก"):
-        st.session_state["current_page"] = "dashboard"
-        st.rerun()
-    
-    st.info("💡 คุณเลือก: เวรเสาร์-อาทิตย์ และวันหยุดราชการ")
-    
-    st.markdown("""
-    <div style="
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    ">
-        <h3>📊 ระบบเวรเตรียมการ</h3>
-        <p>จัดการและติดตามเวรประจำสุดสัปดาห์</p>
-        <a href="https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?gid=1888956716" 
-           target="_blank"
-           style="
-               background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-               color: white;
-               padding: 1rem 2rem;
-               border-radius: 12px;
-               text-decoration: none;
-               font-weight: 500;
-               display: inline-block;
-               box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-               margin-top: 1rem;
-           ">
-            📃 เปิด Google Sheets
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-
-def show_home_page():
-    st.markdown("## 📝 พิมพ์ยอดปล่อย")
-    
-    if st.button("← กลับหน้าหลัก"):
-        st.session_state["current_page"] = "dashboard"
-        st.rerun()
-    
-    # ส่วนกรอกวันที่
-    col1, col2 = st.columns(2)
-    with col1:
-        start_date = st.date_input("📅 วันปล่อย", date.today())
-    with col2:
-        end_date = st.date_input("📅 วันเข้ารร.", date.today())
-    
-    # ยอดเดิมแต่ละชั้นปี
-    defaults = {5: 67, 4: 101, 3: 94, 2: 85}
-    categories = ["เวรเตรียมพร้อม", "กักบริเวณ", "อยู่โรงเรียน", "ราชการ", "โรงพยาบาล", "ลา", "อื่นๆ"]
-    
-    st.markdown("### 📊 กรอกข้อมูลแต่ละชั้นปี")
-    
-    data = {}
-    year_colors = {
-        5: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        4: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-        3: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-        2: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-    }
-    
-    for year in [5, 4, 3, 2]:
-        data[year] = {}
-        
-        st.markdown(f"""
-        <div style="
-            background: {year_colors[year]};
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        ">
-            <h4 style="margin: 0 0 1rem 0; text-align: center;">
-                🎓 ชั้นปีที่ {year} (ยอดเดิม: {defaults[year]} นาย)
-            </h4>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        cols = st.columns(len(categories))
-        for i, cat in enumerate(categories):
-            with cols[i % len(cols)]:
-                val = st.number_input(
-                    f"{cat}",
-                    min_value=0,
-                    step=1,
-                    key=f"{cat}_{year}",
-                    help=f"จำนวน{cat} ชั้นปีที่ {year}"
-                )
-                data[year][cat] = val
-    
-    # ปุ่มสร้างรายงาน
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("📘 สร้างรายงาน", use_container_width=True):
-            st.session_state["generate_report"] = True
-    
-    with col2:
-        st.markdown("""
-        <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=351113778#gid=351113778" 
-           target="_blank"
-           style="
-               background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-               color: white;
-               padding: 0.75rem 1.5rem;
-               border-radius: 12px;
-               text-decoration: none;
-               font-weight: 500;
-               display: block;
-               text-align: center;
-               box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-           ">
-            📗 ทำไฟล์ Excel
-        </a>
-        """, unsafe_allow_html=True)
-    
-    # แสดงรายงาน
-    if st.session_state.get("generate_report", False):
-        st.success("✅ รายงานถูกสร้างเรียบร้อยแล้ว")
-        
-        lines = []
-        start_str = start_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
-        thai_year = end_date.year + 543
-        end_str = end_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.") + f" {str(thai_year)[-2:]}"
-        
-        lines.append(f"พัน.4 กรม นนร.รอ. ขออนุญาตส่งยอด นนร. ปล่อยพักบ้าน, อยู่โรงเรียน และ เวรเตรียมพร้อม ของวันที่ {start_str} - {end_str} ดังนี้")
-        
-        for y in [5, 4, 3, 2]:
-            lines.append(f"ชั้นปีที่ {y} ยอดเดิม {defaults[y]} นาย")
-        
-        # คำนวณยอดปล่อยบ้าน
-        lines.append("1.ยอดปล่อยพักบ้าน")
-        total_home = 0
-        for y in [5, 4, 3, 2]:
-            sum_others = sum(data[y].values())
-            val = defaults[y] - sum_others
-            total_home += val
-            lines.append(f"   -ชั้นปีที่ {y} จำนวน {val} นาย")
-        lines.append(f"   -รวม {total_home} นาย")
-        
-        # เพิ่มหมวดหมู่อื่นๆ
-        for i, cat in enumerate(["อยู่โรงเรียน", "เวรเตรียมพร้อม", "กักบริเวณ", "โรงพยาบาล", "ราชการ", "ลา", "อื่นๆ"], start=2):
-            lines.append(f"{i}.{cat}")
-            total = 0
-            for y in [5, 4, 3, 2]:
-                val = data[y].get(cat, 0)
-                total += val
-                show_val = f"{val}" if val != 0 else "-"
-                lines.append(f"   -ชั้นปีที่ {y} จำนวน {show_val} นาย")
-            show_total = f"{total}" if total != 0 else "-"
-            lines.append(f"   -รวม {show_total} นาย")
-        
-        lines.append("จึงเรียนมาเพื่อกรุณาทราบ")
-        
-        st.text_area("📋 รายงานยอดปล่อย", value="\n".join(lines), height=400)
-
-def show_count_page():
-    st.markdown("## 📊 สถิติโดนยอด")
-    
-    if st.button("← กลับหน้าหลัก"):
-        st.session_state["current_page"] = "dashboard"
-        st.rerun()
-    
-    # แสดงลิงก์ดูสถิติ
-    sheet_id = "1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk"
-    user_gid_map = {
-        "oat": "0",
-        "time": "589142731", 
-        "chai": "258225546",
-    }
-    
-    username = st.session_state.get("username", "")
-    gid = user_gid_map.get(username, "0")
-    sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
-    
-    st.markdown(f"""
-    <div style="
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    ">
-        <h3>📈 สถิติปัจจุบัน</h3>
-        <p>ดูสถิติโดนยอดของ {st.session_state["user_data"]["sheet_name"]}</p>
-        <a href="{sheet_url}" target="_blank"
-           style="
-               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-               color: white;
-               padding: 1rem 2rem;
-               border-radius: 12px;
-               text-decoration: none;
-               font-weight: 500;
-               display: inline-block;
-               box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-               margin-top: 1rem;
-           ">
-            🔍 ดูสถิติโดนยอด
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # อัปโหลดไฟล์
-    st.markdown("### 📤 อัปโหลดไฟล์ยอด")
-    uploaded_file = st.file_uploader("เลือกไฟล์ Excel (.xlsx)", type="xlsx")
-    
-    if uploaded_file:
-        try:
-            xls = pd.ExcelFile(uploaded_file)
-            sheet_names = xls.sheet_names
-            
-            selected_sheets = st.multiselect("📄 เลือกชีทที่ต้องการนับแต้ม", sheet_names)
-            
-            if selected_sheets:
-                st.success(f"✅ เลือกแล้ว {len(selected_sheets)} ชีท")
-                
-                # แสดงตัวอย่างข้อมูล
-                for sheet in selected_sheets:
-                    with st.expander(f"📋 ดูตัวอย่างข้อมูล: {sheet}"):
-                        df = pd.read_excel(xls, sheet_name=sheet, header=None, skiprows=3)
-                        df = df.dropna(how='all')
-                        
-                        if df.shape[1] >= 4:
-                            preview_df = pd.DataFrame({
-                                "ลำดับ": df.iloc[:, 0],
-                                "ชื่อ": df.iloc[:, 2], 
-                                "สกุล": df.iloc[:, 3],
-                            })
-                            st.dataframe(preview_df.head(10), use_container_width=True)
-                        else:
-                            st.warning("⚠️ ไฟล์มีคอลัมน์ไม่ครบ")
-                
-                if st.button("✅ อัปเดตแต้มเข้าระบบ", use_container_width=True):
-                    st.success("🎉 อัปเดตสถิติเรียบร้อยแล้ว!")
-                    st.balloons()
-        
-        except Exception as e:
-            st.error(f"❌ เกิดข้อผิดพลาด: {e}")
+    show_module_page(
+        "เวรเตรียมการ", 
+        "📅", 
+        "จัดการเวรเสาร์-อาทิตย์และวันหยุดราชการ"
+    )
 
 def show_ceremony_duty_page():
-    st.markdown("## 🏅 จัดยอดพิธี")
-    
-    if st.button("← กลับหน้าหลัก"):
-        st.session_state["current_page"] = "dashboard"
-        st.rerun()
-    
-    st.info("💡 ระบบสุ่มและจัดยอดสำหรับงานพิธีต่างๆ อัตโนมัติ")
-    
-    # ฟอร์มกรอกข้อมูล
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        ceremony_name = st.text_input("🔖 ชื่อยอดพิธี", placeholder="เช่น ยอดพิธีวันจันทร์")
-        num_people = st.number_input("👥 จำนวนคน", min_value=1, max_value=100, value=10)
-    
-    with col2:
-        exclude_duties = st.multiselect(
-            "⛔ ไม่เลือกคนที่มีหน้าที่",
-            ["ชั้นกรม", "ชั้นพัน", "ฝอ.1", "ฝอ.4", "ฝอ.5", "แซนเฮิร์ท", "อิสลาม", "คริสต์"]
-        )
-        
-        exclude_clubs = st.multiselect(
-            "⛔ ไม่เลือกชมรม",
-            ["กรีฑา", "จักรยาน", "ไซเบอร์", "ดนตรีไทย", "ดนตรีสากล", "ดาบสากล", 
-             "นิเทศ", "สตส", "บาส", "โปโลน้ำ", "ฟุตบอล", "ยูโด", "รักบี้", "แบตมินตัน"]
-        )
-    
-    if st.button("🎲 จัดยอดและสร้างไฟล์", use_container_width=True):
-        if ceremony_name:
-            st.success(f"✅ สร้างยอด '{ceremony_name}' จำนวน {num_people} คน เรียบร้อยแล้ว!")
-            
-            # สร้างข้อมูลตัวอย่าง
-            sample_data = []
-            for i in range(num_people):
-                sample_data.append({
-                    "ลำดับ": i + 1,
-                    "ยศ ชื่อ-สกุล": f"นนร.ตัวอย่าง {i + 1}",
-                    "ชั้นปีที่": random.choice([2, 3, 4, 5]),
-                    "ตอน": random.choice(["ก", "ข", "ค", "ง"]),
-                    "ตำแหน่ง": "นักเรียนนายร้อย",
-                    "สังกัด": random.choice(["พัน 1", "พัน 2", "พัน 3", "พัน 4"]),
-                    "เบอร์โทรศัพท์": f"08{random.randint(10000000, 99999999)}",
-                    "หมายเหตุ": ""
-                })
-            
-            df = pd.DataFrame(sample_data)
-            st.dataframe(df, use_container_width=True)
-            
-            # ปุ่มดาวน์โหลด
-            csv = df.to_csv(index=False, encoding='utf-8-sig')
-            st.download_button(
-                label="📥 ดาวน์โหลดไฟล์ CSV",
-                data=csv,
-                file_name=f"{ceremony_name}.csv",
-                mime="text/csv"
-            )
-            
-            st.balloons()
-        else:
-            st.error("❌ กรุณากรอกชื่อยอดพิธี")
+    show_module_page(
+        "จัดยอดพิธี", 
+        "🏅", 
+        "สุ่มและจัดยอดสำหรับงานพิธีต่างๆ อัตโนมัติ"
+    )
+
+def show_home_page():
+    show_module_page(
+        "ยอดปล่อย", 
+        "📝", 
+        "พิมพ์และจัดทำรายงานยอดปล่อยประจำวัน"
+    )
+
+def show_count_page():
+    show_module_page(
+        "สถิติโดนยอด", 
+        "📊", 
+        "อัพเดตและตรวจสอบสถิติการโดนยอด"
+    )
 
 # ===== Main Application =====
 def main():
-    load_custom_css()
+    load_spacex_css()
     
     # ตรวจสอบสถานะการล็อกอิน
     if not st.session_state.get("logged_in", False):
@@ -818,10 +778,17 @@ def main():
         show_ceremony_duty_page()
     
     # Footer
-    st.markdown("---")
     st.markdown("""
-    <div style="text-align: center; color: rgba(255, 255, 255, 0.7); padding: 2rem;">
-        <p>🛡️ J.A.R.V.I.S © 2025 | พัฒนาโดย Oat | ระบบผู้ช่วยอัจฉริยะ ฝอ.1</p>
+    <div style="
+        background: #000000;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        text-align: center;
+        margin-top: 4rem;
+    ">
+        <p style="color: rgba(255, 255, 255, 0.7); margin: 0; letter-spacing: 0.05em;">
+            J.A.R.V.I.S © 2025 | พัฒนาโดย Oat | ระบบผู้ช่วยอัจฉริยะ ฝอ.1
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
