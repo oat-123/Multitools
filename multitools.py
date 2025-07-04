@@ -462,4 +462,172 @@ def show_login_page():
         <p class="login-description">
             ระบบผู้ช่วยอัจฉริยะสำหรับการจัดการงานต่างๆ ของ ฝอ.1<br>
             ด้วยเทคโนโลยี AI และการประมวลผลที่ทันสมัย
-        </
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ===== ฟังก์ชันสำหรับการแสดง Dashboard =====
+def show_dashboard():
+    st.markdown('<div class="space-background"></div>', unsafe_allow_html=True)
+    current_page = st.session_state.get("current_page", "dashboard")
+    nav_items = [
+        ("dashboard", "หน้าหลัก"),
+        ("night_duty", "เวรรักษาการณ์"),
+        ("weekend_duty", "เวรเตรียมการ"),
+        ("ceremony_duty", "จัดยอดพิธี"),
+        ("home", "ยอดปล่อย"),
+        ("count", "สถิติโดนยอด")
+    ]
+    st.markdown(f"""
+    <div class="spacex-header">
+        <div class="spacex-logo">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #4A90E2, #357ABD); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🛡️</div>
+            <h1>J.A.R.V.I.S</h1>
+        </div>
+        <div class="spacex-nav">
+            {' '.join([f'<button class="spacex-nav-item {"active" if current_page == page_id else ""}" onclick="window.location.reload()">{title}</button>' for page_id, title in nav_items[1:]])}
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">{st.session_state['username'][0].upper()}</div>
+            <div class="user-info">
+                <h4>{st.session_state['user_data']['display_name']}</h4>
+                <p>{st.session_state['user_data']['sheet_name']}</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.markdown("""
+    <div class="hero-section">
+        <h1 class="hero-title">THE FUTURE OF</h1>
+        <h2 class="hero-subtitle">MILITARY ASSISTANCE</h2>
+        <p class="hero-description">
+            ระบบผู้ช่วยอัจฉริยะสำหรับการจัดการงานต่างๆ ของ ฝอ.1 <br>ด้วยเทคโนโลยีที่ทันสมัยและใช้งานง่าย
+        </p>
+        <button class="hero-button" onclick="document.querySelector('[data-testid=\\"stSidebar\\"]')?.click()">เริ่มใช้งาน</button>
+    </div>
+    """, unsafe_allow_html=True)
+    st.markdown("""
+    <div class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">150+</div>
+                <div class="stat-label">นักเรียนนายร้อย</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">ระบบพร้อมใช้งาน</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">5</div>
+                <div class="stat-label">ฟังก์ชันหลัก</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99%</div>
+                <div class="stat-label">ความแม่นยำ</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ===== ฟังก์ชันสำหรับหน้าต่างๆ =====
+def show_module_page(module_name, icon, description):
+    st.markdown('<div class="space-background"></div>', unsafe_allow_html=True)
+    
+    st.markdown(f"""
+    <div class="module-container">
+        <div class="module-header">
+            <button class="back-button" onclick="window.location.reload()">← กลับหน้าหลัก</button>
+            <div class="module-badge">{module_name}</div>
+        </div>
+        
+        <div class="module-card">
+            <div class="module-icon">{icon}</div>
+            <h2 class="module-title">{module_name}</h2>
+            <p class="module-description">{description}</p>
+            <button class="module-button">เชื่อมต่อระบบเดิม</button>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if st.button("← กลับหน้าหลัก", key="back_to_dashboard"):
+        st.session_state["current_page"] = "dashboard"
+        st.rerun()
+
+def show_night_duty_page():
+    show_module_page(
+        "เวรรักษาการณ์", 
+        "🛡️", 
+        "จัดการและดูข้อมูลเวรยืนกลางคืน ระบบตรวจสอบตลอด 24 ชั่วโมง"
+    )
+
+def show_weekend_duty_page():
+    show_module_page(
+        "เวรเตรียมการ", 
+        "📅", 
+        "จัดการเวรเสาร์-อาทิตย์และวันหยุดราชการ"
+    )
+
+def show_ceremony_duty_page():
+    show_module_page(
+        "จัดยอดพิธี", 
+        "🏅", 
+        "สุ่มและจัดยอดสำหรับงานพิธีต่างๆ อัตโนมัติ"
+    )
+
+def show_home_page():
+    show_module_page(
+        "ยอดปล่อย", 
+        "📝", 
+        "พิมพ์และจัดทำรายงานยอดปล่อยประจำวัน"
+    )
+
+def show_count_page():
+    show_module_page(
+        "สถิติโดนยอด", 
+        "📊", 
+        "อัพเดตและตรวจสอบสถิติการโดนยอด"
+    )
+
+# ===== Main Application =====
+def main():
+    load_spacex_css()
+    
+    # ตรวจสอบสถานะการล็อกอิน
+    if not st.session_state.get("logged_in", False):
+        show_login_page()
+        return
+    
+    # กำหนดหน้าปัจจุบัน
+    current_page = st.session_state.get("current_page", "dashboard")
+    
+    # แสดงหน้าตามที่เลือก
+    if current_page == "dashboard":
+        show_dashboard()
+    elif current_page == "night_duty":
+        show_night_duty_page()
+    elif current_page == "weekend_duty":
+        show_weekend_duty_page()
+    elif current_page == "home":
+        show_home_page()
+    elif current_page == "count":
+        show_count_page()
+    elif current_page == "ceremony_duty":
+        show_ceremony_duty_page()
+    
+    # Footer
+    st.markdown("""
+    <div style="
+        background: #000000;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        text-align: center;
+        margin-top: 4rem;
+    ">
+        <p style="color: rgba(255, 255, 255, 0.7); margin: 0; letter-spacing: 0.05em;">
+            J.A.R.V.I.S © 2025 | พัฒนาโดย Oat | ระบบผู้ช่วยอัจฉริยะ ฝอ.1
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()
