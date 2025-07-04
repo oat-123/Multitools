@@ -57,6 +57,20 @@ def render_header():
     st.markdown("""
         <style>
         /* Responsive header and image */
+        .header-img-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .header-img-container img {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
         .title-text {
             font-size: 2.2rem;
             font-weight: bold;
@@ -73,15 +87,18 @@ def render_header():
             .subtitle-text {
                 font-size: 1rem;
             }
-            img {
-                width: 180px !important;
+            .header-img-container img {
+                max-width: 180px;
             }
         }
         </style>
     """, unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image("https://images4.alphacoders.com/112/1127690.png", use_container_width=True)
+    st.markdown(
+        '<div class="header-img-container">'
+        '<img src="https://images4.alphacoders.com/112/1127690.png" alt="header" />'
+        '</div>',
+        unsafe_allow_html=True
+    )
     st.markdown("""
         <div style='text-align: center;'>
             <div class='title-text'>
