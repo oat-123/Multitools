@@ -458,13 +458,28 @@ def show_login_page():
     <div class="login-header">
         <div class="login-logo">🛡️</div>
         <h1 class="login-title">J.A.R.V.I.S</h1>
-        <p class="login-subtitle">Military Assistance System</p>
+        <p class="login-subtitle">MILITARY ASSISTANCE SYSTEM</p>
         <p class="login-description">
             ระบบผู้ช่วยอัจฉริยะสำหรับการจัดการงานต่างๆ ของ ฝอ.1<br>
             ด้วยเทคโนโลยี AI และการประมวลผลที่ทันสมัย
         </p>
     </div>
     """, unsafe_allow_html=True)
+
+    # เพิ่มฟอร์ม login
+    with st.form("login_form"):
+        username = st.text_input("ชื่อผู้ใช้", placeholder="กรอกชื่อผู้ใช้")
+        password = st.text_input("รหัสผ่าน", type="password", placeholder="กรอกรหัสผ่าน")
+        login_button = st.form_submit_button("เข้าสู่ระบบ")
+        if login_button:
+            if username in users and users[username]["password"] == password:
+                st.session_state["logged_in"] = True
+                st.session_state["username"] = username
+                st.session_state["user_data"] = users[username]
+                st.session_state["current_page"] = "dashboard"
+                st.rerun()
+            else:
+                st.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
 # ===== ฟังก์ชันสำหรับการแสดง Dashboard =====
 def show_dashboard():
