@@ -453,9 +453,9 @@ def connect_gsheet(sheet_name: str):
 
 # ===== ฟังก์ชันสำหรับการแสดงหน้า Login =====
 def show_login_page():
-    # Header Section
+    # กล่อง login-header + ฟอร์ม login อยู่ในกล่องเดียวกัน
     st.markdown("""
-    <div class="login-header">
+    <div class="login-header" style="max-width:700px;margin:3rem auto 0 auto;">
         <div class="login-logo">🛡️</div>
         <h1 class="login-title">J.A.R.V.I.S</h1>
         <p class="login-subtitle">MILITARY ASSISTANCE SYSTEM</p>
@@ -463,31 +463,39 @@ def show_login_page():
             ระบบผู้ช่วยอัจฉริยะสำหรับการจัดการงานต่างๆ ของ ฝอ.1<br>
             ด้วยเทคโนโลยี AI และการประมวลผลที่ทันสมัย
         </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Centered login form card
-    st.markdown("""
-    <div style='display: flex; justify-content: center; align-items: center; min-height: 40vh;'>
-        <div class="login-form" style="max-width: 400px; width: 100%; margin: 0 auto;">
-            <form>
-            </form>
+        <div style="margin-top:2.5rem;">
+            <!-- login form will be rendered here by Streamlit -->
         </div>
     </div>
     """, unsafe_allow_html=True)
-    with st.form("login_form"):
-        username = st.text_input("ชื่อผู้ใช้", placeholder="กรอกชื่อผู้ใช้")
-        password = st.text_input("รหัสผ่าน", type="password", placeholder="กรอกรหัสผ่าน")
-        login_button = st.form_submit_button("เข้าสู่ระบบ")
-        if login_button:
-            if username in users and users[username]["password"] == password:
-                st.session_state["logged_in"] = True
-                st.session_state["username"] = username
-                st.session_state["user_data"] = users[username]
-                st.session_state["current_page"] = "dashboard"
-                st.rerun()
-            else:
-                st.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+
+    # ใช้ container เพื่อให้ฟอร์มอยู่ในกล่อง login-header
+    with st.container():
+        st.markdown(
+            """
+            <style>
+            div[data-testid="stForm"] {
+                margin-left: auto !important;
+                margin-right: auto !important;
+                max-width: 400px !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+        with st.form("login_form"):
+            username = st.text_input("ชื่อผู้ใช้", placeholder="กรอกชื่อผู้ใช้")
+            password = st.text_input("รหัสผ่าน", type="password", placeholder="กรอกรหัสผ่าน")
+            login_button = st.form_submit_button("เข้าสู่ระบบ")
+            if login_button:
+                if username in users and users[username]["password"] == password:
+                    st.session_state["logged_in"] = True
+                    st.session_state["username"] = username
+                    st.session_state["user_data"] = users[username]
+                    st.session_state["current_page"] = "dashboard"
+                    st.rerun()
+                else:
+                    st.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
 # ===== ฟังก์ชันสำหรับการแสดง Dashboard =====
 def show_dashboard():
