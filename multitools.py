@@ -1,1157 +1,749 @@
 import streamlit as st
+import webbrowser
+import subprocess
 import pandas as pd
 import random
 from collections import defaultdict
-from datetime import date, datetime
+from openpyxl.styles import Alignment, Border, Side
+from openpyxl import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+from datetime import date
+import io
 import time
 import gspread
 from google.oauth2 import service_account
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
-# ===== การตั้งค่าหน้าเว็บ =====
-st.set_page_config(
-    page_title="J.A.R.V.I.S - ระบบผู้ช่วย ฝอ.1",
-    page_icon="🛡️",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
-
-# ===== ข้อมูลผู้ใช้ =====
+# ===== ระบบ Login =====
 users = {
-    "oat": {"password": "crma74", "sheet_name": "ชั้น4_พัน4", "display_name": "ผู้ใช้ OAT", "role": "ผู้ดูแลระบบ", "avatar": "👨‍💼"},
-    "time": {"password": "crma74", "sheet_name": "ชั้น4_พัน1", "display_name": "ผู้ใช้ TIME", "role": "ผู้ใช้งาน", "avatar": "👨‍🎓"},
-    "chai": {"password": "crma74", "sheet_name": "ชั้น4_พัน3", "display_name": "ผู้ใช้ CHAI", "role": "ผู้ใช้งาน", "avatar": "👨‍🎓"}
+    "oat": {"password": "crma74", "sheet_name": "ชั้น4_พัน4"},
+    "time": {"password": "crma74", "sheet_name": "ชั้น4_พัน1"},
+    "chai": {"password": "crma74", "sheet_name": "ชั้น4_พัน3"}
 }
 
-# ===== ฟังก์ชันสำหรับ Enhanced CSS =====
-def load_enhanced_css():
-    st.markdown("""
-    <style>
-    /* Import Modern Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-    
-    /* Hide Streamlit Elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stDeployButton {visibility: hidden;}
-    .stDecoration {display: none;}
-    
-    /* Global Styles */
-    .stApp {
-        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0e4b99 100%);
-        color: white;
-        font-family: 'Inter', sans-serif;
-    }
-    
-    /* Animated Background */
-    .stApp::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: 
-            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
-        z-index: -1;
-        animation: backgroundShift 20s ease-in-out infinite;
-    }
-    
-    @keyframes backgroundShift {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.8; }
-    }
-    
-    /* Main Container */
-    .main .block-container {
-        padding: 1rem;
-        max-width: 1400px;
-    }
-    
-    /* ===== LOGIN PAGE STYLES ===== */
-    
-    /* Login Container */
-    .login-container {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 2rem;
-        position: relative;
-    }
-    
-    /* Floating Particles */
-    .login-container::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            radial-gradient(2px 2px at 100px 50px, rgba(255,255,255,0.4), transparent),
-            radial-gradient(1px 1px at 200px 100px, rgba(74,144,226,0.6), transparent),
-            radial-gradient(1px 1px at 300px 200px, rgba(255,255,255,0.3), transparent),
-            radial-gradient(2px 2px at 400px 150px, rgba(74,144,226,0.4), transparent);
-        background-size: 500px 300px;
-        animation: floatingParticles 25s linear infinite;
-        pointer-events: none;
-        z-index: 1;
-    }
-    
-    @keyframes floatingParticles {
-        0% { transform: translateX(0) translateY(0); }
-        100% { transform: translateX(-500px) translateY(-300px); }
-    }
-    
-    /* Login Header */
-    .login-header {
-        text-align: center;
-        margin-bottom: 3rem;
-        padding: 3rem 2rem;
-        background: rgba(15, 25, 45, 0.8);
-        backdrop-filter: blur(20px);
-        border-radius: 24px;
-        border: 1px solid rgba(74, 144, 226, 0.2);
-        box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.4),
-            0 0 80px rgba(74, 144, 226, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        position: relative;
-        z-index: 2;
-        max-width: 600px;
-        width: 100%;
-    }
-    
-    /* Animated Logo */
-    .login-logo {
-        width: 140px;
-        height: 140px;
-        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 30%, #2E5F8A 60%, #1E3A8A 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 2rem auto;
-        font-size: 4.5rem;
-        position: relative;
-        animation: logoFloat 6s ease-in-out infinite;
-        box-shadow: 
-            0 0 40px rgba(74, 144, 226, 0.6),
-            0 0 80px rgba(74, 144, 226, 0.3),
-            inset 0 2px 20px rgba(255, 255, 255, 0.2);
-    }
-    
-    .login-logo::before {
-        content: '';
-        position: absolute;
-        top: -10px;
-        left: -10px;
-        right: -10px;
-        bottom: -10px;
-        border: 2px solid rgba(74, 144, 226, 0.4);
-        border-radius: 50%;
-        animation: logoRing1 4s linear infinite;
-    }
-    
-    .login-logo::after {
-        content: '';
-        position: absolute;
-        top: -20px;
-        left: -20px;
-        right: -20px;
-        bottom: -20px;
-        border: 1px solid rgba(74, 144, 226, 0.2);
-        border-radius: 50%;
-        animation: logoRing2 6s linear infinite reverse;
-    }
-    
-    @keyframes logoFloat {
-        0%, 100% { transform: translateY(0) scale(1); }
-        50% { transform: translateY(-10px) scale(1.05); }
-    }
-    
-    @keyframes logoRing1 {
-        0% { transform: rotate(0deg) scale(1); opacity: 1; }
-        100% { transform: rotate(360deg) scale(1.1); opacity: 0.5; }
-    }
-    
-    @keyframes logoRing2 {
-        0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
-        100% { transform: rotate(-360deg) scale(1.2); opacity: 0; }
-    }
-    
-    /* Typography */
-    .login-title {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 4rem;
-        font-weight: 800;
-        color: #ffffff;
-        margin: 0 0 1rem 0;
-        letter-spacing: 0.1em;
-        text-shadow: 
-            0 0 20px rgba(74, 144, 226, 0.8),
-            0 0 40px rgba(74, 144, 226, 0.4);
-        animation: titleGlow 3s ease-in-out infinite alternate;
-    }
-    
-    @keyframes titleGlow {
-        0% { text-shadow: 0 0 20px rgba(74, 144, 226, 0.8), 0 0 40px rgba(74, 144, 226, 0.4); }
-        100% { text-shadow: 0 0 30px rgba(74, 144, 226, 1), 0 0 60px rgba(74, 144, 226, 0.6); }
-    }
-    
-    .login-subtitle {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 1.4rem;
-        color: rgba(74, 144, 226, 0.9);
-        margin: 0 0 1.5rem 0;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        font-weight: 500;
-    }
-    
-    .login-description {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.6;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-    
-    /* Login Form */
-    .login-form-container {
-        background: rgba(15, 25, 45, 0.9);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 3rem 2.5rem;
-        border: 1px solid rgba(74, 144, 226, 0.3);
-        box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        max-width: 450px;
-        width: 100%;
-        position: relative;
-        z-index: 2;
-    }
-    
-    /* Form Elements */
-    .stTextInput > div > div > input {
-        background: linear-gradient(135deg, rgba(20, 30, 50, 0.8) 0%, rgba(15, 25, 40, 0.9) 100%) !important;
-        border: 2px solid rgba(74, 144, 226, 0.3) !important;
-        border-radius: 12px !important;
-        color: #ffffff !important;
-        font-family: 'Inter', sans-serif !important;
-        font-size: 1.1rem !important;
-        font-weight: 500 !important;
-        padding: 1.2rem 1.5rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2) !important;
-    }
-    
-    .stTextInput > div > div > input:focus {
-        border-color: rgba(74, 144, 226, 0.8) !important;
-        box-shadow: 
-            0 0 0 3px rgba(74, 144, 226, 0.2),
-            inset 0 2px 10px rgba(0, 0, 0, 0.2) !important;
-        outline: none !important;
-        background: linear-gradient(135deg, rgba(25, 35, 55, 0.9) 0%, rgba(20, 30, 45, 0.95) 100%) !important;
-    }
-    
-    .stTextInput > div > div > input::placeholder {
-        color: rgba(255, 255, 255, 0.5) !important;
-        font-style: italic;
-    }
-    
-    .stTextInput label {
-        color: rgba(255, 255, 255, 0.9) !important;
-        font-family: 'Inter', sans-serif !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-        letter-spacing: 0.05em !important;
-        margin-bottom: 0.8rem !important;
-    }
-    
-    /* Enhanced Button */
-    .stButton > button {
-        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 50%, #2E5F8A 100%) !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 12px !important;
-        font-family: 'Space Grotesk', sans-serif !important;
-        font-size: 1.2rem !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.1em !important;
-        text-transform: uppercase !important;
-        padding: 1.2rem 2rem !important;
-        width: 100% !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 
-            0 10px 30px rgba(74, 144, 226, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-        position: relative !important;
-        overflow: hidden !important;
-    }
-    
-    .stButton > button::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s ease;
-    }
-    
-    .stButton > button:hover {
-        background: linear-gradient(135deg, #357ABD 0%, #4A90E2 50%, #5BA0F2 100%) !important;
-        box-shadow: 
-            0 15px 40px rgba(74, 144, 226, 0.4),
-            0 0 60px rgba(74, 144, 226, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-        transform: translateY(-3px) !important;
-    }
-    
-    .stButton > button:hover::before {
-        left: 100%;
-    }
-    
-    /* Status Messages */
-    .stSuccess {
-        background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.1) 100%) !important;
-        border: 1px solid rgba(34, 197, 94, 0.6) !important;
-        border-radius: 12px !important;
-        color: #4ade80 !important;
-        font-family: 'Inter', sans-serif !important;
-        font-weight: 500 !important;
-        backdrop-filter: blur(10px) !important;
-    }
-    
-    .stError {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%) !important;
-        border: 1px solid rgba(239, 68, 68, 0.6) !important;
-        border-radius: 12px !important;
-        color: #ff6b6b !important;
-        font-family: 'Inter', sans-serif !important;
-        font-weight: 500 !important;
-        backdrop-filter: blur(10px) !important;
-    }
-    
-    .stWarning {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%) !important;
-        border: 1px solid rgba(245, 158, 11, 0.6) !important;
-        border-radius: 12px !important;
-        color: #fbbf24 !important;
-        font-family: 'Inter', sans-serif !important;
-        font-weight: 500 !important;
-        backdrop-filter: blur(10px) !important;
-    }
-    
-    /* Info Box */
-    .info-box {
-        background: rgba(74, 144, 226, 0.1);
-        border: 1px solid rgba(74, 144, 226, 0.3);
-        border-radius: 16px;
-        padding: 2rem;
-        margin-top: 2rem;
-        backdrop-filter: blur(10px);
-    }
-    
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin-top: 1rem;
-    }
-    
-    .info-item {
-        text-align: center;
-        padding: 1.5rem;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: all 0.3s ease;
-    }
-    
-    .info-item:hover {
-        background: rgba(255, 255, 255, 0.1);
-        transform: translateY(-2px);
-    }
-    
-    .info-icon {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-    
-    .info-title {
-        font-family: 'Inter', sans-serif;
-        font-weight: 600;
-        color: #ffffff;
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-    }
-    
-    .info-desc {
-        font-family: 'Inter', sans-serif;
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 0.9rem;
-        line-height: 1.4;
-    }
-    
-    /* ===== DASHBOARD STYLES ===== */
-    
-    /* Dashboard Header */
-    .dashboard-header {
-        background: rgba(15, 25, 45, 0.9);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(74, 144, 226, 0.3);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-    
-    .dashboard-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 2rem;
-    }
-    
-    .dashboard-logo {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    
-    .dashboard-logo-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #4A90E2, #357ABD);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        box-shadow: 0 0 20px rgba(74, 144, 226, 0.4);
-    }
-    
-    .dashboard-title {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #ffffff;
-        margin: 0;
-        letter-spacing: 0.1em;
-        text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
-    }
-    
-    .user-profile {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        background: rgba(74, 144, 226, 0.1);
-        border: 1px solid rgba(74, 144, 226, 0.3);
-        border-radius: 16px;
-        padding: 1rem 1.5rem;
-        backdrop-filter: blur(10px);
-    }
-    
-    .user-avatar {
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #4A90E2, #357ABD);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        box-shadow: 0 0 15px rgba(74, 144, 226, 0.4);
-    }
-    
-    .user-info h4 {
-        margin: 0;
-        color: #ffffff;
-        font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
-    
-    .user-info p {
-        margin: 0;
-        color: rgba(255, 255, 255, 0.7);
-        font-family: 'Inter', sans-serif;
-        font-size: 0.9rem;
-    }
-    
-    /* Navigation Buttons */
-    .nav-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin: 2rem 0;
-    }
-    
-    .nav-card {
-        background: rgba(15, 25, 45, 0.8);
-        border: 1px solid rgba(74, 144, 226, 0.3);
-        border-radius: 16px;
-        padding: 2rem;
-        text-align: center;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        backdrop-filter: blur(10px);
-    }
-    
-    .nav-card:hover {
-        background: rgba(74, 144, 226, 0.1);
-        border-color: rgba(74, 144, 226, 0.6);
-        transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(74, 144, 226, 0.2);
-    }
-    
-    .nav-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        display: block;
-        filter: drop-shadow(0 0 10px rgba(74, 144, 226, 0.5));
-    }
-    
-    .nav-title {
-        font-family: 'Inter', sans-serif;
-        font-weight: 600;
-        color: #ffffff;
-        margin-bottom: 0.5rem;
-        font-size: 1.2rem;
-    }
-    
-    .nav-desc {
-        font-family: 'Inter', sans-serif;
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 0.9rem;
-        line-height: 1.4;
-    }
-    
-    /* Hero Section */
-    .hero-section {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: rgba(74, 144, 226, 0.1);
-        border-radius: 24px;
-        margin: 3rem 0;
-        border: 1px solid rgba(74, 144, 226, 0.2);
-        backdrop-filter: blur(10px);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, transparent 30%, rgba(74, 144, 226, 0.1) 50%, transparent 70%);
-        animation: heroShine 3s ease-in-out infinite;
-    }
-    
-    @keyframes heroShine {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-    
-    .hero-title {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 3.5rem;
-        font-weight: 800;
-        color: #ffffff;
-        margin-bottom: 1rem;
-        letter-spacing: 0.1em;
-        text-shadow: 0 0 30px rgba(74, 144, 226, 0.6);
-        position: relative;
-        z-index: 1;
-    }
-    
-    .hero-subtitle {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2.5rem;
-        font-weight: 600;
-        color: #4A90E2;
-        margin-bottom: 2rem;
-        letter-spacing: 0.1em;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .hero-description {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.3rem;
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.6;
-        max-width: 800px;
-        margin: 0 auto 3rem auto;
-        position: relative;
-        z-index: 1;
-    }
-    
-    /* Stats Grid */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        margin: 3rem 0;
-    }
-    
-    .stat-card {
-        background: rgba(15, 25, 45, 0.8);
-        border: 1px solid rgba(74, 144, 226, 0.3);
-        border-radius: 20px;
-        padding: 2.5rem;
-        text-align: center;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        backdrop-filter: blur(10px);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #4A90E2, #357ABD, #2E5F8A);
-        border-radius: 20px 20px 0 0;
-    }
-    
-    .stat-card:hover {
-        border-color: rgba(74, 144, 226, 0.6);
-        box-shadow: 0 20px 50px rgba(74, 144, 226, 0.2);
-        transform: translateY(-8px);
-    }
-    
-    .stat-number {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 3.5rem;
-        font-weight: 800;
-        color: #4A90E2;
-        margin-bottom: 1rem;
-        text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
-        line-height: 1;
-    }
-    
-    .stat-label {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.2rem;
-        color: rgba(255, 255, 255, 0.9);
-        font-weight: 500;
-        letter-spacing: 0.05em;
-    }
-    
-    .stat-description {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.6);
-        margin-top: 0.5rem;
-        line-height: 1.4;
-    }
-    
-    /* Time Display */
-    .time-display {
-        background: rgba(74, 144, 226, 0.1);
-        border: 1px solid rgba(74, 144, 226, 0.3);
-        border-radius: 12px;
-        padding: 1rem;
-        text-align: center;
-        margin: 1rem 0;
-        backdrop-filter: blur(10px);
-    }
-    
-    .current-time {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 1.5rem;
-        color: #4A90E2;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-    
-    .current-date {
-        font-family: 'Inter', sans-serif;
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 1rem;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .login-title {
-            font-size: 2.5rem;
-        }
-        
-        .login-logo {
-            width: 100px;
-            height: 100px;
-            font-size: 3rem;
-        }
-        
-        .hero-title {
-            font-size: 2.5rem;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.8rem;
-        }
-        
-        .dashboard-nav {
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .nav-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .info-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-    
-    /* Loading Animation */
-    .loading-spinner {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 3px solid rgba(74, 144, 226, 0.3);
-        border-radius: 50%;
-        border-top-color: #4A90E2;
-        animation: spin 1s ease-in-out infinite;
-        margin-right: 0.5rem;
-    }
-    
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-    
-    /* Footer */
-    .footer {
-        background: rgba(15, 25, 45, 0.8);
-        border-top: 1px solid rgba(74, 144, 226, 0.2);
-        padding: 3rem 2rem;
-        text-align: center;
-        margin-top: 4rem;
-        backdrop-filter: blur(10px);
-    }
-    
-    .footer-content {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    .footer-text {
-        color: rgba(255, 255, 255, 0.7);
-        font-family: 'Inter', sans-serif;
-        font-size: 1rem;
-        margin: 0;
-        letter-spacing: 0.05em;
-    }
-    
-    .footer-links {
-        margin-top: 1rem;
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        flex-wrap: wrap;
-    }
-    
-    .footer-link {
-        color: rgba(74, 144, 226, 0.8);
-        text-decoration: none;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.9rem;
-        transition: color 0.3s ease;
-    }
-    
-    .footer-link:hover {
-        color: #4A90E2;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+st.sidebar.title("🔐 เข้าสู่ระบบ")
+username = st.sidebar.text_input("ชื่อผู้ใช้")
+password = st.sidebar.text_input("รหัสผ่าน", type="password")
 
-# ===== ฟังก์ชันสำหรับการเชื่อมต่อ Google Sheets =====
-@st.cache_resource
+if st.sidebar.button("เข้าสู่ระบบ"):
+    if username in users and users[username]["password"] == password:
+        st.session_state["logged_in"] = True
+        st.session_state["username"] = username
+        st.session_state["sheet_name"] = users[username]["sheet_name"]
+        st.rerun()
+    else:
+        st.sidebar.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+
+if not st.session_state.get("logged_in"):
+    st.stop()
+
+st.sidebar.success(f"ยินดีต้อนรับ {st.session_state['username']}")
+st.sidebar.success(f"ฐานข้อมูล : {st.session_state['sheet_name']}")
+
 def connect_gsheet(sheet_name: str):
+    creds_dict = st.secrets["gcp_service_account"]
+    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+    client = gspread.authorize(creds)
+    sheet = client.open_by_url(
+        "https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?usp=drivesdk"
+    )
+    worksheet = sheet.worksheet(sheet_name)
+    return worksheet
+
+worksheet = connect_gsheet(st.session_state["sheet_name"])
+
+# --- ส่วนตกแต่งและ layout ---
+def render_header():
+    st.markdown("""
+        <style>
+        /* Soft dark theme background and text */
+        body, .stApp, .main, .block-container {
+            background: #23272f !important;
+            color: #f3f4f6 !important;
+        }
+        .stSidebar, .css-1d391kg, .css-1lcbmhc, .css-1v0mbdj {
+            background: #232733 !important;
+        }
+        .header-img-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .header-img-container img {
+            max-width: 180px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+        }
+        .title-text {
+            font-size: 2.1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #6ec1e4;
+            text-shadow: 1px 2px 8px #00000033;
+        }
+        .subtitle-text {
+            font-size: 1.1rem;
+            color: #bfc9d1;
+            margin-bottom: 10px;
+        }
+        .stButton>button, .export-link {
+            background: linear-gradient(90deg, #6ec1e4 0%, #7f8fa6 100%);
+            color: #23272f;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.08rem;
+            font-weight: 500;
+            padding: 0.5em 1.2em;
+            margin: 0.2em 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: background 0.2s, color 0.2s;
+        }
+        .stButton>button:hover, .export-link:hover {
+            background: linear-gradient(90deg, #7f8fa6 0%, #6ec1e4 100%);
+            color: #23272f;
+        }
+        .card {
+            background: #262b36;
+            border-radius: 13px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+            padding: 1.2em 0.5em 1em 0.5em;
+            margin-bottom: 1em;
+            text-align: center;
+            border: 1px solid #23272f;
+            color: #e3e7ef;
+            transition: box-shadow 0.2s, border 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 18px rgba(110,193,228,0.18);
+            border: 1.5px solid #6ec1e4;
+        }
+        .stTextInput>div>div>input, .stTextArea textarea, .stNumberInput input, .stSelectbox>div>div>div>input, .stMultiSelect>div>div>div>input {
+            background: #232733 !important;
+            color: #f3f4f6 !important;
+            border-radius: 8px;
+            border: 1px solid #353b48;
+        }
+        .stTextInput>div>div>input:focus, .stTextArea textarea:focus, .stNumberInput input:focus {
+            border: 1.5px solid #6ec1e4;
+        }
+        .stExpanderHeader {
+            color: #6ec1e4 !important;
+        }
+        .stDataFrame, .stTable {
+            background: #232733 !important;
+            color: #f3f4f6 !important;
+        }
+        @media (max-width: 600px) {
+            .title-text {
+                font-size: 1.2rem;
+            }
+            .subtitle-text {
+                font-size: 0.98rem;
+            }
+            .header-img-container img {
+                max-width: 90px;
+            }
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    st.markdown(
+        '<div class="header-img-container">'
+        '<img src="https://images4.alphacoders.com/112/1127690.png" alt="header" />'
+        '</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown("""
+        <div style='text-align: center;'>
+            <div class='title-text'>
+                <span>J.A.R.V.I.S</span> <span style='color:#bfc9d1;'>ระบบผู้ช่วย ฝอ.1</span>
+            </div>
+            <div class='subtitle-text'>⏬เลือกฟังก์ชันที่ต้องการจากด้านล่าง⏬</div>
+            <hr style='border: 1px solid #353b48; margin-top: 10px; margin-bottom: 25px;'>
+        </div>
+    """, unsafe_allow_html=True)
+
+def render_menu():
+    st.markdown("""
+        <style>
+        .card {
+            background: #262b36;
+            border-radius: 13px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+            padding: 1.2em 0.5em 1em 0.5em;
+            margin-bottom: 1em;
+            text-align: center;
+            border: 1px solid #23272f;
+            color: #e3e7ef;
+            transition: box-shadow 0.2s, border 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 18px rgba(110,193,228,0.18);
+            border: 1.5px solid #6ec1e4;
+        }
+        @media (max-width: 600px) {
+            .stColumns {
+                flex-direction: column !important;
+            }
+            .card {
+                margin-bottom: 1.2em;
+                padding: 1em 0.2em;
+            }
+        }
+        .stButton>button {
+            width: 100%;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #6ec1e4 0%, #2d3440 100%);
+            color: #23272f;
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: background 0.2s, color 0.2s;
+        }
+        .stButton>button:hover {
+            background: linear-gradient(90deg, #2d3440 0%, #6ec1e4 100%);
+            color: #e3e7ef;
+        }
+        /* Input fields */
+        .stTextInput>div>div>input, .stTextArea textarea, .stNumberInput input, .stSelectbox>div>div>div>input, .stMultiSelect>div>div>div>input {
+            background: #232733 !important;
+            color: #f3f4f6 !important;
+            border-radius: 8px;
+            border: 1px solid #353b48;
+        }
+        .stTextInput>div>div>input:focus, .stTextArea textarea:focus, .stNumberInput input:focus {
+            border: 1.5px solid #6ec1e4;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.markdown("#### 🛡 เวรรักษาการณ์")
+        if st.button("ดู-อัพเดต", key="night_duty_btn"):
+            st.session_state["mode"] = "night_duty"
+        st.markdown("</div>", unsafe_allow_html=True)
+    with col2:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.markdown("#### 📅 เวรเตรียมการ")
+        if st.button("ดู-อัพเดต", key="weekend_duty_btn"):
+            st.session_state["mode"] = "weekend_duty"
+        st.markdown("</div>", unsafe_allow_html=True)
+    with col3:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.markdown("#### 🏅 จัดยอดพิธี")
+        if st.button("จัดยอด(สุ่ม)", key="ceremony_duty_btn"):
+            st.session_state["mode"] = "ceremony_duty"
+        st.markdown("</div>", unsafe_allow_html=True)
+    col4, col5, _ = st.columns([1, 1, 1])
+    with col4:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.markdown("#### 📝 ยอดปล่อย")
+        if st.button("พิมพ์", key="home_btn"):
+            st.session_state["mode"] = "home"
+        st.markdown("</div>", unsafe_allow_html=True)
+    with col5:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.markdown("#### 📊 สถิติโดนยอด")
+        if st.button("อัพเดต-ตรวจสอบ", key="count_btn"):
+            st.session_state["mode"] = "count"
+        st.markdown("</div>", unsafe_allow_html=True)
+
+def night_duty_mode():
+    st.info("คุณเลือก: เวรยืนกลางคืน")
+    # ลิงก์ CSV export (จากชีทแรก)
+    csv_url = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/export?format=csv"
+
     try:
-        creds_dict = st.secrets["gcp_service_account"]
-        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-        creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
-        client = gspread.authorize(creds)
-        sheet = client.open_by_url(
-            "https://docs.google.com/spreadsheets/d/1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk/edit?usp=drivesdk"
-        )
-        worksheet = sheet.worksheet(sheet_name)
-        return worksheet
-    except:
-        return None
-
-# ===== ฟังก์ชันสำหรับการแสดงเวลาปัจจุบัน =====
-def get_current_time():
-    now = datetime.now()
-    return now.strftime("%H:%M:%S"), now.strftime("%d/%m/%Y")
-
-# ===== ฟังก์ชันสำหรับการแสดงหน้า Login =====
-def show_login_page():
-    st.markdown("""
-    <div class="login-container">
-        <div class="login-header">
-            <div class="login-logo">🛡️</div>
-            <h1 class="login-title">J.A.R.V.I.S</h1>
-            <p class="login-subtitle">MILITARY ASSISTANCE SYSTEM</p>
-            <p class="login-description">
-                ระบบผู้ช่วยอัจฉริยะสำหรับการจัดการงานต่างๆ ของ ฝอ.1<br>
-                ด้วยเทคโนโลยี AI และการประมวลผลที่ทันสมัย พร้อมระบบรักษาความปลอดภัยระดับสูง
-            </p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Login Form
-    col1, col2, col3 = st.columns([1, 2, 1])
-    
-    with col2:
-        st.markdown('<div class="login-form-container">', unsafe_allow_html=True)
+        # ให้ผู้ใช้เลือกระหว่างชีทแทกเวร หรือ ใบเวร (สรุป)
+        sheet_option = st.radio(
+            "เลือกดูชีท",
+            ("แท็กเวร", "ใบเวร (สรุป)"))
         
-        st.markdown("### 🔐 เข้าสู่ระบบ")
+        # สร้างลิงก์สำหรับชีทที่เลือก
+        if sheet_option == "แท็กเวร":
+            iframe_link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=0&single=true&range=A1:I100"  # ลิงก์ชีทแทกเวร
+            edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit#gid=0"  # ลิงก์แก้ไขชีทแทกเวร
+        else:
+            iframe_link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8pO9068jsukCJL0guT_dF7I5cjYMMIhsu7ah-1DkPxSMxnYFsSkuRgffvSUJKVZzQccQyJEOPxvvg/pubhtml?gid=2030248910&single=true&range=A1:I100"  # ลิงก์ใบเวร (สรุป)
+            edit_link = "https://docs.google.com/spreadsheets/d/1PjT38W2Zx7KV764yv9Vjwo9i0TJPacRI0iUGzP0ItAU/edit#gid=1"  # ลิงก์แก้ไขใบเวร (สรุป)
         
-        with st.form("login_form", clear_on_submit=False):
-            username = st.text_input(
-                "👤 ชื่อผู้ใช้", 
-                placeholder="กรอกชื่อผู้ใช้งาน...",
-                help="ใช้ชื่อผู้ใช้ที่ได้รับจากระบบ"
-            )
-            
-            password = st.text_input(
-                "🔒 รหัสผ่าน", 
-                type="password", 
-                placeholder="กรอกรหัสผ่าน...",
-                help="รหัสผ่านที่ได้รับจากผู้ดูแลระบบ"
-            )
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            
-            login_button = st.form_submit_button("🚀 เข้าสู่ระบบ")
-            
-            if login_button:
-                if username and password:
-                    with st.spinner('🔍 กำลังตรวจสอบข้อมูล...'):
-                        time.sleep(1.5)
-                        
-                        if username in users and users[username]["password"] == password:
-                            st.success("✅ เข้าสู่ระบบสำเร็จ! กำลังเปลี่ยนหน้า...")
-                            time.sleep(1)
-                            
-                            st.session_state["logged_in"] = True
-                            st.session_state["username"] = username
-                            st.session_state["user_data"] = users[username]
-                            st.session_state["current_page"] = "dashboard"
-                            st.session_state["login_time"] = datetime.now()
-                            st.rerun()
-                        else:
-                            st.error("❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
-                else:
-                    st.warning("⚠️ กรุณากรอกชื่อผู้ใช้และรหัสผ่าน")
+        # การฝัง iframe สำหรับชีทที่เลือก
+        st.markdown(f"""
+            <style>
+                .iframe-container {{
+                    width: 100%;
+                    max-width: 1200px;
+                    margin: auto;
+                    border: 2px solid #4CAF50;
+                    border-radius: 10px;
+                    overflow: auto;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }}
         
-        st.markdown('</div>', unsafe_allow_html=True)
+                .iframe-container iframe {{
+                    width: 100%;
+                    min-width: 320px;
+                    height: 1400px;
+                    border: none;
+                    transform: scale(1); 
+                    transform-origin: top left;
+                }}
         
-        # System Info
-        st.markdown("""
-        <div class="info-box">
-            <h3 style="text-align: center; color: #4A90E2; margin-bottom: 1.5rem; font-family: 'Inter', sans-serif;">ระบบคุณสมบัติ</h3>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-icon">🔒</span>
-                    <div class="info-title">ความปลอดภัย</div>
-                    <div class="info-desc">ระบบรักษาความปลอดภัยระดับสูง</div>
-                </div>
-                <div class="info-item">
-                    <span class="info-icon">💻</span>
-                    <div class="info-title">รองรับทุกอุปกรณ์</div>
-                    <div class="info-desc">ใช้งานได้บนคอมพิวเตอร์และมือถือ</div>
-                </div>
-                <div class="info-item">
-                    <span class="info-icon">⚡</span>
-                    <div class="info-title">ประมวลผล AI</div>
-                    <div class="info-desc">ระบบอัจฉริยะช่วยจัดการงาน</div>
-                </div>
-                <div class="info-item">
-                    <span class="info-icon">🌐</span>
-                    <div class="info-title">เชื่อมต่อ Cloud</div>
-                    <div class="info-desc">ข้อมูลซิงค์แบบเรียลไทม์</div>
-                </div>
+                @media (max-width: 768px) {{
+                    .iframe-container iframe {{
+                        height: 900px;
+                        min-width: 320px;
+                        transform: scale(0.95);
+                    }}
+                }}
+        
+                .edit-link {{
+                    text-align: right;
+                    margin-top: 10px;
+                    background-color: #4CAF50;
+                    padding: 10px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }}
+                .edit-link a {{
+                    color: white;
+                    font-size: 16px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    transition: all 0.3s ease;
+                }}
+                .edit-link a:hover {{
+                    color: #FFEB3B;
+                    text-decoration: underline;
+                }}
+            </style>
+        
+            <div class="iframe-container">
+                <iframe src="{iframe_link}"></iframe>
             </div>
-        </div>
+        
+            <div class="edit-link">
+                <a href="{edit_link}" target="_blank">✏️ แก้ไข Google Sheets คลิกที่นี่</a>
+            </div>
         """, unsafe_allow_html=True)
 
-# ===== ฟังก์ชันสำหรับการแสดง Dashboard =====
-def show_dashboard():
-    current_time, current_date = get_current_time()
-    
-    # Header
-    st.markdown(f"""
-    <div class="dashboard-header">
-        <div class="dashboard-nav">
-            <div class="dashboard-logo">
-                <div class="dashboard-logo-icon">🛡️</div>
-                <div>
-                    <h1 class="dashboard-title">J.A.R.V.I.S</h1>
-                    <div class="time-display">
-                        <div class="current-time">{current_time}</div>
-                        <div class="current-date">{current_date}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="user-profile">
-                <div class="user-avatar">{st.session_state['user_data']['avatar']}</div>
-                <div class="user-info">
-                    <h4>{st.session_state['user_data']['display_name']}</h4>
-                    <p>{st.session_state['user_data']['role']}</p>
-                    <p>{st.session_state['user_data']['sheet_name']}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Navigation Cards
-    st.markdown("## 🎯 เลือกฟังก์ชันการทำงาน")
-    
-    nav_items = [
-        ("night_duty", "🛡️", "เวรรักษาการณ์", "จัดการและดูข้อมูลเวรยืนกลางคืน"),
-        ("weekend_duty", "📅", "เวรเตรียมการ", "จัดการเวรเสาร์-อาทิตย์และวันหยุด"),
-        ("ceremony_duty", "🏅", "จัดยอดพิธี", "สุ่มและจัดยอดสำหรับงานพิธีต่างๆ"),
-        ("home", "📝", "ยอดปล่อย", "พิมพ์และจัดทำรายงานยอดปล่อย"),
-        ("count", "📊", "สถิติโดนยอด", "อัพเดตและตรวจสอบสถิติการโดนยอด"),
-        ("logout", "🚪", "ออกจากระบบ", "ออกจากระบบและกลับสู่หน้าเข้าสู่ระบบ")
-    ]
-    
-    cols = st.columns(3)
-    for i, (page_id, icon, title, desc) in enumerate(nav_items):
-        with cols[i % 3]:
-            if st.button(f"{icon} {title}", key=f"nav_{page_id}", use_container_width=True):
-                if page_id == "logout":
-                    for key in list(st.session_state.keys()):
-                        del st.session_state[key]
-                    st.rerun()
-                else:
-                    st.session_state["current_page"] = page_id
-                    st.rerun()
-    
-    # Hero Section
-    st.markdown("""
-    <div class="hero-section">
-        <h1 class="hero-title">THE FUTURE OF</h1>
-        <h2 class="hero-subtitle">MILITARY ASSISTANCE</h2>
-        <p class="hero-description">
-            ระบบผู้ช่วยอัจฉริยะสำหรับการจัดการงานต่างๆ ของ ฝอ.1<br>
-            ด้วยเทคโนโลยีที่ทันสมัยและใช้งานง่าย พร้อมการเชื่อมต่อ Google Sheets<br>
-            และระบบวิเคราะห์ข้อมูลแบบเรียลไทม์
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Stats Section
-    st.markdown("## 📈 สถิติระบบ")
-    
-    stats_data = [
-        ("150+", "นักเรียนนายร้อย", "จำนวนผู้ใช้งานในระบบ"),
-        ("24/7", "ระบบพร้อมใช้งาน", "บริการตลอด 24 ชั่วโมง"),
-        ("5", "ฟังก์ชันหลัก", "โมดูลการทำงานที่สำคัญ"),
-        ("99%", "ความแม่นยำ", "ประสิทธิภาพการทำงาน")
-    ]
-    
-    cols = st.columns(4)
-    for i, (number, label, desc) in enumerate(stats_data):
-        with cols[i]:
-            st.markdown(f"""
-            <div class="stat-card">
-                <div class="stat-number">{number}</div>
-                <div class="stat-label">{label}</div>
-                <div class="stat-description">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    # Recent Activity (Mock Data)
-    st.markdown("## 📋 กิจกรรมล่าสุด")
-    
+    except Exception as e:
+        st.error(f"โหลดข้อมูลไม่สำเร็จ: {e}")
+
+def weekend_duty_mode():
+    st.info("คุณเลือก: เวรเสาร์-อาทิตย์")
+    st.markdown("[คลิกเพื่อดู Google Sheet📃](https://docs.google.com/spreadsheets/d/1ufm0LPa4c903jhlANKn_YqNyMtG9id0iN-tMHrhNRA8/edit?gid=1888956716)", unsafe_allow_html=True)
+
+def home_mode():
+    st.header("📋 พิมพ์ยอดปล่อย")
+
+    # วันที่ของรายงาน
     col1, col2 = st.columns(2)
+    with col1:
+        start_date = st.date_input("วันปล่อย", date.today())
+    with col2:
+        end_date = st.date_input("วันเข้ารร.", date.today())
+    
+    # ยอดเดิมแต่ละชั้นปี
+    defaults = {5: 67, 4: 101, 3: 94, 2: 85}
+    categories = ["เวรเตรียมพร้อม", "กักบริเวณ", "อยู่โรงเรียน","ราชการ", "โรงพยาบาล", "ลา", "อื่นๆ"]
+    
+    # กรอกข้อมูล
+    st.subheader("กรอกข้อมูลเเต่ละชั้นปี")
+    data = {}
+    year_colors = {
+        5: "#b3e5fc",  # สีฟ้าอ่อน
+        4: "#c8e6c9",  # สีเขียวอ่อน
+        3: "#bbdefb",  # สีน้ำเงินอ่อน
+        2: "#f8bbd0",  # สีชมพูอ่อน
+    }
+    for year in [5, 4, 3, 2]:
+        data[year] = {}
+        with st.expander(f"ชั้นปีที่ {year}"):
+            st.markdown(
+                f"""
+                <div style="background-color: {year_colors[year]}; padding: 15px; border-radius: 10px;">
+                """,
+                unsafe_allow_html=True
+            )
+            for cat in categories:
+                val = st.number_input(
+                    f"{cat} ชั้นปีที่ {year}",
+                    min_value=0,
+                    step=1,
+                    key=f"{cat}_{year}"
+                )
+                data[year][cat] = val
+            st.markdown("</div>", unsafe_allow_html=True)
+    
+    # ปุ่ม "สร้างรายงาน" และ "ทำไฟล์" ในแถวเดียวกัน ตกแต่งด้วย CSS
+    col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.markdown("""
-        <div style="background: rgba(15, 25, 45, 0.8); border: 1px solid rgba(74, 144, 226, 0.3); border-radius: 16px; padding: 2rem; backdrop-filter: blur(10px);">
-            <h4 style="color: #4A90E2; margin-bottom: 1rem;">🕐 เวรล่าสุด</h4>
-            <div style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
-                <p>• เวรรักษาการณ์: 03/01/2025</p>
-                <p>• เวรเตรียมการ: 05/01/2025</p>
-                <p>• จัดยอดพิธี: 07/01/2025</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        generate = st.button("📘 สร้างรายงาน")
     
     with col2:
         st.markdown("""
-        <div style="background: rgba(15, 25, 45, 0.8); border: 1px solid rgba(74, 144, 226, 0.3); border-radius: 16px; padding: 2rem; backdrop-filter: blur(10px);">
-            <h4 style="color: #4A90E2; margin-bottom: 1rem;">📊 สถิติการใช้งาน</h4>
-            <div style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
-                <p>• การเข้าใช้งานวันนี้: 25 ครั้ง</p>
-                <p>• ฟังก์ชันที่ใช้บ่อย: เวรรักษาการณ์</p>
-                <p>• เวลาใช้งานเฉลี่ย: 15 นาที</p>
-            </div>
-        </div>
+            <style>
+            .stButton>button.export-link {
+                background-color: #28a745;
+                color: white;
+                border-radius: 6px;
+                padding: 0.4em 1em;
+                border: none;
+                font-size: 14px;
+            }
+            .stButton>button.export-link:hover {
+                background-color: #218838;
+                color: white;
+            }
+            </style>
+            <a href="https://docs.google.com/spreadsheets/d/1_kKUegxtwwd3ce3EduPqRoPpgAF1_IcecA1ri9Pfxz0/edit?gid=351113778#gid=351113778" target="_blank">
+                <button class="export-link">📗 ทำไฟล์</button>
+            </a>
         """, unsafe_allow_html=True)
-
-# ===== ฟังก์ชันสำหรับหน้าต่างๆ =====
-def show_module_page(module_name, icon, description):
-    current_time, current_date = get_current_time()
     
-    # Header
-    st.markdown(f"""
-    <div class="dashboard-header">
-        <div class="dashboard-nav">
-            <div class="dashboard-logo">
-                <div class="dashboard-logo-icon">{icon}</div>
-                <div>
-                    <h1 class="dashboard-title">{module_name}</h1>
-                    <div class="time-display">
-                        <div class="current-time">{current_time}</div>
-                        <div class="current-date">{current_date}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="user-profile">
-                <div class="user-avatar">{st.session_state['user_data']['avatar']}</div>
-                <div class="user-info">
-                    <h4>{st.session_state['user_data']['display_name']}</h4>
-                    <p>{st.session_state['user_data']['role']}</p>
-                    <p>{st.session_state['user_data']['sheet_name']}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    # ✅ ทำงานต่อเมื่อกดปุ่ม
+    if generate:
+        st.success("รายงานถูกสร้างเรียบร้อย")
     
-    # Back Button
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        if st.button("← กลับหน้าหลัก", key="back_to_dashboard"):
-            st.session_state["current_page"] = "dashboard"
-            st.rerun()
+        lines = []
+        start_str = start_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.")
+        thai_year = end_date.year + 543  # แปลง ค.ศ. -> พ.ศ.
+        end_str = end_date.strftime("%-d %b").replace("May", "พ.ค.").replace("Jun", "มิ.ย.") + f" {str(thai_year)[-2:]}"
     
-    # Module Content
-    st.markdown(f"""
-    <div class="hero-section">
-        <div style="font-size: 5rem; margin-bottom: 2rem;">{icon}</div>
-        <h1 class="hero-title">{module_name}</h1>
-        <p class="hero-description">{description}</p>
-        <div style="margin-top: 3rem;">
-            <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 12px; padding: 2rem; color: rgba(255, 193, 7, 0.9);">
-                <h3>🚧 ฟังก์ชันกำลังพัฒนา</h3>
-                <p>ฟังก์ชันนี้จะเชื่อมต่อกับ Google Sheets และระบบฐานข้อมูลเดิม<br>
-                รอการอัพเดตในเวอร์ชันถัดไป</p>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-def show_night_duty_page():
-    show_module_page(
-        "เวรรักษาการณ์", 
-        "🛡️", 
-        "จัดการและดูข้อมูลเวรยืนกลางคืน ระบบตรวจสอบตลอด 24 ชั่วโมง พร้อมการแจ้งเตือนอัตโนมัติและการจัดตารางเวรอัจฉริยะ"
-    )
-
-def show_weekend_duty_page():
-    show_module_page(
-        "เวรเตรียมการ", 
-        "📅", 
-        "จัดการเวรเสาร์-อาทิตย์และวันหยุดราชการ พร้อมระบบจัดตารางอัตโนมัติและการแจ้งเตือนล่วงหน้า"
-    )
-
-def show_ceremony_duty_page():
-    show_module_page(
-        "จัดยอดพิธี", 
-        "🏅", 
-        "สุ่มและจัดยอดสำหรับงานพิธีต่างๆ อัตโนมัติ ด้วยอัลกอริทึมที่ยุติธรรมและระบบติดตามประวัติ"
-    )
-
-def show_home_page():
-    show_module_page(
-        "ยอดปล่อย", 
-        "📝", 
-        "พิมพ์และจัดทำรายงานยอดปล่อยประจำวัน พร้อมการส่งออกเป็น PDF และระบบอนุมัติอิเล็กทรอนิกส์"
-    )
-
-def show_count_page():
-    show_module_page(
-        "สถิติโดนยอด", 
-        "📊", 
-        "อัพเดตและตรวจสอบสถิติการโดนยอด พร้อมกราฟและการวิเคราะห์ข้อมูลแบบเรียลไทม์"
-    )
-
-# ===== Main Application =====
-def main():
-    load_enhanced_css()
+        lines.append(f"พัน.4 กรม นนร.รอ. ขออนุญาตส่งยอด นนร. ปล่อยพักบ้าน, อยู่โรงเรียน และ เวรเตรียมพร้อม ของวันที่   {start_str} - {end_str} ดังนี้")
     
-    # ตรวจสอบสถานะการล็อกอิน
-    if not st.session_state.get("logged_in", False):
-        show_login_page()
-        return
+        for y in [5, 4, 3, 2]:
+            lines.append(f"ชั้นปีที่ {y} ยอดเดิม {defaults[y]} นาย")
     
-    # กำหนดหน้าปัจจุบัน
-    current_page = st.session_state.get("current_page", "dashboard")
+        def section(title, key):
+            lines.append(f"{key+1}.{title}")
+            total = 0
+            for y in [5, 4, 3, 2]:
+                val = data[y].get(title, 0)
+                total += val
+                show_val = f"{val}" if val != 0 else "-"
+                lines.append(f"   -ชั้นปีที่ {y} จำนวน {show_val} นาย")
+            show_total = f"{total}" if total != 0 else "-"
+            lines.append(f"   -รวม {show_total} นาย")
     
-    # แสดงหน้าตามที่เลือก
-    if current_page == "dashboard":
-        show_dashboard()
-    elif current_page == "night_duty":
-        show_night_duty_page()
-    elif current_page == "weekend_duty":
-        show_weekend_duty_page()
-    elif current_page == "home":
-        show_home_page()
-    elif current_page == "count":
-        show_count_page()
-    elif current_page == "ceremony_duty":
-        show_ceremony_duty_page()
+        # 1. ยอดปล่อยบ้าน
+        lines.append("1.ยอดปล่อยพักบ้าน")
+        total_home = 0
+        for y in [5, 4, 3, 2]:
+            sum_others = sum(data[y].values())
+            val = defaults[y] - sum_others
+            total_home += val
+            lines.append(f"   -ชั้นปีที่ {y} จำนวน {val} นาย")
+        lines.append(f"   -รวม {total_home} นาย")
     
-    # Footer
-    st.markdown("""
-    <div class="footer">
-        <div class="footer-content">
-            <p class="footer-text">
-                J.A.R.V.I.S © 2025 | พัฒนาโดย Oat | ระบบผู้ช่วยอัจฉริยะ ฝอ.1
-            </p>
-            <div class="footer-links">
-                <a href="#" class="footer-link">เกี่ยวกับระบบ</a>
-                <a href="#" class="footer-link">คู่มือการใช้งาน</a>
-                <a href="#" class="footer-link">ติดต่อสนับสนุน</a>
-                <a href="#" class="footer-link">นโยบายความเป็นส่วนตัว</a>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+        for i, cat in enumerate(["อยู่โรงเรียน", "เวรเตรียมพร้อม", "กักบริเวณ", "โรงพยาบาล", "ราชการ", "ลา", "อื่นๆ"], start=2):
+            section(cat, i)
+        lines.append("จึงเรียนมาเพื่อกรุณาทราบ")
+    
+        st.text_area("รายงานยอด", value="\n".join(lines), height=600)
 
-if __name__ == "__main__":
-    main()
+def count_mode():
+ # STEP 1: ลิงก์ดูสถิติ
+    sheet_id = "1PfZdCw2iL65CPTZzNsCnkhF7EVJNFZHRvYAXqeOJsSk"
+    user_gid_map = {
+        "oat": "0",
+        "time": "589142731",
+        "chai": "258225546",
+    }
+
+    users = {
+        "oat": {"password": "crma74", "sheet_name": "ชั้น4_พัน4"},
+        "time": {"password": "crma74", "sheet_name": "ชั้น4_พัน1"},
+        "chai": {"password": "crma74", "sheet_name": "ชั้น4_พัน3"}
+    }
+
+    username = st.session_state.get("username", "")
+    sheet_name = users.get(username, {}).get("sheet_name", username)
+    gid = user_gid_map.get(username, "0")
+    sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit#gid={gid}"
+
+    st.markdown(f"🔍 [กดเพื่อดูสถิติโดนยอดปัจจุบัน (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
+
+    # STEP 2: อัปโหลดไฟล์
+    ยอด_file = st.file_uploader("📤 อัปโหลดไฟล์ยอด (.xlsx)", type="xlsx")
+
+    if ยอด_file:
+        try:
+            xls = pd.ExcelFile(ยอด_file)
+            sheet_names = xls.sheet_names
+
+            selected_sheets = st.multiselect("📄 เลือกชีทที่ต้องการนับแต้ม", sheet_names)
+            sheet_data = {}
+
+            for sheet in selected_sheets:
+                st.markdown(f"### 📌 ตั้งค่าความเหนื่อยสำหรับชีท: {sheet}")
+                เหนื่อย = st.slider(f"ระดับความเหนื่อยของ '{sheet}' (1–5)", 1, 5, 3, key=sheet)
+
+                try:
+                    df = pd.read_excel(xls, sheet_name=sheet, header=None, skiprows=3)
+                    df = df.dropna(how='all')
+
+                    if df.shape[1] >= 4:
+                        df["ชื่อเต็ม"] = df.iloc[:, 2].fillna("").astype(str).str.strip() + " " + df.iloc[:, 3].fillna("").astype(str).str.strip()
+                        preview_df = pd.DataFrame({
+                            "ลำดับ": df.iloc[:, 0],
+                            "ชื่อ": df.iloc[:, 2],
+                            "สกุล": df.iloc[:, 3],
+                        })
+                        st.dataframe(preview_df, use_container_width=True)
+
+                        sheet_data[sheet] = {"df": df, "เหนื่อย": เหนื่อย}
+                    else:
+                        st.warning(f"⚠️ ไฟล์ชีท '{sheet}' มีคอลัมน์ไม่ครบ A–D")
+                except Exception as e:
+                    st.error(f"❌ ไม่สามารถอ่านชีท '{sheet}': {e}")
+
+            if st.button("✅ อัปเดตแต้มเข้า Google Sheets"):
+                try:
+                    ws = connect_gsheet(sheet_name)
+                    gsheet_data = ws.get_all_values()
+                    gsheet_df = pd.DataFrame(gsheet_data)
+                    gsheet_df.columns = gsheet_df.iloc[0]
+                    gsheet_df = gsheet_df[1:].reset_index(drop=True)
+            
+                    gsheet_df["ชื่อเต็ม"] = gsheet_df.iloc[:, 2].astype(str).str.strip() + " " + gsheet_df.iloc[:, 3].astype(str).str.strip()
+            
+                    if "สถิติโดนยอด" not in gsheet_df.columns:
+                        gsheet_df["สถิติโดนยอด"] = 0
+                    gsheet_df["สถิติโดนยอด"] = pd.to_numeric(gsheet_df["สถิติโดนยอด"], errors='coerce').fillna(0).astype(int)
+            
+                    # ✅ รวมแต้มจากหลายชีทตามความเหนื่อย
+                    for sheet, data in sheet_data.items():
+                        df = data["df"]
+                        เหนื่อย = data["เหนื่อย"]
+                        gsheet_df["สถิติโดนยอด"] = gsheet_df.apply(
+                            lambda row: row["สถิติโดนยอด"] + เหนื่อย if row["ชื่อเต็ม"] in df["ชื่อเต็ม"].values else row["สถิติโดนยอด"],
+                            axis=1
+                        )
+            
+                    # ✅ อัปเดตคอลัมน์เดียวทั้งหมดในครั้งเดียว
+                    updated_column_values = gsheet_df["สถิติโดนยอด"].astype(str).tolist()
+                    start_cell = 'N2'
+                    end_cell = f'N{1 + len(updated_column_values)}'
+                    cell_range = f'{start_cell}:{end_cell}'
+                    ws.update(cell_range, [[val] for val in updated_column_values])
+                    time.sleep(2)
+                    st.success("✅ อัปเดต 'สถิติโดนยอด' สำเร็จ")
+                    st.markdown(f"[🔗 ดูสถิติที่อัปเดตแล้ว (ชีท: {sheet_name})]({sheet_url})", unsafe_allow_html=True)
+            
+                except Exception as e:
+                    st.error(f"❌ ไม่สามารถประมวลผลไฟล์: {e}")
+        except Exception as e:
+                st.error(f"❌ Error: {e}")
+
+def ceremony_duty_mode():
+    st.info("คุณเลือก: จัดยอดพิธี")
+
+    sheet = connect_gsheet(st.session_state["sheet_name"])
+    data = sheet.get_all_values()
+    df = pd.DataFrame(data[1:], columns=data[0])  # ข้าม header แรก
+
+    if "สถิติโดนยอด" in df.columns:
+        df["สถิติโดนยอด"] = pd.to_numeric(df["สถิติโดนยอด"], errors="coerce").fillna(0)
+
+    ยอด_name = st.text_input("🔖กรอกชื่อยอด")
+    จำนวนคน = st.number_input("👥จำนวนคน", min_value=1, step=1)
+
+    ตัวเลือก_หน้าที่ = ["ชั้นกรม", "ชั้นพัน", "ฝอ.1", "ฝอ.4", "ฝอ.5", "เเซนเฮิร์ท", "อิสลาม", "คริสต์"]
+    ตัวเลือก_หน้าที่_ทั้งหมด = ["เลือกทั้งหมด"] + ตัวเลือก_หน้าที่
+    ตัวกรอง_หน้าที่_เลือก = st.multiselect("⛔ไม่เลือกคนที่มีหน้าที่", ตัวเลือก_หน้าที่_ทั้งหมด)
+    
+    ตัวเลือก_ชมรม = ["กรีฑา", "จักรยาน", "ไซเบอร์", "ดนตรีไทย", "ดนตรีสากล", "ดาบสากล", "นิเทศ", "สตส", "บาส", "โปโลน้ำ", "ฟุตบอล", "ยูโด", "รักบี้", "แบตมินตัน"]
+    ตัวเลือก_ชมรม_ทั้งหมด = ["เลือกทั้งหมด"] + ตัวเลือก_ชมรม
+    excluded_clubs = st.multiselect("⛔ไม่เลือกชมรม", ตัวเลือก_ชมรม_ทั้งหมด)
+    
+    if st.button("📤 จัดยอดและส่งออกไฟล์"):
+        # จัดการเงื่อนไข "เลือกทั้งหมด"
+        ตัวกรอง_หน้าที่ = ตัวเลือก_หน้าที่ if "เลือกทั้งหมด" in ตัวกรอง_หน้าที่_เลือก else ตัวกรอง_หน้าที่_เลือก
+        filtered_clubs = ตัวเลือก_ชมรม if "เลือกทั้งหมด" in excluded_clubs else excluded_clubs
+    
+        df_filtered = df.copy()
+        if "หน้าที่" in df_filtered.columns and ตัวกรอง_หน้าที่:
+            df_filtered = df_filtered[~df_filtered["หน้าที่"].isin(ตัวกรอง_หน้าที่)]
+        if "ชมรม" in df_filtered.columns and filtered_clubs:
+            df_filtered = df_filtered[~df_filtered["ชมรม"].isin(filtered_clubs)]
+        if "สถิติโดนยอด" in df_filtered.columns:
+            df_filtered = df_filtered.sort_values(by="สถิติโดนยอด", ascending=True)
+    
+        grouped = df_filtered.groupby("สังกัด")
+        สังกัด_list = list(grouped.groups.keys())
+        คนต่อสังกัด = defaultdict(list)
+    
+        while sum(len(v) for v in คนต่อสังกัด.values()) < จำนวนคน:
+            for สังกัด in สังกัด_list:
+                available = grouped.get_group(สังกัด)
+                used_indices = set().union(*คนต่อสังกัด.values())
+                choices = available[~available.index.isin(used_indices)]
+                if not choices.empty and sum(len(v) for v in คนต่อสังกัด.values()) < จำนวนคน:
+                    chosen = choices.sample(1)
+                    คนต่อสังกัด[สังกัด].append(chosen.index[0])
+    
+        selected_indices = [i for indices in คนต่อสังกัด.values() for i in indices]
+        selected_df = df.loc[selected_indices]
+        selected_df = selected_df.reset_index(drop=True)
+        selected_df.index += 1
+    
+        if "ลำดับ" in selected_df.columns:
+            selected_df = selected_df.drop(columns=["ลำดับ"])
+        selected_df.insert(0, "ลำดับ", selected_df.index)
+    
+        selected_df["ยศ"] = "นนร."
+        selected_df["ชื่อ"] = selected_df.iloc[:, 2].fillna("")
+        selected_df["สกุล"] = selected_df.iloc[:, 3].fillna("")
+        selected_df["ยศ ชื่อ-สกุล"] = selected_df["ยศ"] + " " + selected_df["ชื่อ"] + " " + selected_df["สกุล"]
+    
+        # แสดงตารางบนหน้าเว็บพร้อมคอลัมน์เบอร์โทรศัพท์
+        columns = ["ลำดับ", "ยศ ชื่อ-สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "เบอร์โทรศัพท์", "หมายเหตุ"]
+        output_df = selected_df[columns]
+    
+        def render_centered_table(df):
+            html = """
+            <style>
+                table.custom-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    table-layout: auto;
+                    font-size: 11px;
+                    overflow-x: auto;
+                }
+                table.custom-table th, table.custom-table td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: center;
+                    height: 40px;
+                }
+                table.custom-table th {
+                    font-weight: bold;
+                }
+                table.custom-table th:nth-child(1), table.custom-table td:nth-child(1) { width: 5%; }
+                table.custom-table th:nth-child(2), table.custom-table td:nth-child(2) { width: 20%; }
+                table.custom-table th:nth-child(3), table.custom-table td:nth-child(3) { width: 8%; }
+                table.custom-table th:nth-child(4), table.custom-table td:nth-child(4) { width: 5%; }
+                table.custom-table th:nth-child(5), table.custom-table td:nth-child(5) { width: 15%; }
+                table.custom-table th:nth-child(6), table.custom-table td:nth-child(6) { width: 15%; }
+                table.custom-table th:nth-child(7), table.custom-table td:nth-child(7) { width: 15%; }
+                table.custom-table th:nth-child(8), table.custom-table td:nth-child(8) { width: 10%; }
+                table.custom-table td:nth-child(2) {
+                    text-align: left;
+                    padding-left: 10px;
+                }
+                @media (max-width: 600px) {
+                    table.custom-table {
+                        font-size: 9px;
+                        min-width: 600px;
+                        overflow-x: auto;
+                        display: block;
+                    }
+                }
+            </style>
+            """
+            html += "<div style='overflow-x:auto;'>"
+            html += "<table class='custom-table'>"
+            html += "<thead><tr>" + "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead>"
+            html += "<tbody>"
+            for _, row in df.iterrows():
+                html += "<tr>"
+                for i, cell in enumerate(row):
+                    value = "" if pd.isna(cell) and i == 7 else cell
+                    html += f"<td>{value}</td>"
+                html += "</tr>"
+            html += "</tbody></table>"
+            html += "</div>"
+            st.markdown(html, unsafe_allow_html=True)
+    
+        render_centered_table(output_df)
+    
+        # สร้าง Excel
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "ยอดพิธี"
+        ws.append([ยอด_name])
+        ws.append([])
+        ws.merge_cells('A2:j2')
+    
+        selected_df["ยศ"] = "นนร."
+        selected_df["ชื่อ"] = selected_df.iloc[:, 2]
+        selected_df["สกุล"] = selected_df.iloc[:, 3]
+    
+        columns_excel = ["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "เบอร์โทรศัพท์", "หมายเหตุ"]
+        output_df_excel = selected_df[columns_excel]
+    
+        # เขียนหัวตาราง Excel
+        ws.append(["ลำดับ", "ยศ", "ชื่อ", "สกุล", "ชั้นปีที่", "ตอน", "ตำแหน่ง", "สังกัด", "เบอร์โทรศัพท์", "หมายเหตุ"])
+        ws.merge_cells('A1:J1')
+        ws.merge_cells('A2:J2')
+        ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)
+        ws.cell(row=3, column=2).value = "ยศ ชื่อ-สกุล"
+        ws.cell(row=3, column=2).alignment = Alignment(horizontal='center', vertical='center')
+        ws.cell(row=3, column=5).value = "ชั้นปีที่"
+        ws.cell(row=3, column=6).value = "ตอน"
+        ws.cell(row=3, column=7).value = "ตำแหน่ง"
+        ws.cell(row=3, column=8).value = "สังกัด"
+        ws.cell(row=3, column=9).value = "เบอร์โทรศัพท์"
+        ws.cell(row=3, column=10).value = "หมายเหตุ"
+    
+        for r in dataframe_to_rows(output_df_excel, index=False, header=False):
+            ws.append(r)
+    
+        thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+        for row in ws.iter_rows(min_row=2):
+            for idx, cell in enumerate(row[:10]):
+                if idx < 1 or idx > 3:
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                cell.border = thin_border
+    
+        ws.column_dimensions['A'].width = 6
+        ws.column_dimensions['B'].width = 5
+        ws.column_dimensions['C'].width = 15
+        ws.column_dimensions['D'].width = 15
+        ws.column_dimensions['E'].width = 8
+        ws.column_dimensions['F'].width = 8
+        ws.column_dimensions['G'].width = 20
+        ws.column_dimensions['H'].width = 15
+        ws.column_dimensions['I'].width = 15
+        ws.column_dimensions['J'].width = 15
+    
+        for cell in ws[1]:
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+            cell.border = thin_border
+    
+        output_filename = f"{ยอด_name}.xlsx"
+        wb.save(output_filename)
+        st.success(f"✅ สร้างไฟล์ Excel สำเร็จ: {output_filename}")
+        with open(output_filename, "rb") as f:
+            st.download_button("📥 ดาวน์โหลด Excel", f, file_name=output_filename)
+
+
+# =================== MAIN ===================
+render_header()
+render_menu()
+
+mode = st.session_state.get("mode", None)
+
+if mode == "night_duty":
+    night_duty_mode()
+elif mode == "weekend_duty":
+    weekend_duty_mode()
+elif mode == "home":
+    home_mode()
+elif mode == "count":
+    count_mode()
+elif mode == "ceremony_duty":
+    ceremony_duty_mode()
+
+st.markdown("<hr style='border:0.5px solid #ccc;'>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>J.A.R.V.I.S © 2025 | Dev by Oat</p>", unsafe_allow_html=True)
