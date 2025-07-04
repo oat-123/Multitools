@@ -116,6 +116,12 @@ def render_header():
             margin-bottom: 1em;
             text-align: center;
             border: 1px solid #23272f;
+            color: #e3e7ef;
+            transition: box-shadow 0.2s, border 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 18px rgba(110,193,228,0.18);
+            border: 1.5px solid #6ec1e4;
         }
         .stTextInput>div>div>input, .stTextArea textarea, .stNumberInput input, .stSelectbox>div>div>div>input, .stMultiSelect>div>div>div>input {
             background: #232733 !important;
@@ -166,12 +172,19 @@ def render_menu():
     st.markdown("""
         <style>
         .card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            background: #262b36;
+            border-radius: 13px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.10);
             padding: 1.2em 0.5em 1em 0.5em;
             margin-bottom: 1em;
             text-align: center;
+            border: 1px solid #23272f;
+            color: #e3e7ef;
+            transition: box-shadow 0.2s, border 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 18px rgba(110,193,228,0.18);
+            border: 1.5px solid #6ec1e4;
         }
         @media (max-width: 600px) {
             .stColumns {
@@ -186,6 +199,26 @@ def render_menu():
             width: 100%;
             font-size: 1.1rem;
             border-radius: 8px;
+            background: linear-gradient(90deg, #6ec1e4 0%, #2d3440 100%);
+            color: #23272f;
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: background 0.2s, color 0.2s;
+        }
+        .stButton>button:hover {
+            background: linear-gradient(90deg, #2d3440 0%, #6ec1e4 100%);
+            color: #e3e7ef;
+        }
+        /* Input fields */
+        .stTextInput>div>div>input, .stTextArea textarea, .stNumberInput input, .stSelectbox>div>div>div>input, .stMultiSelect>div>div>div>input {
+            background: #232733 !important;
+            color: #f3f4f6 !important;
+            border-radius: 8px;
+            border: 1px solid #353b48;
+        }
+        .stTextInput>div>div>input:focus, .stTextArea textarea:focus, .stNumberInput input:focus {
+            border: 1.5px solid #6ec1e4;
         }
         </style>
     """, unsafe_allow_html=True)
